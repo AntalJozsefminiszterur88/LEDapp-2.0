@@ -1,0 +1,134 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\Users\\vatib\\Projects\\LEDapp-2.0\\src\\LedController.Infrastructure\\LedController.Infrastructure.csproj": {}
+  },
+  "projects": {
+    "C:\\Users\\vatib\\Projects\\LEDapp-2.0\\src\\LedController.Core\\LedController.Core.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\vatib\\Projects\\LEDapp-2.0\\src\\LedController.Core\\LedController.Core.csproj",
+        "projectName": "LedController.Core",
+        "projectPath": "C:\\Users\\vatib\\Projects\\LEDapp-2.0\\src\\LedController.Core\\LedController.Core.csproj",
+        "packagesPath": "C:\\Users\\vatib\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\vatib\\Projects\\LEDapp-2.0\\src\\LedController.Core\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\vatib\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "CommunityToolkit.Mvvm": {
+              "target": "Package",
+              "version": "[8.3.2, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.101/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Users\\vatib\\Projects\\LEDapp-2.0\\src\\LedController.Infrastructure\\LedController.Infrastructure.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\vatib\\Projects\\LEDapp-2.0\\src\\LedController.Infrastructure\\LedController.Infrastructure.csproj",
+        "projectName": "LedController.Infrastructure",
+        "projectPath": "C:\\Users\\vatib\\Projects\\LEDapp-2.0\\src\\LedController.Infrastructure\\LedController.Infrastructure.csproj",
+        "packagesPath": "C:\\Users\\vatib\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\vatib\\Projects\\LEDapp-2.0\\src\\LedController.Infrastructure\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\vatib\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "C:\\Users\\vatib\\Projects\\LEDapp-2.0\\src\\LedController.Core\\LedController.Core.csproj": {
+                "projectPath": "C:\\Users\\vatib\\Projects\\LEDapp-2.0\\src\\LedController.Core\\LedController.Core.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "InTheHand.BluetoothLE": {
+              "target": "Package",
+              "version": "[4.0.44, )"
+            },
+            "MQTTnet": {
+              "target": "Package",
+              "version": "[4.3.7.1207, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.101/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("LedController.UI")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+514a630c7454f38a6a3b8c0150c504a72ebeaa38")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+867e60394e89c14a3493dea8662bafd26baf4408")]
 [assembly: System.Reflection.AssemblyProductAttribute("LedController.UI")]
 [assembly: System.Reflection.AssemblyTitleAttribute("LedController.UI")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
