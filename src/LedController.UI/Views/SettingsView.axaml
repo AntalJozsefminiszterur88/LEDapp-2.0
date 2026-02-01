@@ -1,0 +1,64 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:viewModels="clr-namespace:LedController.UI.ViewModels"
+             x:Class="LedController.UI.Views.SettingsView"
+             x:DataType="viewModels:SettingsViewModel">
+  <Grid RowDefinitions="Auto,*" ColumnDefinitions="*">
+    <TextBlock Text="Beállítások" FontSize="24" FontWeight="SemiBold" />
+
+    <StackPanel Grid.Row="1" Spacing="16" Margin="0,16,0,0">
+      <Border Background="#242424"
+              BorderBrush="#2D2D2D"
+              BorderThickness="1"
+              CornerRadius="8"
+              Padding="16">
+        <StackPanel Spacing="12">
+          <TextBlock Text="Rendszer" FontWeight="SemiBold" />
+          <CheckBox Content="Indítás Windowszal"
+                    IsChecked="{Binding StartWithWindows}" />
+        </StackPanel>
+      </Border>
+
+      <Border Background="#242424"
+              BorderBrush="#2D2D2D"
+              BorderThickness="1"
+              CornerRadius="8"
+              Padding="16">
+        <StackPanel Spacing="12">
+          <TextBlock Text="MQTT" FontWeight="SemiBold" />
+
+          <CheckBox Content="MQTT engedélyezése"
+                    IsChecked="{Binding MqttEnabled}" />
+
+          <Grid ColumnDefinitions="120,*" RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="8" ColumnSpacing="12">
+            <TextBlock Text="Host" VerticalAlignment="Center" />
+            <TextBox Grid.Column="1" Text="{Binding MqttHost}" />
+
+            <TextBlock Grid.Row="1" Text="Port" VerticalAlignment="Center" />
+            <NumericUpDown Grid.Row="1"
+                           Grid.Column="1"
+                           Minimum="1"
+                           Maximum="65535"
+                           Value="{Binding MqttPort}" />
+
+            <TextBlock Grid.Row="2" Text="Felhasználó" VerticalAlignment="Center" />
+            <TextBox Grid.Row="2"
+                     Grid.Column="1"
+                     Text="{Binding MqttUsername}" />
+
+            <TextBlock Grid.Row="3" Text="Jelszó" VerticalAlignment="Center" />
+            <TextBox Grid.Row="3"
+                     Grid.Column="1"
+                     Text="{Binding MqttPassword}"
+                     PasswordChar="*" />
+          </Grid>
+
+          <StackPanel Orientation="Horizontal" Spacing="12">
+            <Button Content="Mentés" Command="{Binding SaveCommand}" />
+            <Button Content="{Binding MqttToggleLabel}" Command="{Binding ToggleMqttCommand}" />
+          </StackPanel>
+        </StackPanel>
+      </Border>
+    </StackPanel>
+  </Grid>
+</UserControl>

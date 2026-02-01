@@ -1,0 +1,30 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:viewModels="clr-namespace:LedController.UI.ViewModels"
+             xmlns:views="clr-namespace:LedController.UI.Views"
+             x:Class="LedController.UI.App"
+             RequestedThemeVariant="Dark">
+             <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+
+    <Application.Styles>
+        <FluentTheme />
+    </Application.Styles>
+
+    <Application.DataTemplates>
+        <DataTemplate DataType="{x:Type viewModels:DashboardViewModel}">
+            <views:DashboardView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:DiscoveryViewModel}">
+            <views:DiscoveryView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:SettingsViewModel}">
+            <views:SettingsView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:DeviceControlViewModel}">
+            <views:DeviceControlView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:SchedulerViewModel}">
+            <views:SchedulerView />
+        </DataTemplate>
+    </Application.DataTemplates>
+</Application>

@@ -1,0 +1,157 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converters="clr-namespace:LedController.UI.Converters"
+             xmlns:viewModels="clr-namespace:LedController.UI.ViewModels"
+             xmlns:models="clr-namespace:LedController.Core.Models;assembly=LedController.Core"
+             x:Class="LedController.UI.Views.SchedulerView"
+             x:DataType="viewModels:SchedulerViewModel"
+             x:Name="Root">
+  <UserControl.Resources>
+    <converters:DayOfWeekToHungarianConverter x:Key="DayNameConverter" />
+    <converters:AnyTrueToFalseConverter x:Key="AnyTrueToFalseConverter" />
+    <converters:AnyNonNullToFalseConverter x:Key="AnyNonNullToFalseConverter" />
+  </UserControl.Resources>
+
+  <Grid RowDefinitions="Auto,Auto,*,Auto" ColumnDefinitions="*">
+    <StackPanel Orientation="Horizontal" Spacing="12">
+      <TextBlock Text="{Binding TargetDevice.Name}" FontSize="22" FontWeight="SemiBold" VerticalAlignment="Center" />
+      <TextBlock Text="Ütemezés" FontSize="16" Opacity="0.8" VerticalAlignment="Center" />
+    </StackPanel>
+
+    <Border Grid.Row="1"
+            Margin="0,16,0,0"
+            Background="#242424"
+            BorderBrush="#2D2D2D"
+            BorderThickness="1"
+            CornerRadius="8"
+            Padding="12">
+      <Grid ColumnDefinitions="2*,Auto,Auto,Auto" ColumnSpacing="12" RowDefinitions="Auto,Auto">
+        <ComboBox Grid.Row="0"
+                  Grid.Column="0"
+                  ItemsSource="{Binding Profiles}"
+                  SelectedItem="{Binding SelectedProfile}">
+          <ComboBox.ItemTemplate>
+            <DataTemplate x:DataType="models:ScheduleProfile">
+              <TextBlock Text="{Binding Name}" />
+            </DataTemplate>
+          </ComboBox.ItemTemplate>
+        </ComboBox>
+
+        <CheckBox Grid.Row="0"
+                  Grid.Column="1"
+                  Content="Aktív"
+                  IsChecked="{Binding SelectedProfile.IsActive}" />
+
+        <Button Grid.Row="0"
+                Grid.Column="2"
+                Content="Új profil"
+                Command="{Binding AddProfileCommand}" />
+
+        <Button Grid.Row="0"
+                Grid.Column="3"
+                Content="Profil törlése"
+                Command="{Binding DeleteProfileCommand}" />
+      </Grid>
+    </Border>
+
+    <Border Grid.Row="2"
+            Margin="0,16,0,16"
+            Background="#242424"
+            BorderBrush="#2D2D2D"
+            BorderThickness="1"
+            CornerRadius="8"
+            Padding="12">
+      <StackPanel Spacing="8">
+        <Grid ColumnDefinitions="120,Auto,90,Auto,90,Auto,Auto,180" ColumnSpacing="12">
+          <TextBlock Text="Nap" FontWeight="SemiBold" />
+          <TextBlock Grid.Column="1" Text="Napkelte" FontWeight="SemiBold" />
+          <TextBlock Grid.Column="2" Text="Eltolás" FontWeight="SemiBold" />
+          <TextBlock Grid.Column="3" Text="Napnyugta" FontWeight="SemiBold" />
+          <TextBlock Grid.Column="4" Text="Eltolás" FontWeight="SemiBold" />
+          <TextBlock Grid.Column="5" Text="Be" FontWeight="SemiBold" />
+          <TextBlock Grid.Column="6" Text="Ki" FontWeight="SemiBold" />
+          <TextBlock Grid.Column="7" Text="Szín" FontWeight="SemiBold" />
+        </Grid>
+
+        <ItemsControl ItemsSource="{Binding DailySchedules}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="models:DailySchedule">
+              <Grid ColumnDefinitions="120,Auto,90,Auto,90,Auto,Auto,180" ColumnSpacing="12" RowDefinitions="Auto">
+                <TextBlock Text="{Binding DayOfWeek, Converter={StaticResource DayNameConverter}}" VerticalAlignment="Center" />
+
+                <CheckBox Grid.Column="1"
+                          IsChecked="{Binding SunriseEnabled}">
+                  <CheckBox.IsEnabled>
+                    <MultiBinding Converter="{StaticResource AnyNonNullToFalseConverter}">
+                      <Binding Path="FixedOnTime" />
+                      <Binding Path="FixedOffTime" />
+                    </MultiBinding>
+                  </CheckBox.IsEnabled>
+                </CheckBox>
+
+                <NumericUpDown Grid.Column="2"
+                               Minimum="-720"
+                               Maximum="720"
+                               Width="70"
+                               Value="{Binding SunriseOffset}"
+                               IsEnabled="{Binding SunriseEnabled}" />
+
+                <CheckBox Grid.Column="3"
+                          IsChecked="{Binding SunsetEnabled}">
+                  <CheckBox.IsEnabled>
+                    <MultiBinding Converter="{StaticResource AnyNonNullToFalseConverter}">
+                      <Binding Path="FixedOnTime" />
+                      <Binding Path="FixedOffTime" />
+                    </MultiBinding>
+                  </CheckBox.IsEnabled>
+                </CheckBox>
+
+                <NumericUpDown Grid.Column="4"
+                               Minimum="-720"
+                               Maximum="720"
+                               Width="70"
+                               Value="{Binding SunsetOffset}"
+                               IsEnabled="{Binding SunsetEnabled}" />
+
+                <TimePicker Grid.Column="5"
+                            SelectedTime="{Binding FixedOnTime}">
+                  <TimePicker.IsEnabled>
+                    <MultiBinding Converter="{StaticResource AnyTrueToFalseConverter}">
+                      <Binding Path="SunriseEnabled" />
+                      <Binding Path="SunsetEnabled" />
+                    </MultiBinding>
+                  </TimePicker.IsEnabled>
+                </TimePicker>
+
+                <TimePicker Grid.Column="6"
+                            SelectedTime="{Binding FixedOffTime}">
+                  <TimePicker.IsEnabled>
+                    <MultiBinding Converter="{StaticResource AnyTrueToFalseConverter}">
+                      <Binding Path="SunriseEnabled" />
+                      <Binding Path="SunsetEnabled" />
+                    </MultiBinding>
+                  </TimePicker.IsEnabled>
+                </TimePicker>
+
+                <ComboBox Grid.Column="7"
+                          ItemsSource="{Binding DataContext.AvailableColors, ElementName=Root}"
+                          SelectedItem="{Binding TargetColor}">
+                  <ComboBox.ItemTemplate>
+                    <DataTemplate x:DataType="models:LedColor">
+                      <TextBlock Text="{Binding Name}" />
+                    </DataTemplate>
+                  </ComboBox.ItemTemplate>
+                </ComboBox>
+              </Grid>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </StackPanel>
+    </Border>
+
+    <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="12">
+      <Button Content="Mentés" Command="{Binding SaveProfileCommand}" />
+      <Button Content="Vissza" Command="{Binding BackCommand}" />
+    </StackPanel>
+  </Grid>
+</UserControl>

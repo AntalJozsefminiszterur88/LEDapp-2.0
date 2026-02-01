@@ -1,0 +1,40 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:viewModels="clr-namespace:LedController.UI.ViewModels"
+             xmlns:models="clr-namespace:LedController.Core.Models;assembly=LedController.Core"
+             x:Class="LedController.UI.Views.DiscoveryView"
+             x:DataType="viewModels:DiscoveryViewModel">
+  <Grid RowDefinitions="Auto,*,Auto" ColumnDefinitions="*">
+    <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+      <Button Content="Keresés" Command="{Binding ScanCommand}" />
+      <ProgressBar IsIndeterminate="True"
+                   Width="160"
+                   Height="8"
+                   IsVisible="{Binding IsBusy}" />
+    </StackPanel>
+
+    <Border Grid.Row="1"
+            Margin="0,16,0,16"
+            Background="#242424"
+            BorderBrush="#2D2D2D"
+            BorderThickness="1"
+            CornerRadius="8"
+            Padding="12">
+      <ListBox ItemsSource="{Binding DiscoveredDevices}"
+               SelectedItem="{Binding SelectedDevice}">
+        <ListBox.ItemTemplate>
+          <DataTemplate x:DataType="models:LedDevice">
+            <StackPanel Spacing="4">
+              <TextBlock Text="{Binding Name}" FontWeight="SemiBold" />
+              <TextBlock Text="{Binding MacAddress}" Opacity="0.7" />
+            </StackPanel>
+          </DataTemplate>
+        </ListBox.ItemTemplate>
+      </ListBox>
+    </Border>
+
+    <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
+      <Button Content="Hozzáadás" Command="{Binding ConnectCommand}" />
+    </StackPanel>
+  </Grid>
+</UserControl>

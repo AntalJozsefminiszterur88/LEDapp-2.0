@@ -1,0 +1,57 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converters="clr-namespace:LedController.UI.Converters"
+             xmlns:viewModels="clr-namespace:LedController.UI.ViewModels"
+             xmlns:models="clr-namespace:LedController.Core.Models;assembly=LedController.Core"
+             x:Class="LedController.UI.Views.DashboardView"
+             x:DataType="viewModels:DashboardViewModel"
+             x:Name="Root">
+  <UserControl.Resources>
+    <converters:BoolToBrushConverter x:Key="ConnectionBrushConverter"
+                                     TrueBrush="#3DDC84"
+                                     FalseBrush="#E85D5D" />
+  </UserControl.Resources>
+
+  <Grid RowDefinitions="Auto,*">
+    <TextBlock Text="Dashboard" FontSize="24" FontWeight="SemiBold" />
+
+    <Border Grid.Row="1"
+            Margin="0,16,0,0"
+            Background="#242424"
+            BorderBrush="#2D2D2D"
+            BorderThickness="1"
+            CornerRadius="8"
+            Padding="12">
+      <ListBox ItemsSource="{Binding SavedDevices}">
+        <ListBox.ItemTemplate>
+          <DataTemplate x:DataType="models:LedDevice">
+            <Border Background="#1B1B1B"
+                    BorderBrush="#2D2D2D"
+                    BorderThickness="1"
+                    CornerRadius="6"
+                    Margin="0,0,0,10"
+                    Padding="12">
+              <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto" ColumnSpacing="12">
+                <Ellipse Width="10"
+                         Height="10"
+                         VerticalAlignment="Center"
+                         Fill="{Binding IsConnected, Converter={StaticResource ConnectionBrushConverter}}" />
+                <TextBlock Grid.Column="1"
+                           Text="{Binding Name}"
+                           FontWeight="SemiBold" />
+                <Button Grid.Column="2"
+                        Content="Vezérlés"
+                        Command="{Binding DataContext.GoToDeviceControlCommand, ElementName=Root}"
+                        CommandParameter="{Binding}" />
+                <TextBlock Grid.Row="1"
+                           Grid.Column="1"
+                           Text="{Binding MacAddress}"
+                           Opacity="0.7" />
+              </Grid>
+            </Border>
+          </DataTemplate>
+        </ListBox.ItemTemplate>
+      </ListBox>
+    </Border>
+  </Grid>
+</UserControl>

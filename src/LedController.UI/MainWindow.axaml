@@ -1,0 +1,103 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:viewModels="clr-namespace:LedController.UI.ViewModels"
+        xmlns:views="clr-namespace:LedController.UI.Views"
+        xmlns:models="clr-namespace:LedController.Core.Models;assembly=LedController.Core"
+        xmlns:converters="clr-namespace:LedController.UI.Converters"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="800"
+        x:Class="LedController.UI.MainWindow"
+        x:DataType="viewModels:MainViewModel"
+        Title="LedController"
+        Icon="avares://LedController.UI/Assets/logo.ico"
+        Background="#1E1E1E"
+        Foreground="#E6E6E6">
+    <Window.Resources>
+        <converters:BoolToBrushConverter x:Key="ConnectionBrushConverter"
+                                         TrueBrush="#3DDC84"
+                                         FalseBrush="#E85D5D" />
+    </Window.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="24" Spacing="16">
+            <Border Background="#151515"
+                    BorderBrush="#2B2B2B"
+                    BorderThickness="1"
+                    CornerRadius="10"
+                    Padding="16">
+                <Grid ColumnDefinitions="2*,2*,Auto" RowDefinitions="Auto,Auto" ColumnSpacing="16">
+                    <StackPanel>
+                        <TextBlock Text="Aktív eszköz" FontWeight="SemiBold" />
+                        <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,8,0,0">
+                            <Ellipse Width="10"
+                                     Height="10"
+                                     VerticalAlignment="Center"
+                                     Fill="{Binding SelectedDevice.IsConnected, Converter={StaticResource ConnectionBrushConverter}}" />
+                            <ComboBox Width="240"
+                                      ItemsSource="{Binding SavedDevices}"
+                                      SelectedItem="{Binding SelectedDevice}">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate x:DataType="models:LedDevice">
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding Name}" />
+                                            <TextBlock Text="{Binding MacAddress}" Opacity="0.7" />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1">
+                        <TextBlock Text="Idő" FontWeight="SemiBold" />
+                        <TextBlock Text="{Binding CurrentTimeText}" FontSize="20" FontWeight="SemiBold" Margin="0,6,0,0" />
+                        <StackPanel Orientation="Horizontal" Spacing="16" Margin="0,8,0,0">
+                            <TextBlock Text="{Binding SunriseText, StringFormat=Napkelte: {0}}" />
+                            <TextBlock Text="{Binding SunsetText, StringFormat=Napnyugta: {0}}" />
+                        </StackPanel>
+                    </StackPanel>
+
+                    <Button Grid.Column="2"
+                            Content="Új eszköz keresése"
+                            Command="{Binding OpenDiscoveryCommand}"
+                            VerticalAlignment="Center"
+                            Padding="16,10" />
+                </Grid>
+            </Border>
+
+            <Border Background="#242424"
+                    BorderBrush="#2D2D2D"
+                    BorderThickness="1"
+                    CornerRadius="10"
+                    Padding="16">
+                <StackPanel Spacing="12">
+                    <TextBlock Text="Vezérlőpult" FontSize="18" FontWeight="SemiBold" />
+                    <views:DeviceControlView DataContext="{Binding DeviceControl}" />
+                </StackPanel>
+            </Border>
+
+            <Expander Header="Ütemezés" IsExpanded="False">
+                <Border Background="#242424"
+                        BorderBrush="#2D2D2D"
+                        BorderThickness="1"
+                        CornerRadius="10"
+                        Padding="16"
+                        Margin="0,8,0,0">
+                    <views:SchedulerView DataContext="{Binding Scheduler}" />
+                </Border>
+            </Expander>
+
+            <Expander Header="Beállítások" IsExpanded="False">
+                <Border Background="#242424"
+                        BorderBrush="#2D2D2D"
+                        BorderThickness="1"
+                        CornerRadius="10"
+                        Padding="16"
+                        Margin="0,8,0,0">
+                    <views:SettingsView DataContext="{Binding Settings}" />
+                </Border>
+            </Expander>
+        </StackPanel>
+    </ScrollViewer>
+</Window>

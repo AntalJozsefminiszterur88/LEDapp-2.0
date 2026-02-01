@@ -1,0 +1,66 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:viewModels="clr-namespace:LedController.UI.ViewModels"
+             xmlns:models="clr-namespace:LedController.Core.Models;assembly=LedController.Core"
+             x:Class="LedController.UI.Views.DeviceControlView"
+             x:DataType="viewModels:DeviceControlViewModel"
+             x:Name="Root">
+  <Grid RowDefinitions="Auto,*" ColumnDefinitions="2*,Auto" ColumnSpacing="24">
+    <StackPanel Orientation="Horizontal" Spacing="12">
+      <Button Content="Bekapcsol"
+              Command="{Binding TogglePowerCommand}"
+              CommandParameter="True" />
+      <Button Content="Kikapcsol"
+              Command="{Binding TogglePowerCommand}"
+              CommandParameter="False" />
+    </StackPanel>
+
+    <Border Grid.Row="1"
+            Background="#242424"
+            BorderBrush="#2D2D2D"
+            BorderThickness="1"
+            CornerRadius="8"
+            Padding="16"
+            Margin="0,12,0,0">
+      <StackPanel Spacing="12">
+        <TextBlock Text="Színek" FontSize="14" FontWeight="SemiBold" />
+        <ItemsControl ItemsSource="{Binding PresetColors}">
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+              <UniformGrid Columns="4" />
+            </ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="models:LedColor">
+              <Button Content="{Binding Name}"
+                      Background="{Binding Hex}"
+                      Command="{Binding DataContext.SetColorCommand, ElementName=Root}"
+                      CommandParameter="{Binding}"
+                      Margin="4" />
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </StackPanel>
+    </Border>
+
+    <Border Grid.Row="0"
+            Grid.RowSpan="2"
+            Grid.Column="1"
+            Background="#242424"
+            BorderBrush="#2D2D2D"
+            BorderThickness="1"
+            CornerRadius="8"
+            Padding="16">
+      <StackPanel Spacing="12">
+        <TextBlock Text="Fényerő" FontSize="14" FontWeight="SemiBold" HorizontalAlignment="Center" />
+        <Slider Minimum="0"
+                Maximum="100"
+                Width="32"
+                Height="220"
+                Orientation="Vertical"
+                Value="{Binding Brightness, Mode=TwoWay}" />
+        <TextBlock Text="{Binding Brightness}" HorizontalAlignment="Center" />
+      </StackPanel>
+    </Border>
+  </Grid>
+</UserControl>
