@@ -15,7 +15,13 @@ public sealed class FileConfigService : IConfigService
         Converters = { new JsonStringEnumConverter() }
     };
 
+    private static readonly TimeSpan CacheDuration = TimeSpan.FromSeconds(10);
+
     private readonly string _configPath;
+    private readonly string _backupPath;
+    private readonly SemaphoreSlim _sync = new(1, 1);
+    private AppConfig? _cache;
+    private DateTime _cacheTimestampUtc;
 
     public FileConfigService()
     {
@@ -25,73 +31,78 @@ public sealed class FileConfigService : IConfigService
             "LEDapp");
 
         _configPath = Path.Combine(baseDir, "led_config.json");
+        _backupPath = Path.Combine(baseDir, "led_config.bak.json");
     }
 
     public async Task<AppConfig> LoadConfigAsync()
     {
+        var now = DateTime.UtcNow;
+        if (_cache is not null && now - _cacheTimestampUtc < CacheDuration)
+        {
+            return _cache;
+        }
+
+        await _sync.WaitAsync();
         try
         {
+            now = DateTime.UtcNow;
+            if (_cache is not null && now - _cacheTimestampUtc < CacheDuration)
+            {
+                return _cache;
+            }
+
             EnsureDirectory();
 
             if (!File.Exists(_configPath))
             {
                 var defaultConfig = AppConfig.Empty;
-                await SaveConfigAsync(defaultConfig);
+                await SaveConfigInternalAsync(defaultConfig);
                 return defaultConfig;
             }
 
-            await using var stream = new FileStream(
-                _configPath,
-                FileMode.Open,
-                FileAccess.Read,
-                FileShare.Read,
-                bufferSize: 4096,
-                useAsync: true);
+            var config = await ReadConfigAsync(_configPath);
+            if (config is null && File.Exists(_backupPath))
+            {
+                config = await ReadConfigAsync(_backupPath);
+            }
 
-            var config = await JsonSerializer.DeserializeAsync<AppConfig>(stream, SerializerOptions);
             if (config is null)
             {
-                return AppConfig.Empty;
+                config = AppConfig.Empty;
             }
 
-            var settings = config.Settings ?? AppSettings.Default;
-            var mqtt = settings.Mqtt ?? MqttSettings.Default;
-            if (!ReferenceEquals(settings.Mqtt, mqtt))
-            {
-                settings = settings with { Mqtt = mqtt };
-            }
-
-            if (!ReferenceEquals(config.Settings, settings))
-            {
-                config = config with { Settings = settings };
-            }
-
+            config = NormalizeSettings(config);
+            _cache = config;
+            _cacheTimestampUtc = DateTime.UtcNow;
             return config;
         }
         catch
         {
-            return AppConfig.Empty;
+            return _cache ?? AppConfig.Empty;
+        }
+        finally
+        {
+            _sync.Release();
         }
     }
 
     public async Task SaveConfigAsync(AppConfig config)
     {
+        await _sync.WaitAsync();
         try
         {
             EnsureDirectory();
-
-            await using var stream = new FileStream(
-                _configPath,
-                FileMode.Create,
-                FileAccess.Write,
-                FileShare.None,
-                bufferSize: 4096,
-                useAsync: true);
-
-            await JsonSerializer.SerializeAsync(stream, config, SerializerOptions);
+            var normalized = NormalizeSettings(config);
+            await SaveConfigInternalAsync(normalized);
+            _cache = normalized;
+            _cacheTimestampUtc = DateTime.UtcNow;
         }
         catch
         {
+        }
+        finally
+        {
+            _sync.Release();
         }
     }
 
@@ -102,5 +113,67 @@ public sealed class FileConfigService : IConfigService
         {
             Directory.CreateDirectory(directory);
         }
+    }
+
+    private async Task<AppConfig?> ReadConfigAsync(string path)
+    {
+        try
+        {
+            await using var stream = new FileStream(
+                path,
+                FileMode.Open,
+                FileAccess.Read,
+                FileShare.ReadWrite,
+                bufferSize: 4096,
+                useAsync: true);
+
+            return await JsonSerializer.DeserializeAsync<AppConfig>(stream, SerializerOptions);
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    private async Task SaveConfigInternalAsync(AppConfig config)
+    {
+        var tempPath = _configPath + ".tmp";
+
+        await using (var stream = new FileStream(
+                         tempPath,
+                         FileMode.Create,
+                         FileAccess.Write,
+                         FileShare.None,
+                         bufferSize: 4096,
+                         useAsync: true))
+        {
+            await JsonSerializer.SerializeAsync(stream, config, SerializerOptions);
+        }
+
+        if (File.Exists(_configPath))
+        {
+            File.Replace(tempPath, _configPath, _backupPath, ignoreMetadataErrors: true);
+        }
+        else
+        {
+            File.Move(tempPath, _configPath, overwrite: true);
+        }
+    }
+
+    private static AppConfig NormalizeSettings(AppConfig config)
+    {
+        var settings = config.Settings ?? AppSettings.Default;
+        var mqtt = settings.Mqtt ?? MqttSettings.Default;
+        if (!ReferenceEquals(settings.Mqtt, mqtt))
+        {
+            settings = settings with { Mqtt = mqtt };
+        }
+
+        if (!ReferenceEquals(config.Settings, settings))
+        {
+            config = config with { Settings = settings };
+        }
+
+        return config;
     }
 }

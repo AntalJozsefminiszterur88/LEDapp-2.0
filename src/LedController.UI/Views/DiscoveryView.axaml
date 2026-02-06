@@ -4,37 +4,56 @@
              xmlns:models="clr-namespace:LedController.Core.Models;assembly=LedController.Core"
              x:Class="LedController.UI.Views.DiscoveryView"
              x:DataType="viewModels:DiscoveryViewModel">
-  <Grid RowDefinitions="Auto,*,Auto" ColumnDefinitions="*">
-    <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
-      <Button Content="Keresés" Command="{Binding ScanCommand}" />
-      <ProgressBar IsIndeterminate="True"
-                   Width="160"
-                   Height="8"
-                   IsVisible="{Binding IsBusy}" />
-    </StackPanel>
+  <Border Background="#242424"
+          BorderBrush="#2D2D2D"
+          BorderThickness="1"
+          CornerRadius="10"
+          Padding="16">
+    <Grid RowDefinitions="Auto,Auto,*,Auto" RowSpacing="10">
+      <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+        <Button Content="Keresés"
+                Command="{Binding ScanCommand}"
+                Padding="18,10"
+                MinWidth="120"
+                MinHeight="40" />
+        <ProgressBar IsIndeterminate="True"
+                     Width="180"
+                     Height="10"
+                     IsVisible="{Binding IsBusy}" />
+      </StackPanel>
 
-    <Border Grid.Row="1"
-            Margin="0,16,0,16"
-            Background="#242424"
-            BorderBrush="#2D2D2D"
-            BorderThickness="1"
-            CornerRadius="8"
-            Padding="12">
-      <ListBox ItemsSource="{Binding DiscoveredDevices}"
-               SelectedItem="{Binding SelectedDevice}">
-        <ListBox.ItemTemplate>
-          <DataTemplate x:DataType="models:LedDevice">
-            <StackPanel Spacing="4">
-              <TextBlock Text="{Binding Name}" FontWeight="SemiBold" />
-              <TextBlock Text="{Binding MacAddress}" Opacity="0.7" />
-            </StackPanel>
-          </DataTemplate>
-        </ListBox.ItemTemplate>
-      </ListBox>
-    </Border>
+      <TextBlock Grid.Row="1"
+                 Text="{Binding StatusMessage}"
+                 Opacity="0.75" />
 
-    <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
-      <Button Content="Hozzáadás" Command="{Binding ConnectCommand}" />
-    </StackPanel>
-  </Grid>
+      <Border Grid.Row="2"
+              Background="#1E1E1E"
+              BorderBrush="#2D2D2D"
+              BorderThickness="1"
+              CornerRadius="8"
+              Padding="12">
+        <ListBox ItemsSource="{Binding DiscoveredDevices}"
+                 SelectedItem="{Binding SelectedDevice}">
+          <ListBox.ItemTemplate>
+            <DataTemplate x:DataType="models:LedDevice">
+              <StackPanel Spacing="4">
+                <TextBlock Text="{Binding Name}" FontWeight="SemiBold" />
+                <TextBlock Text="{Binding MacAddress}" Opacity="0.7" />
+              </StackPanel>
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
+      </Border>
+
+      <StackPanel Grid.Row="3"
+                  Orientation="Horizontal"
+                  HorizontalAlignment="Right">
+        <Button Content="Hozzáadás"
+                Command="{Binding ConnectCommand}"
+                Padding="18,10"
+                MinWidth="140"
+                MinHeight="40" />
+      </StackPanel>
+    </Grid>
+  </Border>
 </UserControl>

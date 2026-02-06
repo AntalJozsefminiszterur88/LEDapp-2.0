@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\vatib\\Projects\\LEDapp-2.0\\src\\LedController.Infrastructure\\LedController.Infrastructure.csproj": {}
+    "C:\\Users\\Szerver\\Documents\\Projects\\LEDapp-2.0\\src\\LedController.Infrastructure\\LedController.Infrastructure.csproj": {}
   },
   "projects": {
-    "C:\\Users\\vatib\\Projects\\LEDapp-2.0\\src\\LedController.Core\\LedController.Core.csproj": {
+    "C:\\Users\\Szerver\\Documents\\Projects\\LEDapp-2.0\\src\\LedController.Core\\LedController.Core.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\vatib\\Projects\\LEDapp-2.0\\src\\LedController.Core\\LedController.Core.csproj",
+        "projectUniqueName": "C:\\Users\\Szerver\\Documents\\Projects\\LEDapp-2.0\\src\\LedController.Core\\LedController.Core.csproj",
         "projectName": "LedController.Core",
-        "projectPath": "C:\\Users\\vatib\\Projects\\LEDapp-2.0\\src\\LedController.Core\\LedController.Core.csproj",
-        "packagesPath": "C:\\Users\\vatib\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\vatib\\Projects\\LEDapp-2.0\\src\\LedController.Core\\obj\\",
+        "projectPath": "C:\\Users\\Szerver\\Documents\\Projects\\LEDapp-2.0\\src\\LedController.Core\\LedController.Core.csproj",
+        "packagesPath": "C:\\Users\\Szerver\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Szerver\\Documents\\Projects\\LEDapp-2.0\\src\\LedController.Core\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\vatib\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\Szerver\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
@@ -32,6 +32,11 @@
           "warnAsError": [
             "NU1605"
           ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "false",
+          "auditLevel": "low",
+          "auditMode": "direct"
         }
       },
       "frameworks": {
@@ -41,6 +46,12 @@
             "CommunityToolkit.Mvvm": {
               "target": "Package",
               "version": "[8.3.2, )"
+            },
+            "Microsoft.NET.ILLink.Tasks": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[8.0.23, )",
+              "autoReferenced": true
             }
           },
           "imports": [
@@ -59,34 +70,39 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.101/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.417/PortableRuntimeIdentifierGraph.json"
+        }
+      },
+      "runtimes": {
+        "win-x64": {
+          "#import": []
         }
       }
     },
-    "C:\\Users\\vatib\\Projects\\LEDapp-2.0\\src\\LedController.Infrastructure\\LedController.Infrastructure.csproj": {
+    "C:\\Users\\Szerver\\Documents\\Projects\\LEDapp-2.0\\src\\LedController.Infrastructure\\LedController.Infrastructure.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\vatib\\Projects\\LEDapp-2.0\\src\\LedController.Infrastructure\\LedController.Infrastructure.csproj",
+        "projectUniqueName": "C:\\Users\\Szerver\\Documents\\Projects\\LEDapp-2.0\\src\\LedController.Infrastructure\\LedController.Infrastructure.csproj",
         "projectName": "LedController.Infrastructure",
-        "projectPath": "C:\\Users\\vatib\\Projects\\LEDapp-2.0\\src\\LedController.Infrastructure\\LedController.Infrastructure.csproj",
-        "packagesPath": "C:\\Users\\vatib\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\vatib\\Projects\\LEDapp-2.0\\src\\LedController.Infrastructure\\obj\\",
+        "projectPath": "C:\\Users\\Szerver\\Documents\\Projects\\LEDapp-2.0\\src\\LedController.Infrastructure\\LedController.Infrastructure.csproj",
+        "packagesPath": "C:\\Users\\Szerver\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Szerver\\Documents\\Projects\\LEDapp-2.0\\src\\LedController.Infrastructure\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\vatib\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\Szerver\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
-          "net8.0"
+          "net8.0-windows10.0.19041.0"
         ],
         "sources": {
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
-          "net8.0": {
-            "targetAlias": "net8.0",
+          "net8.0-windows10.0.19041": {
+            "targetAlias": "net8.0-windows10.0.19041.0",
             "projectReferences": {
-              "C:\\Users\\vatib\\Projects\\LEDapp-2.0\\src\\LedController.Core\\LedController.Core.csproj": {
-                "projectPath": "C:\\Users\\vatib\\Projects\\LEDapp-2.0\\src\\LedController.Core\\LedController.Core.csproj"
+              "C:\\Users\\Szerver\\Documents\\Projects\\LEDapp-2.0\\src\\LedController.Core\\LedController.Core.csproj": {
+                "projectPath": "C:\\Users\\Szerver\\Documents\\Projects\\LEDapp-2.0\\src\\LedController.Core\\LedController.Core.csproj"
               }
             }
           }
@@ -95,11 +111,16 @@
           "warnAsError": [
             "NU1605"
           ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "false",
+          "auditLevel": "low",
+          "auditMode": "direct"
         }
       },
       "frameworks": {
-        "net8.0": {
-          "targetAlias": "net8.0",
+        "net8.0-windows10.0.19041": {
+          "targetAlias": "net8.0-windows10.0.19041.0",
           "dependencies": {
             "InTheHand.BluetoothLE": {
               "target": "Package",
@@ -108,6 +129,12 @@
             "MQTTnet": {
               "target": "Package",
               "version": "[4.3.7.1207, )"
+            },
+            "Microsoft.NET.ILLink.Tasks": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[8.0.23, )",
+              "autoReferenced": true
             }
           },
           "imports": [
@@ -121,12 +148,26 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.Windows.SDK.NET.Ref",
+              "version": "[10.0.19041.56, 10.0.19041.56]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
+            },
+            "Microsoft.Windows.SDK.NET.Ref": {
+              "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.101/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.417/PortableRuntimeIdentifierGraph.json"
+        }
+      },
+      "runtimes": {
+        "win-x64": {
+          "#import": []
         }
       }
     }

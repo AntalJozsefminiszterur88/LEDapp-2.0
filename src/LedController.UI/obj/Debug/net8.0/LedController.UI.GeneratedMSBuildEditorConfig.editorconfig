@@ -16,27 +16,27 @@ build_property.PlatformNeutralAssembly =
 build_property.EnforceExtendedAnalyzerRules = 
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = LedController.UI
-build_property.ProjectDir = C:\Users\vatib\Projects\LEDapp-2.0\src\LedController.UI\
+build_property.ProjectDir = C:\Users\Szerver\Documents\Projects\LEDapp-2.0\src\LedController.UI\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
 
-[C:/Users/vatib/Projects/LEDapp-2.0/src/LedController.UI/App.axaml]
+[C:/Users/Szerver/Documents/Projects/LEDapp-2.0/src/LedController.UI/App.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
-[C:/Users/vatib/Projects/LEDapp-2.0/src/LedController.UI/MainWindow.axaml]
+[C:/Users/Szerver/Documents/Projects/LEDapp-2.0/src/LedController.UI/MainWindow.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
-[C:/Users/vatib/Projects/LEDapp-2.0/src/LedController.UI/Views/DashboardView.axaml]
+[C:/Users/Szerver/Documents/Projects/LEDapp-2.0/src/LedController.UI/Views/DashboardView.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
-[C:/Users/vatib/Projects/LEDapp-2.0/src/LedController.UI/Views/DeviceControlView.axaml]
+[C:/Users/Szerver/Documents/Projects/LEDapp-2.0/src/LedController.UI/Views/DeviceControlView.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
-[C:/Users/vatib/Projects/LEDapp-2.0/src/LedController.UI/Views/DiscoveryView.axaml]
+[C:/Users/Szerver/Documents/Projects/LEDapp-2.0/src/LedController.UI/Views/DiscoveryView.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
-[C:/Users/vatib/Projects/LEDapp-2.0/src/LedController.UI/Views/SchedulerView.axaml]
+[C:/Users/Szerver/Documents/Projects/LEDapp-2.0/src/LedController.UI/Views/SchedulerView.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
-[C:/Users/vatib/Projects/LEDapp-2.0/src/LedController.UI/Views/SettingsView.axaml]
+[C:/Users/Szerver/Documents/Projects/LEDapp-2.0/src/LedController.UI/Views/SettingsView.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml

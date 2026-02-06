@@ -1,0 +1,206 @@
+﻿{
+  "Alapértelmezett": {
+    "active": true,
+    "schedule": {
+      "Hétfő": {
+        "color": "Piros",
+        "on_time": "10:00",
+        "off_time": "00:00",
+        "sunrise": false,
+        "sunrise_offset": 0,
+        "sunset": false,
+        "sunset_offset": 0
+      },
+      "Kedd": {
+        "color": "Kék",
+        "on_time": "10:00",
+        "off_time": "00:00",
+        "sunrise": false,
+        "sunrise_offset": 0,
+        "sunset": false,
+        "sunset_offset": 0
+      },
+      "Szerda": {
+        "color": "Kék",
+        "on_time": "10:00",
+        "off_time": "00:00",
+        "sunrise": false,
+        "sunrise_offset": 0,
+        "sunset": false,
+        "sunset_offset": 0
+      },
+      "Csütörtök": {
+        "color": "Kék",
+        "on_time": "10:00",
+        "off_time": "00:00",
+        "sunrise": false,
+        "sunrise_offset": 0,
+        "sunset": false,
+        "sunset_offset": 0
+      },
+      "Péntek": {
+        "color": "Lila",
+        "on_time": "10:00",
+        "off_time": "00:00",
+        "sunrise": false,
+        "sunrise_offset": 0,
+        "sunset": false,
+        "sunset_offset": 0
+      },
+      "Szombat": {
+        "color": "Zöld",
+        "on_time": "10:00",
+        "off_time": "00:00",
+        "sunrise": false,
+        "sunrise_offset": 0,
+        "sunset": false,
+        "sunset_offset": 0
+      },
+      "Vasárnap": {
+        "color": "Zöld",
+        "on_time": "10:00",
+        "off_time": "00:00",
+        "sunrise": false,
+        "sunrise_offset": 0,
+        "sunset": false,
+        "sunset_offset": 0
+      }
+    }
+  },
+  "1": {
+    "active": true,
+    "schedule": {
+      "Hétfő": {
+        "color": "Piros",
+        "on_time": "00:00",
+        "off_time": "02:00",
+        "sunrise": false,
+        "sunrise_offset": 0,
+        "sunset": false,
+        "sunset_offset": 0
+      },
+      "Kedd": {
+        "color": "Piros",
+        "on_time": "00:00",
+        "off_time": "02:00",
+        "sunrise": false,
+        "sunrise_offset": 0,
+        "sunset": false,
+        "sunset_offset": 0
+      },
+      "Szerda": {
+        "color": "Piros",
+        "on_time": "00:00",
+        "off_time": "02:00",
+        "sunrise": false,
+        "sunrise_offset": 0,
+        "sunset": false,
+        "sunset_offset": 0
+      },
+      "Csütörtök": {
+        "color": "Piros",
+        "on_time": "00:00",
+        "off_time": "02:00",
+        "sunrise": false,
+        "sunrise_offset": 0,
+        "sunset": false,
+        "sunset_offset": 0
+      },
+      "Péntek": {
+        "color": "Piros",
+        "on_time": "00:00",
+        "off_time": "02:00",
+        "sunrise": false,
+        "sunrise_offset": 0,
+        "sunset": false,
+        "sunset_offset": 0
+      },
+      "Szombat": {
+        "color": "Piros",
+        "on_time": "00:00",
+        "off_time": "02:00",
+        "sunrise": false,
+        "sunrise_offset": 0,
+        "sunset": false,
+        "sunset_offset": 0
+      },
+      "Vasárnap": {
+        "color": "Piros",
+        "on_time": "00:00",
+        "off_time": "02:00",
+        "sunrise": false,
+        "sunrise_offset": 0,
+        "sunset": false,
+        "sunset_offset": 0
+      }
+    }
+  },
+  "2": {
+    "active": true,
+    "schedule": {
+      "Hétfő": {
+        "color": "Fehér",
+        "on_time": "02:00",
+        "off_time": "06:00",
+        "sunrise": false,
+        "sunrise_offset": 0,
+        "sunset": false,
+        "sunset_offset": 0
+      },
+      "Kedd": {
+        "color": "Fehér",
+        "on_time": "02:00",
+        "off_time": "06:00",
+        "sunrise": false,
+        "sunrise_offset": 0,
+        "sunset": false,
+        "sunset_offset": 0
+      },
+      "Szerda": {
+        "color": "Fehér",
+        "on_time": "02:00",
+        "off_time": "06:00",
+        "sunrise": false,
+        "sunrise_offset": 0,
+        "sunset": false,
+        "sunset_offset": 0
+      },
+      "Csütörtök": {
+        "color": "Fehér",
+        "on_time": "02:00",
+        "off_time": "06:00",
+        "sunrise": false,
+        "sunrise_offset": 0,
+        "sunset": false,
+        "sunset_offset": 0
+      },
+      "Péntek": {
+        "color": "Fehér",
+        "on_time": "02:00",
+        "off_time": "06:00",
+        "sunrise": false,
+        "sunrise_offset": 0,
+        "sunset": false,
+        "sunset_offset": 0
+      },
+      "Szombat": {
+        "color": "Fehér",
+        "on_time": "02:00",
+        "off_time": "06:00",
+        "sunrise": false,
+        "sunrise_offset": 0,
+        "sunset": false,
+        "sunset_offset": 0
+      },
+      "Vasárnap": {
+        "color": "Fehér",
+        "on_time": "02:00",
+        "off_time": "06:00",
+        "sunrise": false,
+        "sunrise_offset": 0,
+        "sunset": false,
+        "sunset_offset": 0
+      }
+    }
+  }
+}

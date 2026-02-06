@@ -1,7 +1,11 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
+using Avalonia.LogicalTree;
 using Avalonia.Platform;
+using Avalonia.Media;
+using Avalonia.Interactivity;
 using LedController.UI.ViewModels;
 using LedController.UI.Views;
 
@@ -11,6 +15,7 @@ public partial class MainWindow : Window
 {
     private TrayIcon? _trayIcon;
     private bool _exitRequested;
+    private bool _sunTimesRefreshed;
 
     public MainWindow()
     {
@@ -25,6 +30,7 @@ public partial class MainWindow : Window
     {
         DataContext = viewModel;
         viewModel.DiscoveryRequested += async () => await OpenDiscoveryAsync(viewModel);
+        Opened += (_, _) => _ = InitializeAfterOpenAsync(viewModel);
     }
 
     private async Task OpenDiscoveryAsync(MainViewModel viewModel)
@@ -35,6 +41,7 @@ public partial class MainWindow : Window
             Width = 700,
             Height = 500,
             Icon = Icon,
+            Background = new SolidColorBrush(Color.Parse("#1E1E1E")),
             Content = new DiscoveryView
             {
                 DataContext = viewModel.Discovery
@@ -54,7 +61,7 @@ public partial class MainWindow : Window
             return;
         }
 
-        var icon = new WindowIcon(AssetLoader.Open(new Uri("avares://LedController.UI/Assets/logo.ico")));
+        var icon = new WindowIcon(AssetLoader.Open(new Uri("avares://LEDapp-2.0/Assets/logo.ico")));
         var menu = new NativeMenu();
 
         var showHideItem = new NativeMenuItem("Megjelenítés / elrejtés");
@@ -121,5 +128,45 @@ public partial class MainWindow : Window
     {
         _trayIcon?.Dispose();
         _trayIcon = null;
+    }
+
+    private void OnCustomNameSaveClick(object? sender, RoutedEventArgs e)
+    {
+        if (sender is not Control control)
+        {
+            return;
+        }
+
+        var flyout = control.GetLogicalAncestors().OfType<Flyout>().FirstOrDefault();
+        flyout?.Hide();
+    }
+
+    private void OnRemoveDeviceClick(object? sender, RoutedEventArgs e)
+    {
+        if (sender is not Control control)
+        {
+            return;
+        }
+
+        var flyout = control.GetLogicalAncestors().OfType<Flyout>().FirstOrDefault();
+        flyout?.Hide();
+    }
+
+    private async Task RefreshSunTimesAfterOpenAsync(MainViewModel viewModel)
+    {
+        if (_sunTimesRefreshed)
+        {
+            return;
+        }
+
+        _sunTimesRefreshed = true;
+        await viewModel.RefreshSunTimesAsync();
+    }
+
+    private async Task InitializeAfterOpenAsync(MainViewModel viewModel)
+    {
+        await Task.Yield();
+        await viewModel.InitializeAfterOpenAsync();
+        await RefreshSunTimesAfterOpenAsync(viewModel);
     }
 }

@@ -23,8 +23,12 @@ public sealed class MqttService : IMqttService
     private readonly IConfigService _configService;
     private readonly IBleService _bleService;
     private readonly SemaphoreSlim _sync = new(1, 1);
+    private readonly object _reconnectLock = new();
 
     private IMqttClient? _client;
+    private CancellationTokenSource? _reconnectCts;
+    private Task? _reconnectTask;
+    private bool _stopRequested;
 
     public MqttService(IConfigService configService, IBleService bleService)
     {
@@ -36,6 +40,7 @@ public sealed class MqttService : IMqttService
 
     public async Task StartAsync()
     {
+        _stopRequested = false;
         await _sync.WaitAsync();
         try
         {
@@ -51,15 +56,8 @@ public sealed class MqttService : IMqttService
                 return;
             }
 
-            var factory = new MqttFactory();
-            _client = factory.CreateMqttClient();
-
-            _client.ApplicationMessageReceivedAsync += HandleMessageAsync;
-            _client.DisconnectedAsync += _ =>
-            {
-                IsRunning = false;
-                return Task.CompletedTask;
-            };
+            EnsureClient();
+            var client = _client ?? throw new InvalidOperationException("MQTT client not initialized.");
 
             var optionsBuilder = new MqttClientOptionsBuilder()
                 .WithClientId($"LedController-{Guid.NewGuid()}")
@@ -71,14 +69,15 @@ public sealed class MqttService : IMqttService
             }
 
             var options = optionsBuilder.Build();
-            await _client.ConnectAsync(options, CancellationToken.None);
-            await _client.SubscribeAsync(CommandTopic, MqttQualityOfServiceLevel.AtMostOnce);
+            await client.ConnectAsync(options, CancellationToken.None);
+            await client.SubscribeAsync(CommandTopic, MqttQualityOfServiceLevel.AtMostOnce);
             IsRunning = true;
         }
         catch (Exception ex)
         {
             Console.WriteLine($"[MQTT] Start failed: {ex.Message}");
             IsRunning = false;
+            ScheduleReconnect();
         }
         finally
         {
@@ -88,6 +87,8 @@ public sealed class MqttService : IMqttService
 
     public async Task StopAsync()
     {
+        _stopRequested = true;
+        CancelReconnect();
         await _sync.WaitAsync();
         try
         {
@@ -103,6 +104,144 @@ public sealed class MqttService : IMqttService
         finally
         {
             IsRunning = false;
+            _sync.Release();
+        }
+    }
+
+    private void EnsureClient()
+    {
+        if (_client is not null)
+        {
+            return;
+        }
+
+        var factory = new MqttFactory();
+        _client = factory.CreateMqttClient();
+
+        _client.ApplicationMessageReceivedAsync += HandleMessageAsync;
+        _client.DisconnectedAsync += _ =>
+        {
+            IsRunning = false;
+            if (!_stopRequested)
+            {
+                ScheduleReconnect();
+            }
+
+            return Task.CompletedTask;
+        };
+    }
+
+    private void ScheduleReconnect()
+    {
+        lock (_reconnectLock)
+        {
+            if (_stopRequested)
+            {
+                return;
+            }
+
+            if (_reconnectTask is { IsCompleted: false })
+            {
+                return;
+            }
+
+            _reconnectCts?.Cancel();
+            _reconnectCts = new CancellationTokenSource();
+            var token = _reconnectCts.Token;
+            _reconnectTask = Task.Run(() => ReconnectLoopAsync(token), token);
+        }
+    }
+
+    private void CancelReconnect()
+    {
+        lock (_reconnectLock)
+        {
+            _reconnectCts?.Cancel();
+            _reconnectCts = null;
+            _reconnectTask = null;
+        }
+    }
+
+    private async Task ReconnectLoopAsync(CancellationToken token)
+    {
+        var delay = TimeSpan.FromSeconds(5);
+        while (!token.IsCancellationRequested)
+        {
+            try
+            {
+                var config = await _configService.LoadConfigAsync();
+                var settings = config.Settings?.Mqtt ?? MqttSettings.Default;
+                if (!settings.Enabled || string.IsNullOrWhiteSpace(settings.Host))
+                {
+                    return;
+                }
+
+                if (await TryConnectAsync(settings, token))
+                {
+                    return;
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                return;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[MQTT] Reconnect failed: {ex.Message}");
+            }
+
+            try
+            {
+                await Task.Delay(delay, token);
+            }
+            catch (OperationCanceledException)
+            {
+                return;
+            }
+
+            delay = TimeSpan.FromSeconds(Math.Min(delay.TotalSeconds * 2, 60));
+        }
+    }
+
+    private async Task<bool> TryConnectAsync(MqttSettings settings, CancellationToken token)
+    {
+        await _sync.WaitAsync(token);
+        try
+        {
+            if (IsRunning && _client?.IsConnected == true)
+            {
+                return true;
+            }
+
+            EnsureClient();
+
+            var optionsBuilder = new MqttClientOptionsBuilder()
+                .WithClientId($"LedController-{Guid.NewGuid()}")
+                .WithTcpServer(settings.Host, settings.Port);
+
+            if (!string.IsNullOrWhiteSpace(settings.Username))
+            {
+                optionsBuilder = optionsBuilder.WithCredentials(settings.Username, settings.Password);
+            }
+
+            var options = optionsBuilder.Build();
+            await _client!.ConnectAsync(options, token);
+            await _client.SubscribeAsync(CommandTopic, MqttQualityOfServiceLevel.AtMostOnce);
+            IsRunning = true;
+            return true;
+        }
+        catch (OperationCanceledException)
+        {
+            return false;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[MQTT] Connect failed: {ex.Message}");
+            IsRunning = false;
+            return false;
+        }
+        finally
+        {
             _sync.Release();
         }
     }

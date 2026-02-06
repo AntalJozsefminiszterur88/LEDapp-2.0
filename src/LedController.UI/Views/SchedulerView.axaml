@@ -1,6 +1,7 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:converters="clr-namespace:LedController.UI.Converters"
+             xmlns:controls="clr-namespace:LedController.UI.Controls"
              xmlns:viewModels="clr-namespace:LedController.UI.ViewModels"
              xmlns:models="clr-namespace:LedController.Core.Models;assembly=LedController.Core"
              x:Class="LedController.UI.Views.SchedulerView"
@@ -10,9 +11,25 @@
     <converters:DayOfWeekToHungarianConverter x:Key="DayNameConverter" />
     <converters:AnyTrueToFalseConverter x:Key="AnyTrueToFalseConverter" />
     <converters:AnyNonNullToFalseConverter x:Key="AnyNonNullToFalseConverter" />
+    <converters:BoolToIndexConverter x:Key="BoolToIndexConverter" />
+    <converters:BoolToIndexConverter x:Key="BoolToIndexOnOffConverter" TrueIndex="0" FalseIndex="1" />
   </UserControl.Resources>
+  <UserControl.Styles>
+    <Style Selector="TimePicker">
+      <Setter Property="TextElement.Foreground" Value="#F2F2F2" />
+    </Style>
+    <Style Selector="TimePicker /template/ TextBox">
+      <Setter Property="Foreground" Value="#F2F2F2" />
+    </Style>
+    <Style Selector="TimePicker /template/ TextBlock">
+      <Setter Property="Foreground" Value="#F2F2F2" />
+    </Style>
+    <Style Selector="NumericUpDown /template/ TextBox">
+      <Setter Property="Foreground" Value="#F2F2F2" />
+    </Style>
+  </UserControl.Styles>
 
-  <Grid RowDefinitions="Auto,Auto,*,Auto" ColumnDefinitions="*">
+  <Grid RowDefinitions="Auto,Auto,*,Auto,Auto" ColumnDefinitions="*">
     <StackPanel Orientation="Horizontal" Spacing="12">
       <TextBlock Text="{Binding TargetDevice.Name}" FontSize="22" FontWeight="SemiBold" VerticalAlignment="Center" />
       <TextBlock Text="Ütemezés" FontSize="16" Opacity="0.8" VerticalAlignment="Center" />
@@ -61,13 +78,23 @@
             BorderThickness="1"
             CornerRadius="8"
             Padding="12">
-      <StackPanel Spacing="8">
-        <Grid ColumnDefinitions="120,Auto,90,Auto,90,Auto,Auto,180" ColumnSpacing="12">
+      <StackPanel Spacing="8" Grid.IsSharedSizeScope="True">
+        <Grid ColumnSpacing="12">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="120" SharedSizeGroup="ScheduleDay" />
+            <ColumnDefinition Width="Auto" SharedSizeGroup="ScheduleSunrise" />
+            <ColumnDefinition Width="240" SharedSizeGroup="ScheduleSunriseOffset" />
+            <ColumnDefinition Width="Auto" SharedSizeGroup="ScheduleSunset" />
+            <ColumnDefinition Width="240" SharedSizeGroup="ScheduleSunsetOffset" />
+            <ColumnDefinition Width="70" SharedSizeGroup="ScheduleOn" />
+            <ColumnDefinition Width="70" SharedSizeGroup="ScheduleOff" />
+            <ColumnDefinition Width="180" SharedSizeGroup="ScheduleColor" />
+          </Grid.ColumnDefinitions>
           <TextBlock Text="Nap" FontWeight="SemiBold" />
           <TextBlock Grid.Column="1" Text="Napkelte" FontWeight="SemiBold" />
-          <TextBlock Grid.Column="2" Text="Eltolás" FontWeight="SemiBold" />
+          <TextBlock Grid.Column="2" Text="Eltolás (perc)" FontWeight="SemiBold" />
           <TextBlock Grid.Column="3" Text="Napnyugta" FontWeight="SemiBold" />
-          <TextBlock Grid.Column="4" Text="Eltolás" FontWeight="SemiBold" />
+          <TextBlock Grid.Column="4" Text="Eltolás (perc)" FontWeight="SemiBold" />
           <TextBlock Grid.Column="5" Text="Be" FontWeight="SemiBold" />
           <TextBlock Grid.Column="6" Text="Ki" FontWeight="SemiBold" />
           <TextBlock Grid.Column="7" Text="Szín" FontWeight="SemiBold" />
@@ -76,62 +103,110 @@
         <ItemsControl ItemsSource="{Binding DailySchedules}">
           <ItemsControl.ItemTemplate>
             <DataTemplate x:DataType="models:DailySchedule">
-              <Grid ColumnDefinitions="120,Auto,90,Auto,90,Auto,Auto,180" ColumnSpacing="12" RowDefinitions="Auto">
+              <Grid ColumnSpacing="12" RowDefinitions="Auto">
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="120" SharedSizeGroup="ScheduleDay" />
+                  <ColumnDefinition Width="Auto" SharedSizeGroup="ScheduleSunrise" />
+                  <ColumnDefinition Width="240" SharedSizeGroup="ScheduleSunriseOffset" />
+                  <ColumnDefinition Width="Auto" SharedSizeGroup="ScheduleSunset" />
+                  <ColumnDefinition Width="240" SharedSizeGroup="ScheduleSunsetOffset" />
+                  <ColumnDefinition Width="70" SharedSizeGroup="ScheduleOn" />
+                  <ColumnDefinition Width="70" SharedSizeGroup="ScheduleOff" />
+                  <ColumnDefinition Width="180" SharedSizeGroup="ScheduleColor" />
+                </Grid.ColumnDefinitions>
                 <TextBlock Text="{Binding DayOfWeek, Converter={StaticResource DayNameConverter}}" VerticalAlignment="Center" />
 
-                <CheckBox Grid.Column="1"
-                          IsChecked="{Binding SunriseEnabled}">
-                  <CheckBox.IsEnabled>
-                    <MultiBinding Converter="{StaticResource AnyNonNullToFalseConverter}">
-                      <Binding Path="FixedOnTime" />
-                      <Binding Path="FixedOffTime" />
-                    </MultiBinding>
-                  </CheckBox.IsEnabled>
-                </CheckBox>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                  <CheckBox IsChecked="{Binding SunriseEnabled}"
+                            VerticalAlignment="Center" />
+                  <ComboBox Width="60"
+                            SelectedIndex="{Binding SunriseTurnsOn, Converter={StaticResource BoolToIndexOnOffConverter}}"
+                            IsEnabled="{Binding SunriseEnabled}">
+                    <ComboBoxItem Content="Be" />
+                    <ComboBoxItem Content="Ki" />
+                  </ComboBox>
+                </StackPanel>
 
-                <NumericUpDown Grid.Column="2"
-                               Minimum="-720"
-                               Maximum="720"
-                               Width="70"
-                               Value="{Binding SunriseOffset}"
-                               IsEnabled="{Binding SunriseEnabled}" />
+                <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="6">
+                  <ComboBox Width="48"
+                            HorizontalContentAlignment="Center"
+                            SelectedIndex="{Binding SunriseOffsetIsBefore, Converter={StaticResource BoolToIndexConverter}}"
+                            IsEnabled="{Binding SunriseEnabled}">
+                    <ComboBoxItem Content="+" ToolTip.Tip="Utána (+)" />
+                    <ComboBoxItem Content="-" ToolTip.Tip="Előtte (-)" />
+                  </ComboBox>
+                  <NumericUpDown Minimum="0"
+                                 Maximum="720"
+                                 Width="140"
+                                 MinWidth="140"
+                                 FormatString="0"
+                                 Foreground="#F2F2F2"
+                                 Value="{Binding SunriseOffsetMinutes, Mode=TwoWay}"
+                                 IsEnabled="{Binding SunriseEnabled}" />
+                </StackPanel>
 
-                <CheckBox Grid.Column="3"
-                          IsChecked="{Binding SunsetEnabled}">
-                  <CheckBox.IsEnabled>
-                    <MultiBinding Converter="{StaticResource AnyNonNullToFalseConverter}">
-                      <Binding Path="FixedOnTime" />
-                      <Binding Path="FixedOffTime" />
-                    </MultiBinding>
-                  </CheckBox.IsEnabled>
-                </CheckBox>
+                <StackPanel Grid.Column="3" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                  <CheckBox IsChecked="{Binding SunsetEnabled}"
+                            VerticalAlignment="Center" />
+                  <ComboBox Width="60"
+                            SelectedIndex="{Binding SunsetTurnsOn, Converter={StaticResource BoolToIndexOnOffConverter}}"
+                            IsEnabled="{Binding SunsetEnabled}">
+                    <ComboBoxItem Content="Be" />
+                    <ComboBoxItem Content="Ki" />
+                  </ComboBox>
+                </StackPanel>
 
-                <NumericUpDown Grid.Column="4"
-                               Minimum="-720"
-                               Maximum="720"
-                               Width="70"
-                               Value="{Binding SunsetOffset}"
-                               IsEnabled="{Binding SunsetEnabled}" />
+                <StackPanel Grid.Column="4" Orientation="Horizontal" Spacing="6">
+                  <ComboBox Width="48"
+                            HorizontalContentAlignment="Center"
+                            SelectedIndex="{Binding SunsetOffsetIsBefore, Converter={StaticResource BoolToIndexConverter}}"
+                            IsEnabled="{Binding SunsetEnabled}">
+                    <ComboBoxItem Content="+" ToolTip.Tip="Utána (+)" />
+                    <ComboBoxItem Content="-" ToolTip.Tip="Előtte (-)" />
+                  </ComboBox>
+                  <NumericUpDown Minimum="0"
+                                 Maximum="720"
+                                 Width="140"
+                                 MinWidth="140"
+                                 FormatString="0"
+                                 Foreground="#F2F2F2"
+                                 Value="{Binding SunsetOffsetMinutes, Mode=TwoWay}"
+                                 IsEnabled="{Binding SunsetEnabled}" />
+                </StackPanel>
 
-                <TimePicker Grid.Column="5"
-                            SelectedTime="{Binding FixedOnTime}">
-                  <TimePicker.IsEnabled>
-                    <MultiBinding Converter="{StaticResource AnyTrueToFalseConverter}">
-                      <Binding Path="SunriseEnabled" />
-                      <Binding Path="SunsetEnabled" />
-                    </MultiBinding>
-                  </TimePicker.IsEnabled>
-                </TimePicker>
+                <Grid Grid.Column="5" Width="70" MinWidth="70">
+                  <TimePicker Foreground="#F2F2F2"
+                              SelectedTime="{Binding FixedOnTime}">
+                    <TimePicker.IsEnabled>
+                      <MultiBinding Converter="{StaticResource AnyTrueToFalseConverter}">
+                        <Binding Path="HasSunriseOnEvent" />
+                        <Binding Path="HasSunsetOnEvent" />
+                      </MultiBinding>
+                    </TimePicker.IsEnabled>
+                  </TimePicker>
+                  <TextBlock Text="{Binding FixedOnTime, StringFormat={}{0:hh\\:mm}}"
+                             Foreground="#F2F2F2"
+                             HorizontalAlignment="Center"
+                             VerticalAlignment="Center"
+                             IsHitTestVisible="False" />
+                </Grid>
 
-                <TimePicker Grid.Column="6"
-                            SelectedTime="{Binding FixedOffTime}">
-                  <TimePicker.IsEnabled>
-                    <MultiBinding Converter="{StaticResource AnyTrueToFalseConverter}">
-                      <Binding Path="SunriseEnabled" />
-                      <Binding Path="SunsetEnabled" />
-                    </MultiBinding>
-                  </TimePicker.IsEnabled>
-                </TimePicker>
+                <Grid Grid.Column="6" Width="70" MinWidth="70">
+                  <TimePicker Foreground="#F2F2F2"
+                              SelectedTime="{Binding FixedOffTime}">
+                    <TimePicker.IsEnabled>
+                      <MultiBinding Converter="{StaticResource AnyTrueToFalseConverter}">
+                        <Binding Path="HasSunriseOffEvent" />
+                        <Binding Path="HasSunsetOffEvent" />
+                      </MultiBinding>
+                    </TimePicker.IsEnabled>
+                  </TimePicker>
+                  <TextBlock Text="{Binding FixedOffTime, StringFormat={}{0:hh\\:mm}}"
+                             Foreground="#F2F2F2"
+                             HorizontalAlignment="Center"
+                             VerticalAlignment="Center"
+                             IsHitTestVisible="False" />
+                </Grid>
 
                 <ComboBox Grid.Column="7"
                           ItemsSource="{Binding DataContext.AvailableColors, ElementName=Root}"
@@ -149,7 +224,24 @@
       </StackPanel>
     </Border>
 
-    <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="12">
+    <Border Grid.Row="3"
+            Margin="0,0,0,16"
+            Background="#242424"
+            BorderBrush="#2D2D2D"
+            BorderThickness="1"
+            CornerRadius="8"
+            Padding="12">
+      <controls:ScheduleTimelineControl
+        Profiles="{Binding Profiles}"
+        Coordinates="{Binding TimelineCoordinates}"
+        MinHeight="180"
+        Height="180"
+        ClipToBounds="True" />
+    </Border>
+
+    <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="12">
+      <Button Content="Import&#x00e1;l&#x00e1;s" Click="OnImportClick" />
+      <Button Content="Export&#x00e1;l&#x00e1;s" Click="OnExportClick" />
       <Button Content="Mentés" Command="{Binding SaveProfileCommand}" />
       <Button Content="Vissza" Command="{Binding BackCommand}" />
     </StackPanel>

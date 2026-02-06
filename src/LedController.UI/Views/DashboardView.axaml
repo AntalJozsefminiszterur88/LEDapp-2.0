@@ -7,9 +7,10 @@
              x:DataType="viewModels:DashboardViewModel"
              x:Name="Root">
   <UserControl.Resources>
-    <converters:BoolToBrushConverter x:Key="ConnectionBrushConverter"
-                                     TrueBrush="#3DDC84"
-                                     FalseBrush="#E85D5D" />
+    <converters:ConnectionStateToBrushConverter x:Key="ConnectionBrushConverter"
+                                                ConnectedBrush="#3DDC84"
+                                                ConnectingBrush="#F39C12"
+                                                DisconnectedBrush="#E85D5D" />
   </UserControl.Resources>
 
   <Grid RowDefinitions="Auto,*">
@@ -34,10 +35,16 @@
               <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto" ColumnSpacing="12">
                 <Ellipse Width="10"
                          Height="10"
-                         VerticalAlignment="Center"
-                         Fill="{Binding IsConnected, Converter={StaticResource ConnectionBrushConverter}}" />
+                         VerticalAlignment="Center">
+                    <Ellipse.Fill>
+                        <MultiBinding Converter="{StaticResource ConnectionBrushConverter}">
+                            <Binding Path="IsConnected" />
+                            <Binding Path="IsConnecting" />
+                        </MultiBinding>
+                    </Ellipse.Fill>
+                </Ellipse>
                 <TextBlock Grid.Column="1"
-                           Text="{Binding Name}"
+                           Text="{Binding PrimaryName}"
                            FontWeight="SemiBold" />
                 <Button Grid.Column="2"
                         Content="Vezérlés"
@@ -45,7 +52,7 @@
                         CommandParameter="{Binding}" />
                 <TextBlock Grid.Row="1"
                            Grid.Column="1"
-                           Text="{Binding MacAddress}"
+                           Text="{Binding SecondaryName}"
                            Opacity="0.7" />
               </Grid>
             </Border>

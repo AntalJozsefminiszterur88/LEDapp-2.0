@@ -11,4 +11,12 @@ public sealed class PlaceholderSchedulerService : ISchedulerService
     public void Stop()
     {
     }
+
+    public void MarkDeviceStateDirty(Guid deviceId)
+    {
+    }
+
+    public void SetDeviceScheduleEnabled(Guid deviceId, bool enabled)
+    {
+    }
 }

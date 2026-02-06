@@ -9,6 +9,6 @@ build_property.PlatformNeutralAssembly =
 build_property.EnforceExtendedAnalyzerRules = 
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = LedController.Core
-build_property.ProjectDir = C:\Users\vatib\Projects\LEDapp-2.0\src\LedController.Core\
+build_property.ProjectDir = C:\Users\Szerver\Documents\Projects\LEDapp-2.0\src\LedController.Core\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 

@@ -6,14 +6,19 @@ namespace LedController.Infrastructure.Services;
 
 public sealed class SchedulerService : ISchedulerService
 {
-    private static readonly TimeSpan Interval = TimeSpan.FromMinutes(1);
+    private static readonly TimeSpan Interval = TimeSpan.FromSeconds(2);
+    private static readonly TimeSpan LocationCacheDuration = TimeSpan.FromHours(1);
 
     private readonly object _sync = new();
+    private readonly object _stateLock = new();
     private readonly IBleService _bleService;
     private readonly IConfigService _configService;
     private readonly ILocationService _locationService;
 
     private readonly ConcurrentDictionary<Guid, DeviceState> _deviceStates = new();
+
+    private GeoCoordinate? _cachedCoordinates;
+    private DateTime _lastLocationFetchUtc = DateTime.MinValue;
 
     private PeriodicTimer? _timer;
     private CancellationTokenSource? _cts;
@@ -75,11 +80,36 @@ public sealed class SchedulerService : ISchedulerService
         }
     }
 
+    public void MarkDeviceStateDirty(Guid deviceId)
+    {
+        var state = _deviceStates.GetOrAdd(deviceId, _ => new DeviceState());
+        lock (_stateLock)
+        {
+            state.ForceRefresh = true;
+        }
+    }
+
+    public void SetDeviceScheduleEnabled(Guid deviceId, bool enabled)
+    {
+        var state = _deviceStates.GetOrAdd(deviceId, _ => new DeviceState());
+        lock (_stateLock)
+        {
+            state.ScheduleEnabledOverride = enabled;
+        }
+    }
+
     private async Task RunAsync(CancellationToken token)
     {
         try
         {
-            await TickAsync(token);
+            try
+            {
+                await TickAsync(token);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[Scheduler] Tick failed: {ex}");
+            }
 
             if (_timer is null)
             {
@@ -88,7 +118,14 @@ public sealed class SchedulerService : ISchedulerService
 
             while (await _timer.WaitForNextTickAsync(token))
             {
-                await TickAsync(token);
+                try
+                {
+                    await TickAsync(token);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"[Scheduler] Tick failed: {ex}");
+                }
             }
         }
         catch (OperationCanceledException)
@@ -115,7 +152,7 @@ public sealed class SchedulerService : ISchedulerService
             return;
         }
 
-        if (config.SavedDevices.Count == 0 || config.Profiles.Count == 0)
+        if (config.SavedDevices.Count == 0)
         {
             return;
         }
@@ -123,7 +160,8 @@ public sealed class SchedulerService : ISchedulerService
         GeoCoordinate coordinates;
         try
         {
-            coordinates = await _locationService.GetCurrentLocationAsync();
+            var settings = config.Settings ?? AppSettings.Default;
+            coordinates = await ResolveCoordinatesAsync(settings);
         }
         catch (Exception ex)
         {
@@ -156,11 +194,31 @@ public sealed class SchedulerService : ISchedulerService
                 ? device.Profiles.ToList()
                 : config.Profiles;
 
+            var hasActiveProfiles = profilesForDevice.Any(p => p.IsActive);
+            bool? scheduleOverride;
+            lock (_stateLock)
+            {
+                scheduleOverride = state.ScheduleEnabledOverride;
+            }
+
+            if (scheduleOverride == false || !hasActiveProfiles)
+            {
+                continue;
+            }
+
             var desiredColor = ResolveDesiredColor(profilesForDevice, now, todaySunTimes, yesterdaySunTimes);
+
+            var forceRefresh = false;
+            lock (_stateLock)
+            {
+                forceRefresh = state.ForceRefresh;
+                state.ForceRefresh = false;
+            }
 
             if (desiredColor is not null)
             {
-                var needsUpdate = !state.IsOn ||
+                var needsUpdate = forceRefresh ||
+                                  !state.IsOn ||
                                   string.IsNullOrWhiteSpace(state.ColorHex) ||
                                   !string.Equals(state.ColorHex, desiredColor.NormalizedHex, StringComparison.OrdinalIgnoreCase);
 
@@ -181,7 +239,7 @@ public sealed class SchedulerService : ISchedulerService
                     }
                 }
             }
-            else if (state.IsOn)
+            else if (state.IsOn || forceRefresh)
             {
                 try
                 {
@@ -198,6 +256,25 @@ public sealed class SchedulerService : ISchedulerService
                 }
             }
         }
+    }
+
+    private async Task<GeoCoordinate> ResolveCoordinatesAsync(AppSettings settings)
+    {
+        if (settings.Latitude != 0 || settings.Longitude != 0)
+        {
+            return new GeoCoordinate(settings.Latitude, settings.Longitude);
+        }
+
+        var now = DateTime.UtcNow;
+        if (_cachedCoordinates is not null && now - _lastLocationFetchUtc < LocationCacheDuration)
+        {
+            return _cachedCoordinates;
+        }
+
+        var coords = await _locationService.GetCurrentLocationAsync();
+        _cachedCoordinates = coords;
+        _lastLocationFetchUtc = now;
+        return coords;
     }
 
     private static LedColor? ResolveDesiredColor(
@@ -255,28 +332,63 @@ public sealed class SchedulerService : ISchedulerService
         DateTime? start = null;
         DateTime? end = null;
 
-        if (schedule.SunriseEnabled)
+        var onEvents = new List<DateTime>();
+        var offEvents = new List<DateTime>();
+
+        if (schedule.SunriseEnabled && sunTimes.Sunrise is not null)
         {
-            if (sunTimes.Sunrise is not null)
+            var sunriseTime = sunTimes.Sunrise.Value.AddMinutes(schedule.SunriseOffset);
+            if (schedule.SunriseTurnsOn)
             {
-                start = sunTimes.Sunrise.Value.AddMinutes(schedule.SunriseOffset);
+                onEvents.Add(sunriseTime);
             }
-        }
-        else if (schedule.FixedOnTime is not null)
-        {
-            start = date.Add(schedule.FixedOnTime.Value);
+            else
+            {
+                offEvents.Add(sunriseTime);
+            }
         }
 
-        if (schedule.SunsetEnabled)
+        if (schedule.SunsetEnabled && sunTimes.Sunset is not null)
         {
-            if (sunTimes.Sunset is not null)
+            var sunsetTime = sunTimes.Sunset.Value.AddMinutes(schedule.SunsetOffset);
+            if (schedule.SunsetTurnsOn)
             {
-                end = sunTimes.Sunset.Value.AddMinutes(schedule.SunsetOffset);
+                onEvents.Add(sunsetTime);
+            }
+            else
+            {
+                offEvents.Add(sunsetTime);
             }
         }
-        else if (schedule.FixedOffTime is not null)
+
+        if (onEvents.Count == 0 && schedule.FixedOnTime is not null)
         {
-            end = date.Add(schedule.FixedOffTime.Value);
+            onEvents.Add(date.Add(schedule.FixedOnTime.Value));
+        }
+
+        if (offEvents.Count == 0 && schedule.FixedOffTime is not null)
+        {
+            offEvents.Add(date.Add(schedule.FixedOffTime.Value));
+        }
+
+        if (onEvents.Count > 0)
+        {
+            start = onEvents.Min();
+        }
+
+        if (offEvents.Count > 0 && start is not null)
+        {
+            DateTime? candidate = null;
+            foreach (var off in offEvents)
+            {
+                var adjusted = off <= start.Value ? off.AddDays(1) : off;
+                if (candidate is null || adjusted < candidate.Value)
+                {
+                    candidate = adjusted;
+                }
+            }
+
+            end = candidate;
         }
 
         if (start is null || end is null)
@@ -298,5 +410,7 @@ public sealed class SchedulerService : ISchedulerService
     {
         public bool IsOn { get; set; }
         public string? ColorHex { get; set; }
+        public bool ForceRefresh { get; set; }
+        public bool? ScheduleEnabledOverride { get; set; }
     }
 }

@@ -1,10 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "8Iv3Fy4U9VyK95dO2FHLD9x9EFZYdRIpFkfiNsR09InGP9xlPiZoMcfhc40s9pyjg6J82rdA6RV0DXqm1RD3kw==",
+  "dgSpecHash": "2qH5vzo3/fU=",
   "success": true,
-  "projectFilePath": "C:\\Users\\vatib\\Projects\\LEDapp-2.0\\src\\LedController.Core\\LedController.Core.csproj",
+  "projectFilePath": "C:\\Users\\Szerver\\Documents\\Projects\\LEDapp-2.0\\src\\LedController.Core\\LedController.Core.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\vatib\\.nuget\\packages\\communitytoolkit.mvvm\\8.3.2\\communitytoolkit.mvvm.8.3.2.nupkg.sha512"
+    "C:\\Users\\Szerver\\.nuget\\packages\\communitytoolkit.mvvm\\8.3.2\\communitytoolkit.mvvm.8.3.2.nupkg.sha512",
+    "C:\\Users\\Szerver\\.nuget\\packages\\microsoft.net.illink.tasks\\8.0.23\\microsoft.net.illink.tasks.8.0.23.nupkg.sha512"
   ],
   "logs": []
 }

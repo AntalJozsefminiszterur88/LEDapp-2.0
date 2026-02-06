@@ -1,7 +1,6 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:viewModels="clr-namespace:LedController.UI.ViewModels"
-        xmlns:views="clr-namespace:LedController.UI.Views"
         xmlns:models="clr-namespace:LedController.Core.Models;assembly=LedController.Core"
         xmlns:converters="clr-namespace:LedController.UI.Converters"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -10,13 +9,15 @@
         x:Class="LedController.UI.MainWindow"
         x:DataType="viewModels:MainViewModel"
         Title="LedController"
-        Icon="avares://LedController.UI/Assets/logo.ico"
+        Icon="avares://LEDapp-2.0/Assets/logo.ico"
+        WindowStartupLocation="CenterScreen"
         Background="#1E1E1E"
         Foreground="#E6E6E6">
     <Window.Resources>
-        <converters:BoolToBrushConverter x:Key="ConnectionBrushConverter"
-                                         TrueBrush="#3DDC84"
-                                         FalseBrush="#E85D5D" />
+        <converters:ConnectionStateToBrushConverter x:Key="ConnectionBrushConverter"
+                                                    ConnectedBrush="#3DDC84"
+                                                    ConnectingBrush="#F39C12"
+                                                    DisconnectedBrush="#E85D5D" />
     </Window.Resources>
 
     <ScrollViewer VerticalScrollBarVisibility="Auto">
@@ -32,20 +33,47 @@
                         <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,8,0,0">
                             <Ellipse Width="10"
                                      Height="10"
-                                     VerticalAlignment="Center"
-                                     Fill="{Binding SelectedDevice.IsConnected, Converter={StaticResource ConnectionBrushConverter}}" />
+                                     VerticalAlignment="Center">
+                                <Ellipse.Fill>
+                                    <MultiBinding Converter="{StaticResource ConnectionBrushConverter}">
+                                        <Binding Path="SelectedDevice.IsConnected" />
+                                        <Binding Path="SelectedDevice.IsConnecting" />
+                                    </MultiBinding>
+                                </Ellipse.Fill>
+                            </Ellipse>
                             <ComboBox Width="240"
                                       ItemsSource="{Binding SavedDevices}"
                                       SelectedItem="{Binding SelectedDevice}">
                                 <ComboBox.ItemTemplate>
                                     <DataTemplate x:DataType="models:LedDevice">
                                         <StackPanel>
-                                            <TextBlock Text="{Binding Name}" />
-                                            <TextBlock Text="{Binding MacAddress}" Opacity="0.7" />
+                                            <TextBlock Text="{Binding PrimaryName}" />
+                                            <TextBlock Text="{Binding SecondaryName}" Opacity="0.7" />
                                         </StackPanel>
                                     </DataTemplate>
                                 </ComboBox.ItemTemplate>
                             </ComboBox>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Spacing="12" Margin="0,10,0,0">
+                            <Button Content="Egyedi név">
+                                <Button.Flyout>
+                                    <Flyout Placement="Bottom">
+                                        <StackPanel Spacing="8" Width="220">
+                                            <TextBlock Text="Egyedi név" FontWeight="SemiBold" />
+                                            <TextBox Text="{Binding SelectedDevice.CustomName, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"
+                                                     Watermark="Adj meg egy nevet..." />
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                                <Button Content="Mentés" Click="OnCustomNameSaveClick" />
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </Flyout>
+                                </Button.Flyout>
+                            </Button>
+                            <TextBlock Text="{Binding SelectedDevice.Name, StringFormat=Eredeti: {0}}"
+                                       Opacity="0.6"
+                                       FontSize="12"
+                                       VerticalAlignment="Center" />
                         </StackPanel>
                     </StackPanel>
 
@@ -58,11 +86,43 @@
                         </StackPanel>
                     </StackPanel>
 
-                    <Button Grid.Column="2"
-                            Content="Új eszköz keresése"
-                            Command="{Binding OpenDiscoveryCommand}"
-                            VerticalAlignment="Center"
-                            Padding="16,10" />
+                    <StackPanel Grid.Column="2"
+                                Spacing="8"
+                                VerticalAlignment="Center"
+                                HorizontalAlignment="Right">
+                        <Button Content="Új eszköz keresése"
+                                Command="{Binding OpenDiscoveryCommand}"
+                                Padding="16,10" />
+                        <Button Content="Eszköz eltávolítása"
+                                Padding="16,10">
+                            <Button.Flyout>
+                                <Flyout Placement="BottomEdgeAlignedRight">
+                                    <StackPanel Spacing="8"
+                                                Width="260">
+                                        <TextBlock Text="Kezelt eszközök"
+                                                   FontWeight="SemiBold" />
+                                        <ComboBox ItemsSource="{Binding SavedDevices}"
+                                                  SelectedItem="{Binding DeviceToRemove}">
+                                            <ComboBox.ItemTemplate>
+                                                <DataTemplate x:DataType="models:LedDevice">
+                                                    <StackPanel>
+                                                        <TextBlock Text="{Binding PrimaryName}" />
+                                                        <TextBlock Text="{Binding SecondaryName}" Opacity="0.7" />
+                                                    </StackPanel>
+                                                </DataTemplate>
+                                            </ComboBox.ItemTemplate>
+                                        </ComboBox>
+                                        <StackPanel Orientation="Horizontal"
+                                                    HorizontalAlignment="Right">
+                                            <Button Content="Törlés"
+                                                    Command="{Binding RemoveSelectedDeviceCommand}"
+                                                    Click="OnRemoveDeviceClick" />
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Flyout>
+                            </Button.Flyout>
+                        </Button>
+                    </StackPanel>
                 </Grid>
             </Border>
 
@@ -73,31 +133,32 @@
                     Padding="16">
                 <StackPanel Spacing="12">
                     <TextBlock Text="Vezérlőpult" FontSize="18" FontWeight="SemiBold" />
-                    <views:DeviceControlView DataContext="{Binding DeviceControl}" />
+                    <ContentControl Content="{Binding DeviceControl}" />
                 </StackPanel>
             </Border>
 
-            <Expander Header="Ütemezés" IsExpanded="False">
+            <Expander Header="Ütemezés" IsExpanded="{Binding IsSchedulerExpanded, Mode=TwoWay}">
                 <Border Background="#242424"
                         BorderBrush="#2D2D2D"
                         BorderThickness="1"
                         CornerRadius="10"
                         Padding="16"
                         Margin="0,8,0,0">
-                    <views:SchedulerView DataContext="{Binding Scheduler}" />
+                    <ContentControl Content="{Binding Scheduler}" />
                 </Border>
             </Expander>
 
-            <Expander Header="Beállítások" IsExpanded="False">
+            <Expander Header="Beállítások" IsExpanded="{Binding IsSettingsExpanded, Mode=TwoWay}">
                 <Border Background="#242424"
                         BorderBrush="#2D2D2D"
                         BorderThickness="1"
                         CornerRadius="10"
                         Padding="16"
                         Margin="0,8,0,0">
-                    <views:SettingsView DataContext="{Binding Settings}" />
+                    <ContentControl Content="{Binding Settings}" />
                 </Border>
             </Expander>
         </StackPanel>
     </ScrollViewer>
 </Window>
+

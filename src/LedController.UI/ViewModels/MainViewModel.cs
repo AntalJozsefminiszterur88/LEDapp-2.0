@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,14 +15,35 @@ namespace LedController.UI.ViewModels;
 
 public sealed partial class MainViewModel : ViewModelBase
 {
+    private readonly ISchedulerService _schedulerService;
     private readonly IBleService _bleService;
     private readonly IConfigService _configService;
     private readonly ILocationService _locationService;
     private readonly IMqttService _mqttService;
+    private readonly SettingsViewModel _settingsViewModel;
     private readonly DispatcherTimer _clockTimer;
+    private readonly DispatcherTimer _reconnectTimer;
+    private readonly DispatcherTimer _healthTimer;
+    private Guid? _autoConnectDeviceId;
+    private LedDevice? _pendingSchedulerDevice;
+    private bool _autoConnectEnabled;
+    private bool _autoConnectScheduled;
+    private bool _suppressUiStateSave;
+    private bool _initializedAfterOpen;
+    private bool _reconnectRunning;
+    private bool _healthCheckRunning;
+    private readonly HashSet<LedDevice> _deviceSubscriptions = new();
 
     [ObservableProperty]
     private LedDevice? selectedDevice;
+
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(RemoveSelectedDeviceCommand))]
+    private LedDevice? deviceToRemove;
+
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(RemoveSelectedDeviceCommand))]
+    private bool isRemovingDevice;
 
     public MainViewModel(
         ISchedulerService schedulerService,
@@ -31,18 +54,16 @@ public sealed partial class MainViewModel : ViewModelBase
         DiscoveryViewModel discoveryViewModel,
         SettingsViewModel settingsViewModel)
     {
+        _schedulerService = schedulerService;
         _bleService = bleService;
         _configService = configService;
         _locationService = locationService;
         _mqttService = mqttService;
+        _settingsViewModel = settingsViewModel;
         Discovery = discoveryViewModel;
-        Settings = settingsViewModel;
-
-        schedulerService.Start();
-        _ = StartMqttIfEnabledAsync();
+        Settings = null;
 
         SavedDevices = new ObservableCollection<LedDevice>();
-        _ = LoadAsync();
 
         _clockTimer = new DispatcherTimer
         {
@@ -51,13 +72,26 @@ public sealed partial class MainViewModel : ViewModelBase
         _clockTimer.Tick += (_, _) => UpdateTime();
         _clockTimer.Start();
         UpdateTime();
+
+        _reconnectTimer = new DispatcherTimer
+        {
+            Interval = TimeSpan.FromSeconds(15)
+        };
+        _reconnectTimer.Tick += async (_, _) => await ReconnectMissingDevicesAsync();
+
+        _healthTimer = new DispatcherTimer
+        {
+            Interval = TimeSpan.FromSeconds(30)
+        };
+        _healthTimer.Tick += async (_, _) => await RunHealthCheckAsync();
     }
 
     public ObservableCollection<LedDevice> SavedDevices { get; }
 
     public DiscoveryViewModel Discovery { get; }
 
-    public SettingsViewModel Settings { get; }
+    [ObservableProperty]
+    private SettingsViewModel? settings;
 
     public event Action? DiscoveryRequested;
 
@@ -76,17 +110,39 @@ public sealed partial class MainViewModel : ViewModelBase
     [ObservableProperty]
     private string sunsetText = "--:--";
 
+    [ObservableProperty]
+    private bool isSchedulerExpanded;
+
+    [ObservableProperty]
+    private bool isSettingsExpanded;
+
     partial void OnSelectedDeviceChanged(LedDevice? value)
     {
+        if (DeviceControl is IDisposable disposableDeviceControl)
+        {
+            disposableDeviceControl.Dispose();
+        }
+
+        if (Scheduler is IDisposable disposableScheduler)
+        {
+            disposableScheduler.Dispose();
+        }
+
         if (value is null)
         {
             DeviceControl = null;
             Scheduler = null;
+            _pendingSchedulerDevice = null;
             return;
         }
 
-        DeviceControl = new DeviceControlViewModel(_bleService, value);
-        Scheduler = new SchedulerViewModel(_configService, value);
+        DeviceControl = new DeviceControlViewModel(_bleService, _schedulerService, _configService, value);
+        _pendingSchedulerDevice = value;
+        EnsureSchedulerLoaded();
+        if (_autoConnectEnabled)
+        {
+            _ = EnsureConnectedAsync(value);
+        }
     }
 
     [RelayCommand]
@@ -95,9 +151,111 @@ public sealed partial class MainViewModel : ViewModelBase
         DiscoveryRequested?.Invoke();
     }
 
+    private bool CanRemoveSelectedDevice() => !IsRemovingDevice && DeviceToRemove is not null;
+
+    [RelayCommand(CanExecute = nameof(CanRemoveSelectedDevice))]
+    private async Task RemoveSelectedDeviceAsync()
+    {
+        var target = DeviceToRemove;
+        if (target is null || IsRemovingDevice)
+        {
+            return;
+        }
+
+        IsRemovingDevice = true;
+        try
+        {
+            if (target.IsConnected || target.IsConnecting)
+            {
+                try
+                {
+                    await _bleService.DisconnectAsync(target);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"[Main] Device disconnect before removal failed: {ex.Message}");
+                }
+            }
+
+            var config = await _configService.LoadConfigAsync();
+            var updatedDevices = config.SavedDevices
+                .Where(device => !IsSameDevice(device, target))
+                .ToList();
+
+            var updatedConfig = new AppConfig(updatedDevices, config.Profiles, config.Settings);
+            await _configService.SaveConfigAsync(updatedConfig);
+
+            var toRemove = SavedDevices
+                .Where(device => IsSameDevice(device, target))
+                .ToList();
+
+            foreach (var device in toRemove)
+            {
+                SavedDevices.Remove(device);
+                DetachDevice(device);
+            }
+
+            if (SavedDevices.Count == 0)
+            {
+                SelectedDevice = null;
+                DeviceToRemove = null;
+            }
+            else
+            {
+                if (SelectedDevice is null || IsSameDevice(SelectedDevice, target))
+                {
+                    SelectedDevice = SavedDevices.FirstOrDefault();
+                }
+
+                if (DeviceToRemove is null || IsSameDevice(DeviceToRemove, target))
+                {
+                    DeviceToRemove = SavedDevices.FirstOrDefault();
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[Main] Device removal failed: {ex.Message}");
+        }
+        finally
+        {
+            IsRemovingDevice = false;
+        }
+    }
+
     public async Task RefreshDevicesAsync()
     {
         await LoadAsync();
+    }
+
+    public async Task InitializeAfterOpenAsync()
+    {
+        if (_initializedAfterOpen)
+        {
+            return;
+        }
+
+        _initializedAfterOpen = true;
+        _schedulerService.Start();
+        _ = StartMqttIfEnabledAsync();
+        await LoadAsync();
+        _ = StartDeferredAutoConnectAsync();
+        _healthTimer.Start();
+    }
+
+    public async Task RefreshSunTimesAsync()
+    {
+        try
+        {
+            var config = await _configService.LoadConfigAsync();
+            await UpdateSunTimesAsync(config);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[Main] Sun time refresh failed: {ex.Message}");
+            SunriseText = "--:--";
+            SunsetText = "--:--";
+        }
     }
 
     private async Task StartMqttIfEnabledAsync()
@@ -121,19 +279,75 @@ public sealed partial class MainViewModel : ViewModelBase
         try
         {
             var config = await _configService.LoadConfigAsync();
+            ResetDeviceSubscriptions();
             SavedDevices.Clear();
             foreach (var device in config.SavedDevices)
             {
+                device.IsConnected = false;
+                device.IsConnecting = false;
                 SavedDevices.Add(device);
+                AttachDevice(device);
             }
 
             SelectedDevice = SavedDevices.FirstOrDefault();
+            DeviceToRemove = SavedDevices.FirstOrDefault();
 
-            await UpdateSunTimesAsync(config);
+            var settings = config.Settings ?? AppSettings.Default;
+            _suppressUiStateSave = true;
+            IsSchedulerExpanded = settings.SchedulerExpanded;
+            IsSettingsExpanded = settings.SettingsExpanded;
+            _suppressUiStateSave = false;
+
         }
         catch (Exception ex)
         {
             Console.WriteLine($"[Main] Load failed: {ex.Message}");
+        }
+    }
+
+    partial void OnIsSchedulerExpandedChanged(bool value)
+    {
+        if (value)
+        {
+            EnsureSchedulerLoaded();
+        }
+
+        _ = SaveUiStateAsync();
+    }
+
+    partial void OnIsSettingsExpandedChanged(bool value)
+    {
+        if (value && Settings is null)
+        {
+            Settings = _settingsViewModel;
+        }
+
+        _ = SaveUiStateAsync();
+    }
+
+    private async Task SaveUiStateAsync()
+    {
+        if (_suppressUiStateSave)
+        {
+            return;
+        }
+
+        try
+        {
+            var config = await _configService.LoadConfigAsync();
+            var settings = config.Settings ?? AppSettings.Default;
+            settings = settings with
+            {
+                SchedulerExpanded = IsSchedulerExpanded,
+                SettingsExpanded = IsSettingsExpanded
+            };
+
+            var updated = config with { Settings = settings };
+            await _configService.SaveConfigAsync(updated);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[Main] UI state save failed: {ex.Message}");
         }
     }
 
@@ -163,5 +377,257 @@ public sealed partial class MainViewModel : ViewModelBase
     private void UpdateTime()
     {
         CurrentTimeText = DateTime.Now.ToString("HH:mm", CultureInfo.InvariantCulture);
+    }
+
+    private void EnsureSchedulerLoaded()
+    {
+        if (!IsSchedulerExpanded || _pendingSchedulerDevice is null)
+        {
+            return;
+        }
+
+        if (Scheduler?.TargetDevice.Id == _pendingSchedulerDevice.Id)
+        {
+            return;
+        }
+
+        if (Scheduler is IDisposable disposableScheduler)
+        {
+            disposableScheduler.Dispose();
+        }
+
+        Scheduler = new SchedulerViewModel(_configService, _locationService, _pendingSchedulerDevice);
+    }
+
+    private async Task RunHealthCheckAsync()
+    {
+        if (_healthCheckRunning)
+        {
+            return;
+        }
+
+        _healthCheckRunning = true;
+        try
+        {
+            _schedulerService.Start();
+
+            if (!_mqttService.IsRunning)
+            {
+                await StartMqttIfEnabledAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[Main] Health check failed: {ex.Message}");
+        }
+        finally
+        {
+            _healthCheckRunning = false;
+        }
+    }
+
+    private async Task EnsureConnectedAsync(LedDevice device)
+    {
+        if (device.IsConnected || device.IsConnecting)
+        {
+            return;
+        }
+
+        if (!_autoConnectEnabled)
+        {
+            return;
+        }
+
+        if (_autoConnectDeviceId == device.Id)
+        {
+            return;
+        }
+
+        _autoConnectDeviceId = device.Id;
+        try
+        {
+            await ConnectDeviceAsync(device);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[Main] Auto-connect failed: {ex.Message}");
+        }
+        finally
+        {
+            if (_autoConnectDeviceId == device.Id)
+            {
+                _autoConnectDeviceId = null;
+            }
+        }
+    }
+
+    private async Task ConnectAllDevicesAsync()
+    {
+        var devices = SavedDevices.ToList();
+        if (devices.Count == 0)
+        {
+            return;
+        }
+
+        var tasks = devices
+            .Where(device => !device.IsConnected && !device.IsConnecting)
+            .Select(ConnectDeviceAsync)
+            .ToList();
+
+        if (tasks.Count == 0)
+        {
+            return;
+        }
+
+        await Task.WhenAll(tasks);
+    }
+
+    private async Task ReconnectMissingDevicesAsync()
+    {
+        if (_reconnectRunning)
+        {
+            return;
+        }
+
+        if (!_autoConnectEnabled)
+        {
+            return;
+        }
+
+        _reconnectRunning = true;
+        try
+        {
+            await ConnectAllDevicesAsync();
+        }
+        finally
+        {
+            _reconnectRunning = false;
+        }
+    }
+
+    private async Task<bool> ConnectDeviceAsync(LedDevice device)
+    {
+        if (device.IsConnected || device.IsConnecting)
+        {
+            return device.IsConnected;
+        }
+
+        device.IsConnecting = true;
+        try
+        {
+            await _bleService.ConnectAsync(device);
+            return device.IsConnected;
+        }
+        catch
+        {
+            return false;
+        }
+        finally
+        {
+            device.IsConnecting = false;
+        }
+    }
+
+    private async Task StartDeferredAutoConnectAsync()
+    {
+        if (_autoConnectScheduled)
+        {
+            return;
+        }
+
+        _autoConnectScheduled = true;
+        try
+        {
+            await Task.Delay(TimeSpan.FromSeconds(1));
+            _autoConnectEnabled = true;
+            _reconnectTimer.Start();
+            await ConnectAllDevicesAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[Main] Auto-connect start failed: {ex.Message}");
+        }
+    }
+
+    private void AttachDevice(LedDevice device)
+    {
+        if (_deviceSubscriptions.Add(device))
+        {
+            device.PropertyChanged += OnDevicePropertyChanged;
+        }
+    }
+
+    private void DetachDevice(LedDevice device)
+    {
+        if (_deviceSubscriptions.Remove(device))
+        {
+            device.PropertyChanged -= OnDevicePropertyChanged;
+        }
+    }
+
+    private void ResetDeviceSubscriptions()
+    {
+        foreach (var device in _deviceSubscriptions)
+        {
+            device.PropertyChanged -= OnDevicePropertyChanged;
+        }
+
+        _deviceSubscriptions.Clear();
+    }
+
+    private static bool IsSameDevice(LedDevice left, LedDevice right)
+    {
+        if (left.Id != Guid.Empty && right.Id != Guid.Empty && left.Id == right.Id)
+        {
+            return true;
+        }
+
+        if (string.IsNullOrWhiteSpace(left.MacAddress) || string.IsNullOrWhiteSpace(right.MacAddress))
+        {
+            return false;
+        }
+
+        return string.Equals(left.MacAddress, right.MacAddress, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private void OnDevicePropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (sender is not LedDevice device)
+        {
+            return;
+        }
+
+        if (e.PropertyName == nameof(LedDevice.CustomName))
+        {
+            _ = SaveDeviceCustomNameAsync(device);
+        }
+    }
+
+    private async Task SaveDeviceCustomNameAsync(LedDevice device)
+    {
+        try
+        {
+            var config = await _configService.LoadConfigAsync();
+            var devices = config.SavedDevices.ToList();
+            var target = devices.FirstOrDefault(d =>
+                d.Id == device.Id ||
+                (!string.IsNullOrWhiteSpace(d.MacAddress) &&
+                 string.Equals(d.MacAddress, device.MacAddress, StringComparison.OrdinalIgnoreCase)));
+
+            if (target is null)
+            {
+                target = device;
+                devices.Add(target);
+            }
+
+            target.CustomName = device.CustomName ?? string.Empty;
+
+            var updated = new AppConfig(devices, config.Profiles, config.Settings);
+            await _configService.SaveConfigAsync(updated);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[Main] Device name save failed: {ex.Message}");
+        }
     }
 }

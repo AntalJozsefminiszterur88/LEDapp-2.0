@@ -495,7 +495,10 @@
           "CommunityToolkit.Mvvm": "8.3.2"
         },
         "runtime": {
-          "LedController.Core.dll": {}
+          "LedController.Core.dll": {
+            "assemblyVersion": "1.0.0",
+            "fileVersion": "1.0.0.0"
+          }
         }
       },
       "LedController.Infrastructure/1.0.0": {
@@ -505,7 +508,10 @@
           "MQTTnet": "4.3.7.1207"
         },
         "runtime": {
-          "LedController.Infrastructure.dll": {}
+          "LedController.Infrastructure.dll": {
+            "assemblyVersion": "1.0.0",
+            "fileVersion": "1.0.0.0"
+          }
         }
       }
     }

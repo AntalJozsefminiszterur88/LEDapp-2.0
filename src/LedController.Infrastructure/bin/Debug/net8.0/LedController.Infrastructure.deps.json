@@ -45,7 +45,10 @@
           "CommunityToolkit.Mvvm": "8.3.2"
         },
         "runtime": {
-          "LedController.Core.dll": {}
+          "LedController.Core.dll": {
+            "assemblyVersion": "1.0.0",
+            "fileVersion": "1.0.0.0"
+          }
         }
       }
     }

@@ -32,6 +32,9 @@ public sealed partial class DiscoveryViewModel : ViewModelBase
     [NotifyCanExecuteChangedFor(nameof(ConnectCommand))]
     private bool isBusy;
 
+    [ObservableProperty]
+    private string statusMessage = "Kereséshez nyomd meg a Keresés gombot.";
+
     private bool CanScan() => !IsBusy;
 
     private bool CanConnect() => !IsBusy && SelectedDevice is not null;
@@ -47,6 +50,7 @@ public sealed partial class DiscoveryViewModel : ViewModelBase
         try
         {
             IsBusy = true;
+            StatusMessage = "Keresés folyamatban...";
             var devices = await _bleService.ScanForDevicesAsync();
 
             DiscoveredDevices.Clear();
@@ -56,9 +60,15 @@ public sealed partial class DiscoveryViewModel : ViewModelBase
             }
 
             SelectedDevice = DiscoveredDevices.Count > 0 ? DiscoveredDevices[0] : null;
+            StatusMessage = DiscoveredDevices.Count > 0
+                ? $"Találat: {DiscoveredDevices.Count} eszköz."
+                : "Nem található eszköz.";
         }
         catch (Exception ex)
         {
+            StatusMessage = string.IsNullOrWhiteSpace(ex.Message)
+                ? "Keresés sikertelen. Ellenőrizd, hogy a Bluetooth be van kapcsolva."
+                : $"Keresés sikertelen: {ex.Message}";
             Console.WriteLine($"[Discovery] Scan failed: {ex.Message}");
         }
         finally
@@ -78,6 +88,7 @@ public sealed partial class DiscoveryViewModel : ViewModelBase
         try
         {
             IsBusy = true;
+            StatusMessage = "Csatlakozás...";
             await _bleService.ConnectAsync(SelectedDevice);
 
             var config = await _configService.LoadConfigAsync();
@@ -90,9 +101,12 @@ public sealed partial class DiscoveryViewModel : ViewModelBase
 
             var updatedConfig = new AppConfig(updatedDevices, config.Profiles, config.Settings);
             await _configService.SaveConfigAsync(updatedConfig);
+
+            StatusMessage = "Eszköz hozzáadva.";
         }
         catch (Exception ex)
         {
+            StatusMessage = "Csatlakozás sikertelen.";
             Console.WriteLine($"[Discovery] Connect failed: {ex.Message}");
         }
         finally

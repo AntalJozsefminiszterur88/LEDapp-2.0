@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("LedController.Core")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+867e60394e89c14a3493dea8662bafd26baf4408")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+95970ce08e0cdf064fb21f0a5d50e2540ab04e32")]
 [assembly: System.Reflection.AssemblyProductAttribute("LedController.Core")]
 [assembly: System.Reflection.AssemblyTitleAttribute("LedController.Core")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

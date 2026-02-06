@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -10,24 +13,28 @@ using LedController.Core.Models;
 
 namespace LedController.UI.ViewModels;
 
-public sealed partial class SchedulerViewModel : ViewModelBase
+public sealed partial class SchedulerViewModel : ViewModelBase, IDisposable
 {
     private readonly IConfigService _configService;
+    private readonly ILocationService _locationService;
+    private readonly SemaphoreSlim _activationSaveGate = new(1, 1);
+    private bool _suppressActivationSave;
+    private bool _pendingActivationSave;
 
-    public SchedulerViewModel(IConfigService configService, LedDevice targetDevice)
+    public SchedulerViewModel(
+        IConfigService configService,
+        ILocationService locationService,
+        LedDevice targetDevice)
     {
         _configService = configService;
+        _locationService = locationService;
         TargetDevice = targetDevice ?? throw new ArgumentNullException(nameof(targetDevice));
 
         Profiles = new ObservableCollection<ScheduleProfile>();
         AvailableColors = new ObservableCollection<LedColor>(CreateDefaultColors());
         DailySchedules = new ObservableCollection<DailySchedule>();
 
-        Profiles.CollectionChanged += (_, _) =>
-        {
-            DeleteProfileCommand.NotifyCanExecuteChanged();
-            SaveProfileCommand.NotifyCanExecuteChanged();
-        };
+        Profiles.CollectionChanged += OnProfilesCollectionChanged;
 
         _ = LoadAsync();
     }
@@ -47,6 +54,9 @@ public sealed partial class SchedulerViewModel : ViewModelBase
 
     [ObservableProperty]
     private ObservableCollection<DailySchedule> dailySchedules;
+
+    [ObservableProperty]
+    private GeoCoordinate? timelineCoordinates;
 
     [RelayCommand]
     private void Back()
@@ -78,6 +88,13 @@ public sealed partial class SchedulerViewModel : ViewModelBase
 
             var updatedConfig = new AppConfig(devices, config.Profiles, config.Settings);
             await _configService.SaveConfigAsync(updatedConfig);
+
+            var legacyPath = _legacySchedulePath ?? ResolveDefaultLegacyPath();
+            if (!string.IsNullOrWhiteSpace(legacyPath))
+            {
+                await WriteLegacyScheduleAsync(legacyPath);
+                _legacySchedulePath ??= legacyPath;
+            }
         }
         catch (Exception ex)
         {
@@ -142,6 +159,7 @@ public sealed partial class SchedulerViewModel : ViewModelBase
         try
         {
             var config = await _configService.LoadConfigAsync();
+            _suppressActivationSave = true;
             Profiles.Clear();
 
             var device = FindDevice(config.SavedDevices, TargetDevice);
@@ -167,10 +185,33 @@ public sealed partial class SchedulerViewModel : ViewModelBase
             }
 
             SelectedProfile = Profiles.FirstOrDefault();
+            _suppressActivationSave = false;
+            await LoadTimelineCoordinatesAsync(config);
         }
         catch (Exception ex)
         {
             Console.WriteLine($"[Scheduler] Load failed: {ex.Message}");
+        }
+    }
+
+    private async Task LoadTimelineCoordinatesAsync(AppConfig config)
+    {
+        try
+        {
+            var settings = config.Settings ?? AppSettings.Default;
+            var coords = new GeoCoordinate(settings.Latitude, settings.Longitude);
+            if (coords.Latitude == 0 && coords.Longitude == 0)
+            {
+                coords = await _locationService.GetCurrentLocationAsync();
+            }
+
+            TimelineCoordinates = coords;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[Scheduler] Location resolve failed: {ex.Message}");
+            var fallback = AppSettings.Default;
+            TimelineCoordinates = new GeoCoordinate(fallback.Latitude, fallback.Longitude);
         }
     }
 
@@ -253,8 +294,10 @@ public sealed partial class SchedulerViewModel : ViewModelBase
             {
                 DayOfWeek = schedule.DayOfWeek,
                 SunriseEnabled = schedule.SunriseEnabled,
+                SunriseTurnsOn = schedule.SunriseTurnsOn,
                 SunriseOffset = schedule.SunriseOffset,
                 SunsetEnabled = schedule.SunsetEnabled,
+                SunsetTurnsOn = schedule.SunsetTurnsOn,
                 SunsetOffset = schedule.SunsetOffset,
                 FixedOnTime = schedule.FixedOnTime,
                 FixedOffTime = schedule.FixedOffTime,
@@ -297,4 +340,109 @@ public sealed partial class SchedulerViewModel : ViewModelBase
         new LedColor("Narancs", "#ffa500"),
         new LedColor("Fehér", "#ffffff")
     };
+
+    private void OnProfilesCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        if (e.OldItems is not null)
+        {
+            foreach (var profile in e.OldItems.OfType<ScheduleProfile>())
+            {
+                profile.PropertyChanged -= OnProfilePropertyChanged;
+            }
+        }
+
+        if (e.NewItems is not null)
+        {
+            foreach (var profile in e.NewItems.OfType<ScheduleProfile>())
+            {
+                profile.PropertyChanged += OnProfilePropertyChanged;
+            }
+        }
+
+        DeleteProfileCommand.NotifyCanExecuteChanged();
+        SaveProfileCommand.NotifyCanExecuteChanged();
+    }
+
+    private void OnProfilePropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(ScheduleProfile.IsActive))
+        {
+            _ = SaveActivationStateAsync();
+        }
+    }
+
+    private async Task SaveActivationStateAsync()
+    {
+        if (_suppressActivationSave)
+        {
+            return;
+        }
+
+        if (!_activationSaveGate.Wait(0))
+        {
+            _pendingActivationSave = true;
+            return;
+        }
+
+        try
+        {
+            do
+            {
+                _pendingActivationSave = false;
+
+                var config = await _configService.LoadConfigAsync();
+                var devices = config.SavedDevices.ToList();
+                var target = FindDevice(devices, TargetDevice);
+                if (target is null)
+                {
+                    target = TargetDevice;
+                    devices.Add(target);
+                }
+
+                var uiProfiles = Profiles.ToList();
+                var updateTargetProfiles = target.Profiles.Count > 0;
+                var profilesToUpdate = updateTargetProfiles ? target.Profiles : config.Profiles;
+
+                UpdateProfileActivation(profilesToUpdate, uiProfiles);
+
+                var updatedConfig = new AppConfig(devices, config.Profiles, config.Settings);
+                await _configService.SaveConfigAsync(updatedConfig);
+            }
+            while (_pendingActivationSave);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[Scheduler] Activation save failed: {ex.Message}");
+        }
+        finally
+        {
+            _activationSaveGate.Release();
+        }
+    }
+
+    private static void UpdateProfileActivation(
+        IReadOnlyList<ScheduleProfile> profilesToUpdate,
+        IReadOnlyList<ScheduleProfile> uiProfiles)
+    {
+        foreach (var profile in profilesToUpdate)
+        {
+            var match = uiProfiles.FirstOrDefault(p =>
+                string.Equals(p.Name, profile.Name, StringComparison.OrdinalIgnoreCase));
+            if (match is not null)
+            {
+                profile.IsActive = match.IsActive;
+            }
+        }
+    }
+
+    public void Dispose()
+    {
+        Profiles.CollectionChanged -= OnProfilesCollectionChanged;
+
+        foreach (var profile in Profiles)
+        {
+            profile.PropertyChanged -= OnProfilePropertyChanged;
+        }
+    }
+
 }
