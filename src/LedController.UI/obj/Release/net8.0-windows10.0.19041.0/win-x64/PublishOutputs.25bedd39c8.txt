@@ -1,7 +1,0 @@
-C:\Users\Szerver\Documents\Projects\LEDapp-2.0\publish\LEDapp-2.0.pdb
-C:\Users\Szerver\Documents\Projects\LEDapp-2.0\publish\av_libglesv2.dll
-C:\Users\Szerver\Documents\Projects\LEDapp-2.0\publish\libHarfBuzzSharp.dll
-C:\Users\Szerver\Documents\Projects\LEDapp-2.0\publish\libSkiaSharp.dll
-C:\Users\Szerver\Documents\Projects\LEDapp-2.0\publish\LedController.Core.pdb
-C:\Users\Szerver\Documents\Projects\LEDapp-2.0\publish\LedController.Infrastructure.pdb
-C:\Users\Szerver\Documents\Projects\LEDapp-2.0\publish\LEDapp-2.0.exe
