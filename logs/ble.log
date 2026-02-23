@@ -28827,3 +28827,677 @@ System.InvalidOperationException: LED characteristic not found on device.
 2026-02-06T02:10:10.4060241+01:00 [INFO] Gatt characteristics discovered: 2 for service 0000fff0-0000-1000-8000-00805f9b34fb
 2026-02-06T02:10:10.4065762+01:00 [INFO] Found LED characteristic 0000fff3-0000-1000-8000-00805f9b34fb
 2026-02-06T02:10:10.4161335+01:00 [INFO] Connect attempt 1 success (Windows). Address=BE:67:00:4E:95:CB
+2026-02-06T02:20:41.6029773+01:00 [INFO] Connect attempt 1 start (Windows). Address=BE:67:00:4E:95:CB; DeviceId=52eff7fe-a15d-45e8-81a1-efef5a6e530c; Name=ELK-BLEDOM0B; IsConnected=False; IsConnecting=True
+2026-02-06T02:20:41.6705380+01:00 [INFO] BluetoothLEDevice resolved. Name=ELK-BLEDOM0B; Status=Disconnected
+2026-02-06T02:20:41.6842554+01:00 [INFO] Connect attempt 1 device info: Id=BluetoothLE#BluetoothLE5c:f3:70:a6:d0:76-be:67:00:4e:95:cb; Name=ELK-BLEDOM0B; BluetoothAddress=BE:67:00:4E:95:CB; Status=Disconnected; Paired=False; CanPair=True; Protection=None; Access=Allowed
+2026-02-06T02:20:43.2317795+01:00 [INFO] Gatt services discovered: 2; ConnectionStatus=Connected
+2026-02-06T02:20:43.2373199+01:00 [INFO] Gatt service found: 00001800-0000-1000-8000-00805f9b34fb
+2026-02-06T02:20:43.3939490+01:00 [INFO] Gatt characteristics discovered: 1 for service 00001800-0000-1000-8000-00805f9b34fb
+2026-02-06T02:20:43.3966709+01:00 [INFO] Gatt service found: 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-06T02:20:43.5268870+01:00 [INFO] Gatt characteristics discovered: 2 for service 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-06T02:20:43.5274327+01:00 [INFO] Found LED characteristic 0000fff3-0000-1000-8000-00805f9b34fb
+2026-02-06T02:20:43.5369609+01:00 [INFO] Connect attempt 1 success (Windows). Address=BE:67:00:4E:95:CB
+2026-02-06T04:13:31.4850625+01:00 [INFO] Connect attempt 2 start (Windows). Address=BE:67:00:4E:95:CB; DeviceId=52eff7fe-a15d-45e8-81a1-efef5a6e530c; Name=ELK-BLEDOM0B; IsConnected=False; IsConnecting=True
+2026-02-06T04:13:31.5320612+01:00 [INFO] BluetoothLEDevice resolved. Name=ELK-BLEDOM0B; Status=Disconnected
+2026-02-06T04:13:31.5388558+01:00 [INFO] Connect attempt 2 device info: Id=BluetoothLE#BluetoothLE5c:f3:70:a6:d0:76-be:67:00:4e:95:cb; Name=ELK-BLEDOM0B; BluetoothAddress=BE:67:00:4E:95:CB; Status=Disconnected; Paired=False; CanPair=True; Protection=None; Access=Allowed
+2026-02-06T04:13:39.5879927+01:00 [EXCEPTION] Connect attempt 2 failed (Windows).
+System.TimeoutException: GetGattServices timed out after 8 seconds.
+   at LedController.Infrastructure.Services.BleService.WaitWithTimeout[T](Task`1 task, TimeSpan timeout, String context) in C:\Users\Szerver\Documents\Projects\LEDapp-2.0\src\LedController.Infrastructure\Services\BleService.cs:line 459
+   at LedController.Infrastructure.Services.BleService.FindLedCharacteristicAsync(BluetoothLEDevice device) in C:\Users\Szerver\Documents\Projects\LEDapp-2.0\src\LedController.Infrastructure\Services\BleService.cs:line 417
+   at LedController.Infrastructure.Services.BleService.ConnectAsync(LedDevice device) in C:\Users\Szerver\Documents\Projects\LEDapp-2.0\src\LedController.Infrastructure\Services\BleService.cs:line 183
+
+2026-02-06T04:13:46.4967934+01:00 [INFO] Connect attempt 3 start (Windows). Address=BE:67:00:4E:95:CB; DeviceId=52eff7fe-a15d-45e8-81a1-efef5a6e530c; Name=ELK-BLEDOM0B; IsConnected=False; IsConnecting=True
+2026-02-06T04:13:46.5513101+01:00 [INFO] BluetoothLEDevice resolved. Name=ELK-BLEDOM0B; Status=Connected
+2026-02-06T04:13:46.5567711+01:00 [INFO] Connect attempt 3 device info: Id=BluetoothLE#BluetoothLE5c:f3:70:a6:d0:76-be:67:00:4e:95:cb; Name=ELK-BLEDOM0B; BluetoothAddress=BE:67:00:4E:95:CB; Status=Connected; Paired=False; CanPair=True; Protection=None; Access=Allowed
+2026-02-06T04:13:47.1304814+01:00 [INFO] Gatt services discovered: 2; ConnectionStatus=Connected
+2026-02-06T04:13:47.1309403+01:00 [INFO] Gatt service found: 00001800-0000-1000-8000-00805f9b34fb
+2026-02-06T04:13:47.7044395+01:00 [INFO] Gatt characteristics discovered: 1 for service 00001800-0000-1000-8000-00805f9b34fb
+2026-02-06T04:13:47.7049089+01:00 [INFO] Gatt service found: 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-06T04:13:48.2033211+01:00 [INFO] Gatt characteristics discovered: 2 for service 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-06T04:13:48.2037398+01:00 [INFO] Found LED characteristic 0000fff3-0000-1000-8000-00805f9b34fb
+2026-02-06T04:13:48.2044807+01:00 [INFO] Connect attempt 3 success (Windows). Address=BE:67:00:4E:95:CB
+2026-02-06T18:19:39.7703036+01:00 [INFO] Connect attempt 4 start (Windows). Address=BE:67:00:4E:95:CB; DeviceId=52eff7fe-a15d-45e8-81a1-efef5a6e530c; Name=ELK-BLEDOM0B; IsConnected=False; IsConnecting=True
+2026-02-06T18:19:39.8084052+01:00 [INFO] BluetoothLEDevice resolved. Name=ELK-BLEDOM0B; Status=Disconnected
+2026-02-06T18:19:39.8144366+01:00 [INFO] Connect attempt 4 device info: Id=BluetoothLE#BluetoothLE5c:f3:70:a6:d0:76-be:67:00:4e:95:cb; Name=ELK-BLEDOM0B; BluetoothAddress=BE:67:00:4E:95:CB; Status=Disconnected; Paired=False; CanPair=True; Protection=None; Access=Allowed
+2026-02-06T18:19:42.7617405+01:00 [INFO] Gatt services discovered: 2; ConnectionStatus=Connected
+2026-02-06T18:19:42.7621754+01:00 [INFO] Gatt service found: 00001800-0000-1000-8000-00805f9b34fb
+2026-02-06T18:19:42.9080700+01:00 [INFO] Gatt characteristics discovered: 1 for service 00001800-0000-1000-8000-00805f9b34fb
+2026-02-06T18:19:42.9084892+01:00 [INFO] Gatt service found: 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-06T18:19:43.0947914+01:00 [INFO] Gatt characteristics discovered: 2 for service 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-06T18:19:43.0958184+01:00 [INFO] Found LED characteristic 0000fff3-0000-1000-8000-00805f9b34fb
+2026-02-06T18:19:43.0974698+01:00 [INFO] Connect attempt 4 success (Windows). Address=BE:67:00:4E:95:CB
+2026-02-06T20:59:30.9424345+01:00 [INFO] Connect attempt 5 start (Windows). Address=BE:67:00:4E:95:CB; DeviceId=52eff7fe-a15d-45e8-81a1-efef5a6e530c; Name=ELK-BLEDOM0B; IsConnected=False; IsConnecting=True
+2026-02-06T20:59:30.9788564+01:00 [INFO] BluetoothLEDevice resolved. Name=ELK-BLEDOM0B; Status=Disconnected
+2026-02-06T20:59:30.9844017+01:00 [INFO] Connect attempt 5 device info: Id=BluetoothLE#BluetoothLE5c:f3:70:a6:d0:76-be:67:00:4e:95:cb; Name=ELK-BLEDOM0B; BluetoothAddress=BE:67:00:4E:95:CB; Status=Disconnected; Paired=False; CanPair=True; Protection=None; Access=Allowed
+2026-02-06T20:59:39.0011691+01:00 [EXCEPTION] Connect attempt 5 failed (Windows).
+System.TimeoutException: GetGattServices timed out after 8 seconds.
+   at LedController.Infrastructure.Services.BleService.WaitWithTimeout[T](Task`1 task, TimeSpan timeout, String context) in C:\Users\Szerver\Documents\Projects\LEDapp-2.0\src\LedController.Infrastructure\Services\BleService.cs:line 459
+   at LedController.Infrastructure.Services.BleService.FindLedCharacteristicAsync(BluetoothLEDevice device) in C:\Users\Szerver\Documents\Projects\LEDapp-2.0\src\LedController.Infrastructure\Services\BleService.cs:line 417
+   at LedController.Infrastructure.Services.BleService.ConnectAsync(LedDevice device) in C:\Users\Szerver\Documents\Projects\LEDapp-2.0\src\LedController.Infrastructure\Services\BleService.cs:line 183
+
+2026-02-06T20:59:45.9622116+01:00 [INFO] Connect attempt 6 start (Windows). Address=BE:67:00:4E:95:CB; DeviceId=52eff7fe-a15d-45e8-81a1-efef5a6e530c; Name=ELK-BLEDOM0B; IsConnected=False; IsConnecting=True
+2026-02-06T20:59:45.9911097+01:00 [INFO] BluetoothLEDevice resolved. Name=ELK-BLEDOM0B; Status=Disconnected
+2026-02-06T20:59:45.9964426+01:00 [INFO] Connect attempt 6 device info: Id=BluetoothLE#BluetoothLE5c:f3:70:a6:d0:76-be:67:00:4e:95:cb; Name=ELK-BLEDOM0B; BluetoothAddress=BE:67:00:4E:95:CB; Status=Disconnected; Paired=False; CanPair=True; Protection=None; Access=Allowed
+2026-02-06T20:59:50.0792530+01:00 [INFO] Gatt services discovered: 2; ConnectionStatus=Connected
+2026-02-06T20:59:50.0797061+01:00 [INFO] Gatt service found: 00001800-0000-1000-8000-00805f9b34fb
+2026-02-06T20:59:50.6905323+01:00 [INFO] Gatt characteristics discovered: 1 for service 00001800-0000-1000-8000-00805f9b34fb
+2026-02-06T20:59:50.6916960+01:00 [INFO] Gatt service found: 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-06T20:59:51.4145974+01:00 [INFO] Gatt characteristics discovered: 2 for service 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-06T20:59:51.4150075+01:00 [INFO] Found LED characteristic 0000fff3-0000-1000-8000-00805f9b34fb
+2026-02-06T20:59:51.4153765+01:00 [INFO] Connect attempt 6 success (Windows). Address=BE:67:00:4E:95:CB
+2026-02-06T21:00:46.0042744+01:00 [INFO] Connect attempt 7 start (Windows). Address=BE:67:00:4E:95:CB; DeviceId=52eff7fe-a15d-45e8-81a1-efef5a6e530c; Name=ELK-BLEDOM0B; IsConnected=False; IsConnecting=True
+2026-02-06T21:00:46.0470518+01:00 [INFO] BluetoothLEDevice resolved. Name=ELK-BLEDOM0B; Status=Disconnected
+2026-02-06T21:00:46.0523995+01:00 [INFO] Connect attempt 7 device info: Id=BluetoothLE#BluetoothLE5c:f3:70:a6:d0:76-be:67:00:4e:95:cb; Name=ELK-BLEDOM0B; BluetoothAddress=BE:67:00:4E:95:CB; Status=Disconnected; Paired=False; CanPair=True; Protection=None; Access=Allowed
+2026-02-06T21:00:54.0670095+01:00 [EXCEPTION] Connect attempt 7 failed (Windows).
+System.TimeoutException: GetGattServices timed out after 8 seconds.
+   at LedController.Infrastructure.Services.BleService.WaitWithTimeout[T](Task`1 task, TimeSpan timeout, String context) in C:\Users\Szerver\Documents\Projects\LEDapp-2.0\src\LedController.Infrastructure\Services\BleService.cs:line 459
+   at LedController.Infrastructure.Services.BleService.FindLedCharacteristicAsync(BluetoothLEDevice device) in C:\Users\Szerver\Documents\Projects\LEDapp-2.0\src\LedController.Infrastructure\Services\BleService.cs:line 417
+   at LedController.Infrastructure.Services.BleService.ConnectAsync(LedDevice device) in C:\Users\Szerver\Documents\Projects\LEDapp-2.0\src\LedController.Infrastructure\Services\BleService.cs:line 183
+
+2026-02-06T21:01:01.0169403+01:00 [INFO] Connect attempt 8 start (Windows). Address=BE:67:00:4E:95:CB; DeviceId=52eff7fe-a15d-45e8-81a1-efef5a6e530c; Name=ELK-BLEDOM0B; IsConnected=False; IsConnecting=True
+2026-02-06T21:01:01.0713401+01:00 [INFO] BluetoothLEDevice resolved. Name=ELK-BLEDOM0B; Status=Connected
+2026-02-06T21:01:01.0767013+01:00 [INFO] Connect attempt 8 device info: Id=BluetoothLE#BluetoothLE5c:f3:70:a6:d0:76-be:67:00:4e:95:cb; Name=ELK-BLEDOM0B; BluetoothAddress=BE:67:00:4E:95:CB; Status=Connected; Paired=False; CanPair=True; Protection=None; Access=Allowed
+2026-02-06T21:01:01.2718423+01:00 [INFO] Gatt services discovered: 2; ConnectionStatus=Connected
+2026-02-06T21:01:01.2722320+01:00 [INFO] Gatt service found: 00001800-0000-1000-8000-00805f9b34fb
+2026-02-06T21:01:01.4701632+01:00 [INFO] Gatt characteristics discovered: 1 for service 00001800-0000-1000-8000-00805f9b34fb
+2026-02-06T21:01:01.4711997+01:00 [INFO] Gatt service found: 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-06T21:01:02.0380662+01:00 [INFO] Gatt characteristics discovered: 2 for service 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-06T21:01:02.0387194+01:00 [INFO] Found LED characteristic 0000fff3-0000-1000-8000-00805f9b34fb
+2026-02-06T21:01:02.0393383+01:00 [INFO] Connect attempt 8 success (Windows). Address=BE:67:00:4E:95:CB
+2026-02-07T06:13:39.6478124+01:00 [INFO] Connect attempt 9 start (Windows). Address=BE:67:00:4E:95:CB; DeviceId=52eff7fe-a15d-45e8-81a1-efef5a6e530c; Name=ELK-BLEDOM0B; IsConnected=False; IsConnecting=True
+2026-02-07T06:13:39.6920323+01:00 [INFO] BluetoothLEDevice resolved. Name=ELK-BLEDOM0B; Status=Disconnected
+2026-02-07T06:13:39.6978745+01:00 [INFO] Connect attempt 9 device info: Id=BluetoothLE#BluetoothLE5c:f3:70:a6:d0:76-be:67:00:4e:95:cb; Name=ELK-BLEDOM0B; BluetoothAddress=BE:67:00:4E:95:CB; Status=Disconnected; Paired=False; CanPair=True; Protection=None; Access=Allowed
+2026-02-07T06:13:41.6750642+01:00 [INFO] Gatt services discovered: 2; ConnectionStatus=Connected
+2026-02-07T06:13:41.6754945+01:00 [INFO] Gatt service found: 00001800-0000-1000-8000-00805f9b34fb
+2026-02-07T06:13:41.8227351+01:00 [INFO] Gatt characteristics discovered: 1 for service 00001800-0000-1000-8000-00805f9b34fb
+2026-02-07T06:13:41.8237305+01:00 [INFO] Gatt service found: 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-07T06:13:41.9791746+01:00 [INFO] Gatt characteristics discovered: 2 for service 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-07T06:13:41.9795629+01:00 [INFO] Found LED characteristic 0000fff3-0000-1000-8000-00805f9b34fb
+2026-02-07T06:13:41.9800337+01:00 [INFO] Connect attempt 9 success (Windows). Address=BE:67:00:4E:95:CB
+2026-02-08T07:09:31.4962584+01:00 [INFO] Connect attempt 10 start (Windows). Address=BE:67:00:4E:95:CB; DeviceId=52eff7fe-a15d-45e8-81a1-efef5a6e530c; Name=ELK-BLEDOM0B; IsConnected=False; IsConnecting=True
+2026-02-08T07:09:31.5526434+01:00 [INFO] BluetoothLEDevice resolved. Name=ELK-BLEDOM0B; Status=Disconnected
+2026-02-08T07:09:31.5582231+01:00 [INFO] Connect attempt 10 device info: Id=BluetoothLE#BluetoothLE5c:f3:70:a6:d0:76-be:67:00:4e:95:cb; Name=ELK-BLEDOM0B; BluetoothAddress=BE:67:00:4E:95:CB; Status=Disconnected; Paired=False; CanPair=True; Protection=None; Access=Allowed
+2026-02-08T07:09:33.0685161+01:00 [INFO] Gatt services discovered: 2; ConnectionStatus=Connected
+2026-02-08T07:09:33.0694265+01:00 [INFO] Gatt service found: 00001800-0000-1000-8000-00805f9b34fb
+2026-02-08T07:09:33.2153910+01:00 [INFO] Gatt characteristics discovered: 1 for service 00001800-0000-1000-8000-00805f9b34fb
+2026-02-08T07:09:33.2163842+01:00 [INFO] Gatt service found: 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-08T07:09:33.3583246+01:00 [INFO] Gatt characteristics discovered: 2 for service 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-08T07:09:33.3588111+01:00 [INFO] Found LED characteristic 0000fff3-0000-1000-8000-00805f9b34fb
+2026-02-08T07:09:33.3592630+01:00 [INFO] Connect attempt 10 success (Windows). Address=BE:67:00:4E:95:CB
+2026-02-08T18:24:01.5244030+01:00 [INFO] Connect attempt 11 start (Windows). Address=BE:67:00:4E:95:CB; DeviceId=52eff7fe-a15d-45e8-81a1-efef5a6e530c; Name=ELK-BLEDOM0B; IsConnected=False; IsConnecting=True
+2026-02-08T18:24:01.5754825+01:00 [INFO] BluetoothLEDevice resolved. Name=ELK-BLEDOM0B; Status=Disconnected
+2026-02-08T18:24:01.5815093+01:00 [INFO] Connect attempt 11 device info: Id=BluetoothLE#BluetoothLE5c:f3:70:a6:d0:76-be:67:00:4e:95:cb; Name=ELK-BLEDOM0B; BluetoothAddress=BE:67:00:4E:95:CB; Status=Disconnected; Paired=False; CanPair=True; Protection=None; Access=Allowed
+2026-02-08T18:24:03.1401061+01:00 [INFO] Gatt services discovered: 2; ConnectionStatus=Connected
+2026-02-08T18:24:03.1405155+01:00 [INFO] Gatt service found: 00001800-0000-1000-8000-00805f9b34fb
+2026-02-08T18:24:03.2870400+01:00 [INFO] Gatt characteristics discovered: 1 for service 00001800-0000-1000-8000-00805f9b34fb
+2026-02-08T18:24:03.2875930+01:00 [INFO] Gatt service found: 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-08T18:24:03.4578795+01:00 [INFO] Gatt characteristics discovered: 2 for service 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-08T18:24:03.4586102+01:00 [INFO] Found LED characteristic 0000fff3-0000-1000-8000-00805f9b34fb
+2026-02-08T18:24:03.4595620+01:00 [INFO] Connect attempt 11 success (Windows). Address=BE:67:00:4E:95:CB
+2026-02-08T20:30:22.3390027+01:00 [INFO] Connect attempt 12 start (Windows). Address=BE:67:00:4E:95:CB; DeviceId=52eff7fe-a15d-45e8-81a1-efef5a6e530c; Name=ELK-BLEDOM0B; IsConnected=False; IsConnecting=True
+2026-02-08T20:30:22.3774261+01:00 [INFO] BluetoothLEDevice resolved. Name=ELK-BLEDOM0B; Status=Disconnected
+2026-02-08T20:30:22.3833384+01:00 [INFO] Connect attempt 12 device info: Id=BluetoothLE#BluetoothLE5c:f3:70:a6:d0:76-be:67:00:4e:95:cb; Name=ELK-BLEDOM0B; BluetoothAddress=BE:67:00:4E:95:CB; Status=Disconnected; Paired=False; CanPair=True; Protection=None; Access=Allowed
+2026-02-08T20:30:24.5577838+01:00 [INFO] Gatt services discovered: 2; ConnectionStatus=Connected
+2026-02-08T20:30:24.5582818+01:00 [INFO] Gatt service found: 00001800-0000-1000-8000-00805f9b34fb
+2026-02-08T20:30:24.7226281+01:00 [INFO] Gatt characteristics discovered: 1 for service 00001800-0000-1000-8000-00805f9b34fb
+2026-02-08T20:30:24.7234688+01:00 [INFO] Gatt service found: 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-08T20:30:24.8734407+01:00 [INFO] Gatt characteristics discovered: 2 for service 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-08T20:30:24.8741097+01:00 [INFO] Found LED characteristic 0000fff3-0000-1000-8000-00805f9b34fb
+2026-02-08T20:30:24.8748106+01:00 [INFO] Connect attempt 12 success (Windows). Address=BE:67:00:4E:95:CB
+2026-02-09T00:03:02.0798238+01:00 [INFO] Connect attempt 13 start (Windows). Address=BE:67:00:4E:95:CB; DeviceId=52eff7fe-a15d-45e8-81a1-efef5a6e530c; Name=ELK-BLEDOM0B; IsConnected=False; IsConnecting=True
+2026-02-09T00:03:02.1255026+01:00 [INFO] BluetoothLEDevice resolved. Name=ELK-BLEDOM0B; Status=Disconnected
+2026-02-09T00:03:02.1310477+01:00 [INFO] Connect attempt 13 device info: Id=BluetoothLE#BluetoothLE5c:f3:70:a6:d0:76-be:67:00:4e:95:cb; Name=ELK-BLEDOM0B; BluetoothAddress=BE:67:00:4E:95:CB; Status=Disconnected; Paired=False; CanPair=True; Protection=None; Access=Allowed
+2026-02-09T00:03:10.1520228+01:00 [EXCEPTION] Connect attempt 13 failed (Windows).
+System.TimeoutException: GetGattServices timed out after 8 seconds.
+   at LedController.Infrastructure.Services.BleService.WaitWithTimeout[T](Task`1 task, TimeSpan timeout, String context) in C:\Users\Szerver\Documents\Projects\LEDapp-2.0\src\LedController.Infrastructure\Services\BleService.cs:line 459
+   at LedController.Infrastructure.Services.BleService.FindLedCharacteristicAsync(BluetoothLEDevice device) in C:\Users\Szerver\Documents\Projects\LEDapp-2.0\src\LedController.Infrastructure\Services\BleService.cs:line 417
+   at LedController.Infrastructure.Services.BleService.ConnectAsync(LedDevice device) in C:\Users\Szerver\Documents\Projects\LEDapp-2.0\src\LedController.Infrastructure\Services\BleService.cs:line 183
+
+2026-02-09T00:03:17.0882837+01:00 [INFO] Connect attempt 14 start (Windows). Address=BE:67:00:4E:95:CB; DeviceId=52eff7fe-a15d-45e8-81a1-efef5a6e530c; Name=ELK-BLEDOM0B; IsConnected=False; IsConnecting=True
+2026-02-09T00:03:17.1725326+01:00 [INFO] BluetoothLEDevice resolved. Name=ELK-BLEDOM0B; Status=Connected
+2026-02-09T00:03:17.1814512+01:00 [INFO] Connect attempt 14 device info: Id=BluetoothLE#BluetoothLE5c:f3:70:a6:d0:76-be:67:00:4e:95:cb; Name=ELK-BLEDOM0B; BluetoothAddress=BE:67:00:4E:95:CB; Status=Connected; Paired=False; CanPair=True; Protection=None; Access=Allowed
+2026-02-09T00:03:17.8144242+01:00 [INFO] Gatt services discovered: 2; ConnectionStatus=Connected
+2026-02-09T00:03:17.8150987+01:00 [INFO] Gatt service found: 00001800-0000-1000-8000-00805f9b34fb
+2026-02-09T00:03:18.4003684+01:00 [INFO] Gatt characteristics discovered: 1 for service 00001800-0000-1000-8000-00805f9b34fb
+2026-02-09T00:03:18.4013966+01:00 [INFO] Gatt service found: 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-09T00:03:18.8839563+01:00 [INFO] Gatt characteristics discovered: 2 for service 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-09T00:03:18.8843439+01:00 [INFO] Found LED characteristic 0000fff3-0000-1000-8000-00805f9b34fb
+2026-02-09T00:03:18.8847675+01:00 [INFO] Connect attempt 14 success (Windows). Address=BE:67:00:4E:95:CB
+2026-02-09T21:34:43.7410635+01:00 [INFO] Connect attempt 15 start (Windows). Address=BE:67:00:4E:95:CB; DeviceId=52eff7fe-a15d-45e8-81a1-efef5a6e530c; Name=ELK-BLEDOM0B; IsConnected=False; IsConnecting=True
+2026-02-09T21:34:43.7888666+01:00 [INFO] BluetoothLEDevice resolved. Name=ELK-BLEDOM0B; Status=Disconnected
+2026-02-09T21:34:43.7945037+01:00 [INFO] Connect attempt 15 device info: Id=BluetoothLE#BluetoothLE5c:f3:70:a6:d0:76-be:67:00:4e:95:cb; Name=ELK-BLEDOM0B; BluetoothAddress=BE:67:00:4E:95:CB; Status=Disconnected; Paired=False; CanPair=True; Protection=None; Access=Allowed
+2026-02-09T21:34:45.5470968+01:00 [INFO] Gatt services discovered: 2; ConnectionStatus=Connected
+2026-02-09T21:34:45.5483093+01:00 [INFO] Gatt service found: 00001800-0000-1000-8000-00805f9b34fb
+2026-02-09T21:34:45.7091672+01:00 [INFO] Gatt characteristics discovered: 1 for service 00001800-0000-1000-8000-00805f9b34fb
+2026-02-09T21:34:45.7100686+01:00 [INFO] Gatt service found: 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-09T21:34:45.8836580+01:00 [INFO] Gatt characteristics discovered: 2 for service 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-09T21:34:45.8859519+01:00 [INFO] Found LED characteristic 0000fff3-0000-1000-8000-00805f9b34fb
+2026-02-09T21:34:45.8875370+01:00 [INFO] Connect attempt 15 success (Windows). Address=BE:67:00:4E:95:CB
+2026-02-10T01:18:22.7310453+01:00 [INFO] Connect attempt 16 start (Windows). Address=BE:67:00:4E:95:CB; DeviceId=52eff7fe-a15d-45e8-81a1-efef5a6e530c; Name=ELK-BLEDOM0B; IsConnected=False; IsConnecting=True
+2026-02-10T01:18:22.7718396+01:00 [INFO] BluetoothLEDevice resolved. Name=ELK-BLEDOM0B; Status=Disconnected
+2026-02-10T01:18:22.7807895+01:00 [INFO] Connect attempt 16 device info: Id=BluetoothLE#BluetoothLE5c:f3:70:a6:d0:76-be:67:00:4e:95:cb; Name=ELK-BLEDOM0B; BluetoothAddress=BE:67:00:4E:95:CB; Status=Disconnected; Paired=False; CanPair=True; Protection=None; Access=Allowed
+2026-02-10T01:18:24.1626802+01:00 [INFO] Gatt services discovered: 2; ConnectionStatus=Connected
+2026-02-10T01:18:24.1632010+01:00 [INFO] Gatt service found: 00001800-0000-1000-8000-00805f9b34fb
+2026-02-10T01:18:24.3232095+01:00 [INFO] Gatt characteristics discovered: 1 for service 00001800-0000-1000-8000-00805f9b34fb
+2026-02-10T01:18:24.3236061+01:00 [INFO] Gatt service found: 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-10T01:18:24.4750571+01:00 [INFO] Gatt characteristics discovered: 2 for service 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-10T01:18:24.4755408+01:00 [INFO] Found LED characteristic 0000fff3-0000-1000-8000-00805f9b34fb
+2026-02-10T01:18:24.4762348+01:00 [INFO] Connect attempt 16 success (Windows). Address=BE:67:00:4E:95:CB
+2026-02-10T03:14:12.4763947+01:00 [INFO] Connect attempt 17 start (Windows). Address=BE:67:00:4E:95:CB; DeviceId=52eff7fe-a15d-45e8-81a1-efef5a6e530c; Name=ELK-BLEDOM0B; IsConnected=False; IsConnecting=True
+2026-02-10T03:14:12.5267308+01:00 [INFO] BluetoothLEDevice resolved. Name=ELK-BLEDOM0B; Status=Disconnected
+2026-02-10T03:14:12.5334694+01:00 [INFO] Connect attempt 17 device info: Id=BluetoothLE#BluetoothLE5c:f3:70:a6:d0:76-be:67:00:4e:95:cb; Name=ELK-BLEDOM0B; BluetoothAddress=BE:67:00:4E:95:CB; Status=Disconnected; Paired=False; CanPair=True; Protection=None; Access=Allowed
+2026-02-10T03:14:20.5433565+01:00 [EXCEPTION] Connect attempt 17 failed (Windows).
+System.TimeoutException: GetGattServices timed out after 8 seconds.
+   at LedController.Infrastructure.Services.BleService.WaitWithTimeout[T](Task`1 task, TimeSpan timeout, String context) in C:\Users\Szerver\Documents\Projects\LEDapp-2.0\src\LedController.Infrastructure\Services\BleService.cs:line 459
+   at LedController.Infrastructure.Services.BleService.FindLedCharacteristicAsync(BluetoothLEDevice device) in C:\Users\Szerver\Documents\Projects\LEDapp-2.0\src\LedController.Infrastructure\Services\BleService.cs:line 417
+   at LedController.Infrastructure.Services.BleService.ConnectAsync(LedDevice device) in C:\Users\Szerver\Documents\Projects\LEDapp-2.0\src\LedController.Infrastructure\Services\BleService.cs:line 183
+
+2026-02-10T03:14:27.4859349+01:00 [INFO] Connect attempt 18 start (Windows). Address=BE:67:00:4E:95:CB; DeviceId=52eff7fe-a15d-45e8-81a1-efef5a6e530c; Name=ELK-BLEDOM0B; IsConnected=False; IsConnecting=True
+2026-02-10T03:14:27.5484943+01:00 [INFO] BluetoothLEDevice resolved. Name=ELK-BLEDOM0B; Status=Connected
+2026-02-10T03:14:27.5556511+01:00 [INFO] Connect attempt 18 device info: Id=BluetoothLE#BluetoothLE5c:f3:70:a6:d0:76-be:67:00:4e:95:cb; Name=ELK-BLEDOM0B; BluetoothAddress=BE:67:00:4E:95:CB; Status=Connected; Paired=False; CanPair=True; Protection=None; Access=Allowed
+2026-02-10T03:14:28.0287364+01:00 [INFO] Gatt services discovered: 2; ConnectionStatus=Connected
+2026-02-10T03:14:28.0294203+01:00 [INFO] Gatt service found: 00001800-0000-1000-8000-00805f9b34fb
+2026-02-10T03:14:28.5938027+01:00 [INFO] Gatt characteristics discovered: 1 for service 00001800-0000-1000-8000-00805f9b34fb
+2026-02-10T03:14:28.5942558+01:00 [INFO] Gatt service found: 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-10T03:14:29.0937276+01:00 [INFO] Gatt characteristics discovered: 2 for service 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-10T03:14:29.0944507+01:00 [INFO] Found LED characteristic 0000fff3-0000-1000-8000-00805f9b34fb
+2026-02-10T03:14:29.0958449+01:00 [INFO] Connect attempt 18 success (Windows). Address=BE:67:00:4E:95:CB
+2026-02-13T18:11:51.8906357+01:00 [INFO] Connect attempt 19 start (Windows). Address=BE:67:00:4E:95:CB; DeviceId=52eff7fe-a15d-45e8-81a1-efef5a6e530c; Name=ELK-BLEDOM0B; IsConnected=False; IsConnecting=True
+2026-02-13T18:11:51.9384298+01:00 [INFO] BluetoothLEDevice resolved. Name=ELK-BLEDOM0B; Status=Disconnected
+2026-02-13T18:11:51.9516837+01:00 [INFO] Connect attempt 19 device info: Id=BluetoothLE#BluetoothLE5c:f3:70:a6:d0:76-be:67:00:4e:95:cb; Name=ELK-BLEDOM0B; BluetoothAddress=BE:67:00:4E:95:CB; Status=Disconnected; Paired=False; CanPair=True; Protection=None; Access=Allowed
+2026-02-13T18:11:54.4595391+01:00 [INFO] Gatt services discovered: 2; ConnectionStatus=Connected
+2026-02-13T18:11:54.4608445+01:00 [INFO] Gatt service found: 00001800-0000-1000-8000-00805f9b34fb
+2026-02-13T18:11:54.6536917+01:00 [INFO] Gatt characteristics discovered: 1 for service 00001800-0000-1000-8000-00805f9b34fb
+2026-02-13T18:11:54.6548572+01:00 [INFO] Gatt service found: 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-13T18:11:54.8643386+01:00 [INFO] Gatt characteristics discovered: 2 for service 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-13T18:11:54.8647118+01:00 [INFO] Found LED characteristic 0000fff3-0000-1000-8000-00805f9b34fb
+2026-02-13T18:11:54.8685523+01:00 [INFO] Connect attempt 19 success (Windows). Address=BE:67:00:4E:95:CB
+2026-02-14T02:47:29.1722328+01:00 [INFO] Connect attempt 20 start (Windows). Address=BE:67:00:4E:95:CB; DeviceId=52eff7fe-a15d-45e8-81a1-efef5a6e530c; Name=ELK-BLEDOM0B; IsConnected=False; IsConnecting=True
+2026-02-14T02:47:29.2212373+01:00 [INFO] BluetoothLEDevice resolved. Name=ELK-BLEDOM0B; Status=Disconnected
+2026-02-14T02:47:29.2266231+01:00 [INFO] Connect attempt 20 device info: Id=BluetoothLE#BluetoothLE5c:f3:70:a6:d0:76-be:67:00:4e:95:cb; Name=ELK-BLEDOM0B; BluetoothAddress=BE:67:00:4E:95:CB; Status=Disconnected; Paired=False; CanPair=True; Protection=None; Access=Allowed
+2026-02-14T02:47:30.7185603+01:00 [INFO] Gatt services discovered: 2; ConnectionStatus=Connected
+2026-02-14T02:47:30.7190811+01:00 [INFO] Gatt service found: 00001800-0000-1000-8000-00805f9b34fb
+2026-02-14T02:47:30.8710209+01:00 [INFO] Gatt characteristics discovered: 1 for service 00001800-0000-1000-8000-00805f9b34fb
+2026-02-14T02:47:30.8714343+01:00 [INFO] Gatt service found: 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-14T02:47:31.0293229+01:00 [INFO] Gatt characteristics discovered: 2 for service 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-14T02:47:31.0297132+01:00 [INFO] Found LED characteristic 0000fff3-0000-1000-8000-00805f9b34fb
+2026-02-14T02:47:31.0300730+01:00 [INFO] Connect attempt 20 success (Windows). Address=BE:67:00:4E:95:CB
+2026-02-14T07:12:26.1431843+01:00 [INFO] Connect attempt 21 start (Windows). Address=BE:67:00:4E:95:CB; DeviceId=52eff7fe-a15d-45e8-81a1-efef5a6e530c; Name=ELK-BLEDOM0B; IsConnected=False; IsConnecting=True
+2026-02-14T07:12:26.1795217+01:00 [INFO] BluetoothLEDevice resolved. Name=ELK-BLEDOM0B; Status=Disconnected
+2026-02-14T07:12:26.1858925+01:00 [INFO] Connect attempt 21 device info: Id=BluetoothLE#BluetoothLE5c:f3:70:a6:d0:76-be:67:00:4e:95:cb; Name=ELK-BLEDOM0B; BluetoothAddress=BE:67:00:4E:95:CB; Status=Disconnected; Paired=False; CanPair=True; Protection=None; Access=Allowed
+2026-02-14T07:12:27.8091405+01:00 [INFO] Gatt services discovered: 2; ConnectionStatus=Connected
+2026-02-14T07:12:27.8127318+01:00 [INFO] Gatt service found: 00001800-0000-1000-8000-00805f9b34fb
+2026-02-14T07:12:27.9887709+01:00 [INFO] Gatt characteristics discovered: 1 for service 00001800-0000-1000-8000-00805f9b34fb
+2026-02-14T07:12:27.9925681+01:00 [INFO] Gatt service found: 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-14T07:12:28.2098458+01:00 [INFO] Gatt characteristics discovered: 2 for service 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-14T07:12:28.2134341+01:00 [INFO] Found LED characteristic 0000fff3-0000-1000-8000-00805f9b34fb
+2026-02-14T07:12:28.2150609+01:00 [INFO] Connect attempt 21 success (Windows). Address=BE:67:00:4E:95:CB
+2026-02-14T12:13:54.4689503+01:00 [INFO] Connect attempt 22 start (Windows). Address=BE:67:00:4E:95:CB; DeviceId=52eff7fe-a15d-45e8-81a1-efef5a6e530c; Name=ELK-BLEDOM0B; IsConnected=False; IsConnecting=True
+2026-02-14T12:13:54.5214129+01:00 [INFO] BluetoothLEDevice resolved. Name=ELK-BLEDOM0B; Status=Disconnected
+2026-02-14T12:13:54.5269385+01:00 [INFO] Connect attempt 22 device info: Id=BluetoothLE#BluetoothLE5c:f3:70:a6:d0:76-be:67:00:4e:95:cb; Name=ELK-BLEDOM0B; BluetoothAddress=BE:67:00:4E:95:CB; Status=Disconnected; Paired=False; CanPair=True; Protection=None; Access=Allowed
+2026-02-14T12:14:02.5547626+01:00 [EXCEPTION] Connect attempt 22 failed (Windows).
+System.TimeoutException: GetGattServices timed out after 8 seconds.
+   at LedController.Infrastructure.Services.BleService.WaitWithTimeout[T](Task`1 task, TimeSpan timeout, String context) in C:\Users\Szerver\Documents\Projects\LEDapp-2.0\src\LedController.Infrastructure\Services\BleService.cs:line 459
+   at LedController.Infrastructure.Services.BleService.FindLedCharacteristicAsync(BluetoothLEDevice device) in C:\Users\Szerver\Documents\Projects\LEDapp-2.0\src\LedController.Infrastructure\Services\BleService.cs:line 417
+   at LedController.Infrastructure.Services.BleService.ConnectAsync(LedDevice device) in C:\Users\Szerver\Documents\Projects\LEDapp-2.0\src\LedController.Infrastructure\Services\BleService.cs:line 183
+
+2026-02-14T12:14:09.4889691+01:00 [INFO] Connect attempt 23 start (Windows). Address=BE:67:00:4E:95:CB; DeviceId=52eff7fe-a15d-45e8-81a1-efef5a6e530c; Name=ELK-BLEDOM0B; IsConnected=False; IsConnecting=True
+2026-02-14T12:14:09.5463184+01:00 [INFO] BluetoothLEDevice resolved. Name=ELK-BLEDOM0B; Status=Connected
+2026-02-14T12:14:09.5520574+01:00 [INFO] Connect attempt 23 device info: Id=BluetoothLE#BluetoothLE5c:f3:70:a6:d0:76-be:67:00:4e:95:cb; Name=ELK-BLEDOM0B; BluetoothAddress=BE:67:00:4E:95:CB; Status=Connected; Paired=False; CanPair=True; Protection=None; Access=Allowed
+2026-02-14T12:14:10.0577041+01:00 [INFO] Gatt services discovered: 2; ConnectionStatus=Connected
+2026-02-14T12:14:10.0587677+01:00 [INFO] Gatt service found: 00001800-0000-1000-8000-00805f9b34fb
+2026-02-14T12:14:10.6290129+01:00 [INFO] Gatt characteristics discovered: 1 for service 00001800-0000-1000-8000-00805f9b34fb
+2026-02-14T12:14:10.6300565+01:00 [INFO] Gatt service found: 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-14T12:14:11.1132549+01:00 [INFO] Gatt characteristics discovered: 2 for service 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-14T12:14:11.1136482+01:00 [INFO] Found LED characteristic 0000fff3-0000-1000-8000-00805f9b34fb
+2026-02-14T12:14:11.1140230+01:00 [INFO] Connect attempt 23 success (Windows). Address=BE:67:00:4E:95:CB
+2026-02-14T15:19:34.3010018+01:00 [INFO] Connect attempt 24 start (Windows). Address=BE:67:00:4E:95:CB; DeviceId=52eff7fe-a15d-45e8-81a1-efef5a6e530c; Name=ELK-BLEDOM0B; IsConnected=False; IsConnecting=True
+2026-02-14T15:19:34.3365960+01:00 [INFO] BluetoothLEDevice resolved. Name=ELK-BLEDOM0B; Status=Disconnected
+2026-02-14T15:19:34.3423160+01:00 [INFO] Connect attempt 24 device info: Id=BluetoothLE#BluetoothLE5c:f3:70:a6:d0:76-be:67:00:4e:95:cb; Name=ELK-BLEDOM0B; BluetoothAddress=BE:67:00:4E:95:CB; Status=Disconnected; Paired=False; CanPair=True; Protection=None; Access=Allowed
+2026-02-14T15:19:36.2469904+01:00 [INFO] Gatt services discovered: 2; ConnectionStatus=Connected
+2026-02-14T15:19:36.2473893+01:00 [INFO] Gatt service found: 00001800-0000-1000-8000-00805f9b34fb
+2026-02-14T15:19:36.3734499+01:00 [INFO] Gatt characteristics discovered: 1 for service 00001800-0000-1000-8000-00805f9b34fb
+2026-02-14T15:19:36.3738613+01:00 [INFO] Gatt service found: 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-14T15:19:36.5273591+01:00 [INFO] Gatt characteristics discovered: 2 for service 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-14T15:19:36.5280853+01:00 [INFO] Found LED characteristic 0000fff3-0000-1000-8000-00805f9b34fb
+2026-02-14T15:19:36.5288153+01:00 [INFO] Connect attempt 24 success (Windows). Address=BE:67:00:4E:95:CB
+2026-02-14T15:55:50.8484074+01:00 [INFO] Connect attempt 25 start (Windows). Address=BE:67:00:4E:95:CB; DeviceId=52eff7fe-a15d-45e8-81a1-efef5a6e530c; Name=ELK-BLEDOM0B; IsConnected=False; IsConnecting=True
+2026-02-14T15:55:50.8835493+01:00 [INFO] BluetoothLEDevice resolved. Name=ELK-BLEDOM0B; Status=Disconnected
+2026-02-14T15:55:50.8890973+01:00 [INFO] Connect attempt 25 device info: Id=BluetoothLE#BluetoothLE5c:f3:70:a6:d0:76-be:67:00:4e:95:cb; Name=ELK-BLEDOM0B; BluetoothAddress=BE:67:00:4E:95:CB; Status=Disconnected; Paired=False; CanPair=True; Protection=None; Access=Allowed
+2026-02-14T15:55:52.3942867+01:00 [INFO] Gatt services discovered: 2; ConnectionStatus=Connected
+2026-02-14T15:55:52.3946987+01:00 [INFO] Gatt service found: 00001800-0000-1000-8000-00805f9b34fb
+2026-02-14T15:55:52.5232350+01:00 [INFO] Gatt characteristics discovered: 1 for service 00001800-0000-1000-8000-00805f9b34fb
+2026-02-14T15:55:52.5236131+01:00 [INFO] Gatt service found: 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-14T15:55:52.7313683+01:00 [INFO] Gatt characteristics discovered: 2 for service 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-14T15:55:52.7321410+01:00 [INFO] Found LED characteristic 0000fff3-0000-1000-8000-00805f9b34fb
+2026-02-14T15:55:52.7330327+01:00 [INFO] Connect attempt 25 success (Windows). Address=BE:67:00:4E:95:CB
+2026-02-15T00:31:43.7125316+01:00 [INFO] Connect attempt 26 start (Windows). Address=BE:67:00:4E:95:CB; DeviceId=52eff7fe-a15d-45e8-81a1-efef5a6e530c; Name=ELK-BLEDOM0B; IsConnected=False; IsConnecting=True
+2026-02-15T00:31:43.7491401+01:00 [INFO] BluetoothLEDevice resolved. Name=ELK-BLEDOM0B; Status=Disconnected
+2026-02-15T00:31:43.7546528+01:00 [INFO] Connect attempt 26 device info: Id=BluetoothLE#BluetoothLE5c:f3:70:a6:d0:76-be:67:00:4e:95:cb; Name=ELK-BLEDOM0B; BluetoothAddress=BE:67:00:4E:95:CB; Status=Disconnected; Paired=False; CanPair=True; Protection=None; Access=Allowed
+2026-02-15T00:31:46.0837854+01:00 [INFO] Gatt services discovered: 2; ConnectionStatus=Connected
+2026-02-15T00:31:46.0844567+01:00 [INFO] Gatt service found: 00001800-0000-1000-8000-00805f9b34fb
+2026-02-15T00:31:46.2628442+01:00 [INFO] Gatt characteristics discovered: 1 for service 00001800-0000-1000-8000-00805f9b34fb
+2026-02-15T00:31:46.2638442+01:00 [INFO] Gatt service found: 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-15T00:31:46.4250361+01:00 [INFO] Gatt characteristics discovered: 2 for service 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-15T00:31:46.4254154+01:00 [INFO] Found LED characteristic 0000fff3-0000-1000-8000-00805f9b34fb
+2026-02-15T00:31:46.4258152+01:00 [INFO] Connect attempt 26 success (Windows). Address=BE:67:00:4E:95:CB
+2026-02-15T19:07:17.2316302+01:00 [INFO] Connect attempt 27 start (Windows). Address=BE:67:00:4E:95:CB; DeviceId=52eff7fe-a15d-45e8-81a1-efef5a6e530c; Name=ELK-BLEDOM0B; IsConnected=False; IsConnecting=True
+2026-02-15T19:07:17.2676133+01:00 [INFO] BluetoothLEDevice resolved. Name=ELK-BLEDOM0B; Status=Disconnected
+2026-02-15T19:07:17.2734893+01:00 [INFO] Connect attempt 27 device info: Id=BluetoothLE#BluetoothLE5c:f3:70:a6:d0:76-be:67:00:4e:95:cb; Name=ELK-BLEDOM0B; BluetoothAddress=BE:67:00:4E:95:CB; Status=Disconnected; Paired=False; CanPair=True; Protection=None; Access=Allowed
+2026-02-15T19:07:18.7968745+01:00 [INFO] Gatt services discovered: 2; ConnectionStatus=Connected
+2026-02-15T19:07:18.7973441+01:00 [INFO] Gatt service found: 00001800-0000-1000-8000-00805f9b34fb
+2026-02-15T19:07:18.9584708+01:00 [INFO] Gatt characteristics discovered: 1 for service 00001800-0000-1000-8000-00805f9b34fb
+2026-02-15T19:07:18.9594801+01:00 [INFO] Gatt service found: 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-15T19:07:19.1128173+01:00 [INFO] Gatt characteristics discovered: 2 for service 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-15T19:07:19.1175377+01:00 [INFO] Found LED characteristic 0000fff3-0000-1000-8000-00805f9b34fb
+2026-02-15T19:07:19.1182307+01:00 [INFO] Connect attempt 27 success (Windows). Address=BE:67:00:4E:95:CB
+2026-02-15T22:13:10.4193651+01:00 [INFO] Connect attempt 28 start (Windows). Address=BE:67:00:4E:95:CB; DeviceId=52eff7fe-a15d-45e8-81a1-efef5a6e530c; Name=ELK-BLEDOM0B; IsConnected=False; IsConnecting=True
+2026-02-15T22:13:10.4578197+01:00 [INFO] BluetoothLEDevice resolved. Name=ELK-BLEDOM0B; Status=Disconnected
+2026-02-15T22:13:10.4636652+01:00 [INFO] Connect attempt 28 device info: Id=BluetoothLE#BluetoothLE5c:f3:70:a6:d0:76-be:67:00:4e:95:cb; Name=ELK-BLEDOM0B; BluetoothAddress=BE:67:00:4E:95:CB; Status=Disconnected; Paired=False; CanPair=True; Protection=None; Access=Allowed
+2026-02-15T22:13:11.9519012+01:00 [INFO] Gatt services discovered: 2; ConnectionStatus=Connected
+2026-02-15T22:13:11.9529890+01:00 [INFO] Gatt service found: 00001800-0000-1000-8000-00805f9b34fb
+2026-02-15T22:13:12.1365972+01:00 [INFO] Gatt characteristics discovered: 1 for service 00001800-0000-1000-8000-00805f9b34fb
+2026-02-15T22:13:12.1369752+01:00 [INFO] Gatt service found: 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-15T22:13:12.2867622+01:00 [INFO] Gatt characteristics discovered: 2 for service 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-15T22:13:12.2873046+01:00 [INFO] Found LED characteristic 0000fff3-0000-1000-8000-00805f9b34fb
+2026-02-15T22:13:12.2878394+01:00 [INFO] Connect attempt 28 success (Windows). Address=BE:67:00:4E:95:CB
+2026-02-16T02:06:20.8937251+01:00 [INFO] Connect attempt 29 start (Windows). Address=BE:67:00:4E:95:CB; DeviceId=52eff7fe-a15d-45e8-81a1-efef5a6e530c; Name=ELK-BLEDOM0B; IsConnected=False; IsConnecting=True
+2026-02-16T02:06:20.9451640+01:00 [INFO] BluetoothLEDevice resolved. Name=ELK-BLEDOM0B; Status=Disconnected
+2026-02-16T02:06:20.9507886+01:00 [INFO] Connect attempt 29 device info: Id=BluetoothLE#BluetoothLE5c:f3:70:a6:d0:76-be:67:00:4e:95:cb; Name=ELK-BLEDOM0B; BluetoothAddress=BE:67:00:4E:95:CB; Status=Disconnected; Paired=False; CanPair=True; Protection=None; Access=Allowed
+2026-02-16T02:06:28.9626273+01:00 [EXCEPTION] Connect attempt 29 failed (Windows).
+System.TimeoutException: GetGattServices timed out after 8 seconds.
+   at LedController.Infrastructure.Services.BleService.WaitWithTimeout[T](Task`1 task, TimeSpan timeout, String context) in C:\Users\Szerver\Documents\Projects\LEDapp-2.0\src\LedController.Infrastructure\Services\BleService.cs:line 459
+   at LedController.Infrastructure.Services.BleService.FindLedCharacteristicAsync(BluetoothLEDevice device) in C:\Users\Szerver\Documents\Projects\LEDapp-2.0\src\LedController.Infrastructure\Services\BleService.cs:line 417
+   at LedController.Infrastructure.Services.BleService.ConnectAsync(LedDevice device) in C:\Users\Szerver\Documents\Projects\LEDapp-2.0\src\LedController.Infrastructure\Services\BleService.cs:line 183
+
+2026-02-16T02:06:35.9088735+01:00 [INFO] Connect attempt 30 start (Windows). Address=BE:67:00:4E:95:CB; DeviceId=52eff7fe-a15d-45e8-81a1-efef5a6e530c; Name=ELK-BLEDOM0B; IsConnected=False; IsConnecting=True
+2026-02-16T02:06:35.9641239+01:00 [INFO] BluetoothLEDevice resolved. Name=ELK-BLEDOM0B; Status=Connected
+2026-02-16T02:06:35.9729919+01:00 [INFO] Connect attempt 30 device info: Id=BluetoothLE#BluetoothLE5c:f3:70:a6:d0:76-be:67:00:4e:95:cb; Name=ELK-BLEDOM0B; BluetoothAddress=BE:67:00:4E:95:CB; Status=Connected; Paired=False; CanPair=True; Protection=None; Access=Allowed
+2026-02-16T02:06:36.4243996+01:00 [INFO] Gatt services discovered: 2; ConnectionStatus=Connected
+2026-02-16T02:06:36.4247960+01:00 [INFO] Gatt service found: 00001800-0000-1000-8000-00805f9b34fb
+2026-02-16T02:06:37.0060239+01:00 [INFO] Gatt characteristics discovered: 1 for service 00001800-0000-1000-8000-00805f9b34fb
+2026-02-16T02:06:37.0067156+01:00 [INFO] Gatt service found: 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-16T02:06:37.5806077+01:00 [INFO] Gatt characteristics discovered: 2 for service 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-16T02:06:37.5809904+01:00 [INFO] Found LED characteristic 0000fff3-0000-1000-8000-00805f9b34fb
+2026-02-16T02:06:37.5814028+01:00 [INFO] Connect attempt 30 success (Windows). Address=BE:67:00:4E:95:CB
+2026-02-16T19:05:23.0994922+01:00 [INFO] Connect attempt 31 start (Windows). Address=BE:67:00:4E:95:CB; DeviceId=52eff7fe-a15d-45e8-81a1-efef5a6e530c; Name=ELK-BLEDOM0B; IsConnected=False; IsConnecting=True
+2026-02-16T19:05:23.1375411+01:00 [INFO] BluetoothLEDevice resolved. Name=ELK-BLEDOM0B; Status=Disconnected
+2026-02-16T19:05:23.1463674+01:00 [INFO] Connect attempt 31 device info: Id=BluetoothLE#BluetoothLE5c:f3:70:a6:d0:76-be:67:00:4e:95:cb; Name=ELK-BLEDOM0B; BluetoothAddress=BE:67:00:4E:95:CB; Status=Disconnected; Paired=False; CanPair=True; Protection=None; Access=Allowed
+2026-02-16T19:05:24.6572537+01:00 [INFO] Gatt services discovered: 2; ConnectionStatus=Connected
+2026-02-16T19:05:24.6577018+01:00 [INFO] Gatt service found: 00001800-0000-1000-8000-00805f9b34fb
+2026-02-16T19:05:24.8023760+01:00 [INFO] Gatt characteristics discovered: 1 for service 00001800-0000-1000-8000-00805f9b34fb
+2026-02-16T19:05:24.8027636+01:00 [INFO] Gatt service found: 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-16T19:05:24.9354172+01:00 [INFO] Gatt characteristics discovered: 2 for service 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-16T19:05:24.9358187+01:00 [INFO] Found LED characteristic 0000fff3-0000-1000-8000-00805f9b34fb
+2026-02-16T19:05:24.9362642+01:00 [INFO] Connect attempt 31 success (Windows). Address=BE:67:00:4E:95:CB
+2026-02-17T03:47:15.8076066+01:00 [INFO] Connect attempt 32 start (Windows). Address=BE:67:00:4E:95:CB; DeviceId=52eff7fe-a15d-45e8-81a1-efef5a6e530c; Name=ELK-BLEDOM0B; IsConnected=False; IsConnecting=True
+2026-02-17T03:47:15.8461280+01:00 [INFO] BluetoothLEDevice resolved. Name=ELK-BLEDOM0B; Status=Disconnected
+2026-02-17T03:47:15.8527591+01:00 [INFO] Connect attempt 32 device info: Id=BluetoothLE#BluetoothLE5c:f3:70:a6:d0:76-be:67:00:4e:95:cb; Name=ELK-BLEDOM0B; BluetoothAddress=BE:67:00:4E:95:CB; Status=Disconnected; Paired=False; CanPair=True; Protection=None; Access=Allowed
+2026-02-17T03:47:17.3104662+01:00 [INFO] Gatt services discovered: 2; ConnectionStatus=Connected
+2026-02-17T03:47:17.3109810+01:00 [INFO] Gatt service found: 00001800-0000-1000-8000-00805f9b34fb
+2026-02-17T03:47:17.4500186+01:00 [INFO] Gatt characteristics discovered: 1 for service 00001800-0000-1000-8000-00805f9b34fb
+2026-02-17T03:47:17.4510306+01:00 [INFO] Gatt service found: 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-17T03:47:17.6074816+01:00 [INFO] Gatt characteristics discovered: 2 for service 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-17T03:47:17.6081033+01:00 [INFO] Found LED characteristic 0000fff3-0000-1000-8000-00805f9b34fb
+2026-02-17T03:47:17.6087479+01:00 [INFO] Connect attempt 32 success (Windows). Address=BE:67:00:4E:95:CB
+2026-02-18T02:18:30.8274883+01:00 [INFO] Connect attempt 33 start (Windows). Address=BE:67:00:4E:95:CB; DeviceId=52eff7fe-a15d-45e8-81a1-efef5a6e530c; Name=ELK-BLEDOM0B; IsConnected=False; IsConnecting=True
+2026-02-18T02:18:30.8863947+01:00 [INFO] BluetoothLEDevice resolved. Name=ELK-BLEDOM0B; Status=Disconnected
+2026-02-18T02:18:30.8918678+01:00 [INFO] Connect attempt 33 device info: Id=BluetoothLE#BluetoothLE5c:f3:70:a6:d0:76-be:67:00:4e:95:cb; Name=ELK-BLEDOM0B; BluetoothAddress=BE:67:00:4E:95:CB; Status=Disconnected; Paired=False; CanPair=True; Protection=None; Access=Allowed
+2026-02-18T02:18:32.4798762+01:00 [INFO] Gatt services discovered: 2; ConnectionStatus=Connected
+2026-02-18T02:18:32.4804118+01:00 [INFO] Gatt service found: 00001800-0000-1000-8000-00805f9b34fb
+2026-02-18T02:18:32.6577696+01:00 [INFO] Gatt characteristics discovered: 1 for service 00001800-0000-1000-8000-00805f9b34fb
+2026-02-18T02:18:32.6594467+01:00 [INFO] Gatt service found: 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-18T02:18:32.8290805+01:00 [INFO] Gatt characteristics discovered: 2 for service 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-18T02:18:32.8294500+01:00 [INFO] Found LED characteristic 0000fff3-0000-1000-8000-00805f9b34fb
+2026-02-18T02:18:32.8299556+01:00 [INFO] Connect attempt 33 success (Windows). Address=BE:67:00:4E:95:CB
+2026-02-18T05:54:40.5920135+01:00 [INFO] Connect attempt 34 start (Windows). Address=BE:67:00:4E:95:CB; DeviceId=52eff7fe-a15d-45e8-81a1-efef5a6e530c; Name=ELK-BLEDOM0B; IsConnected=False; IsConnecting=True
+2026-02-18T05:54:40.6297162+01:00 [INFO] BluetoothLEDevice resolved. Name=ELK-BLEDOM0B; Status=Disconnected
+2026-02-18T05:54:40.6353518+01:00 [INFO] Connect attempt 34 device info: Id=BluetoothLE#BluetoothLE5c:f3:70:a6:d0:76-be:67:00:4e:95:cb; Name=ELK-BLEDOM0B; BluetoothAddress=BE:67:00:4E:95:CB; Status=Disconnected; Paired=False; CanPair=True; Protection=None; Access=Allowed
+2026-02-18T05:54:48.6540662+01:00 [EXCEPTION] Connect attempt 34 failed (Windows).
+System.TimeoutException: GetGattServices timed out after 8 seconds.
+   at LedController.Infrastructure.Services.BleService.WaitWithTimeout[T](Task`1 task, TimeSpan timeout, String context) in C:\Users\Szerver\Documents\Projects\LEDapp-2.0\src\LedController.Infrastructure\Services\BleService.cs:line 459
+   at LedController.Infrastructure.Services.BleService.FindLedCharacteristicAsync(BluetoothLEDevice device) in C:\Users\Szerver\Documents\Projects\LEDapp-2.0\src\LedController.Infrastructure\Services\BleService.cs:line 417
+   at LedController.Infrastructure.Services.BleService.ConnectAsync(LedDevice device) in C:\Users\Szerver\Documents\Projects\LEDapp-2.0\src\LedController.Infrastructure\Services\BleService.cs:line 183
+
+2026-02-18T05:54:55.5945405+01:00 [INFO] Connect attempt 35 start (Windows). Address=BE:67:00:4E:95:CB; DeviceId=52eff7fe-a15d-45e8-81a1-efef5a6e530c; Name=ELK-BLEDOM0B; IsConnected=False; IsConnecting=True
+2026-02-18T05:54:55.6655765+01:00 [INFO] BluetoothLEDevice resolved. Name=ELK-BLEDOM0B; Status=Connected
+2026-02-18T05:54:55.6710644+01:00 [INFO] Connect attempt 35 device info: Id=BluetoothLE#BluetoothLE5c:f3:70:a6:d0:76-be:67:00:4e:95:cb; Name=ELK-BLEDOM0B; BluetoothAddress=BE:67:00:4E:95:CB; Status=Connected; Paired=False; CanPair=True; Protection=None; Access=Allowed
+2026-02-18T05:54:56.4107713+01:00 [INFO] Gatt services discovered: 2; ConnectionStatus=Connected
+2026-02-18T05:54:56.4117879+01:00 [INFO] Gatt service found: 00001800-0000-1000-8000-00805f9b34fb
+2026-02-18T05:54:56.8990030+01:00 [INFO] Gatt characteristics discovered: 1 for service 00001800-0000-1000-8000-00805f9b34fb
+2026-02-18T05:54:56.9000845+01:00 [INFO] Gatt service found: 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-18T05:54:57.3957965+01:00 [INFO] Gatt characteristics discovered: 2 for service 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-18T05:54:57.3963354+01:00 [INFO] Found LED characteristic 0000fff3-0000-1000-8000-00805f9b34fb
+2026-02-18T05:54:57.3968260+01:00 [INFO] Connect attempt 35 success (Windows). Address=BE:67:00:4E:95:CB
+2026-02-18T16:01:54.2918380+01:00 [INFO] Connect attempt 36 start (Windows). Address=BE:67:00:4E:95:CB; DeviceId=52eff7fe-a15d-45e8-81a1-efef5a6e530c; Name=ELK-BLEDOM0B; IsConnected=False; IsConnecting=True
+2026-02-18T16:01:54.3493915+01:00 [INFO] BluetoothLEDevice resolved. Name=ELK-BLEDOM0B; Status=Disconnected
+2026-02-18T16:01:54.3554567+01:00 [INFO] Connect attempt 36 device info: Id=BluetoothLE#BluetoothLE5c:f3:70:a6:d0:76-be:67:00:4e:95:cb; Name=ELK-BLEDOM0B; BluetoothAddress=BE:67:00:4E:95:CB; Status=Disconnected; Paired=False; CanPair=True; Protection=None; Access=Allowed
+2026-02-18T16:01:56.0389388+01:00 [INFO] Gatt services discovered: 2; ConnectionStatus=Connected
+2026-02-18T16:01:56.0394434+01:00 [INFO] Gatt service found: 00001800-0000-1000-8000-00805f9b34fb
+2026-02-18T16:01:56.2255305+01:00 [INFO] Gatt characteristics discovered: 1 for service 00001800-0000-1000-8000-00805f9b34fb
+2026-02-18T16:01:56.2259469+01:00 [INFO] Gatt service found: 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-18T16:01:56.3747588+01:00 [INFO] Gatt characteristics discovered: 2 for service 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-18T16:01:56.3752112+01:00 [INFO] Found LED characteristic 0000fff3-0000-1000-8000-00805f9b34fb
+2026-02-18T16:01:56.3758930+01:00 [INFO] Connect attempt 36 success (Windows). Address=BE:67:00:4E:95:CB
+2026-02-21T06:13:55.5523005+01:00 [INFO] Connect attempt 37 start (Windows). Address=BE:67:00:4E:95:CB; DeviceId=52eff7fe-a15d-45e8-81a1-efef5a6e530c; Name=ELK-BLEDOM0B; IsConnected=False; IsConnecting=True
+2026-02-21T06:13:55.5946980+01:00 [INFO] BluetoothLEDevice resolved. Name=ELK-BLEDOM0B; Status=Disconnected
+2026-02-21T06:13:55.6002209+01:00 [INFO] Connect attempt 37 device info: Id=BluetoothLE#BluetoothLE5c:f3:70:a6:d0:76-be:67:00:4e:95:cb; Name=ELK-BLEDOM0B; BluetoothAddress=BE:67:00:4E:95:CB; Status=Disconnected; Paired=False; CanPair=True; Protection=None; Access=Allowed
+2026-02-21T06:13:56.9480252+01:00 [INFO] Gatt services discovered: 2; ConnectionStatus=Connected
+2026-02-21T06:13:56.9494678+01:00 [INFO] Gatt service found: 00001800-0000-1000-8000-00805f9b34fb
+2026-02-21T06:13:57.0908688+01:00 [INFO] Gatt characteristics discovered: 1 for service 00001800-0000-1000-8000-00805f9b34fb
+2026-02-21T06:13:57.0918878+01:00 [INFO] Gatt service found: 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-21T06:13:57.2283255+01:00 [INFO] Gatt characteristics discovered: 2 for service 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-21T06:13:57.2287137+01:00 [INFO] Found LED characteristic 0000fff3-0000-1000-8000-00805f9b34fb
+2026-02-21T06:13:57.2292769+01:00 [INFO] Connect attempt 37 success (Windows). Address=BE:67:00:4E:95:CB
+2026-02-22T01:43:07.6792840+01:00 [INFO] Connect attempt 1 start (Windows). Address=BE:67:00:4E:95:CB; DeviceId=52eff7fe-a15d-45e8-81a1-efef5a6e530c; Name=ELK-BLEDOM0B; IsConnected=False; IsConnecting=True
+2026-02-22T01:43:20.8742672+01:00 [INFO] Connect attempt 2 start (Windows). Address=BE:67:00:4E:95:CB; DeviceId=52eff7fe-a15d-45e8-81a1-efef5a6e530c; Name=ELK-BLEDOM0B; IsConnected=False; IsConnecting=True
+2026-02-22T01:43:20.9622455+01:00 [INFO] BluetoothLEDevice resolved. Name=ELK-BLEDOM0B; Status=Disconnected
+2026-02-22T01:43:20.9779633+01:00 [INFO] Connect attempt 2 device info: Id=BluetoothLE#BluetoothLE5c:f3:70:a6:d0:76-be:67:00:4e:95:cb; Name=ELK-BLEDOM0B; BluetoothAddress=BE:67:00:4E:95:CB; Status=Disconnected; Paired=False; CanPair=True; Protection=None; Access=Allowed
+2026-02-22T01:43:22.7400025+01:00 [INFO] Gatt services discovered: 2; ConnectionStatus=Connected
+2026-02-22T01:43:22.7468204+01:00 [INFO] Gatt service found: 00001800-0000-1000-8000-00805f9b34fb
+2026-02-22T01:43:22.8846924+01:00 [INFO] Gatt characteristics discovered: 1 for service 00001800-0000-1000-8000-00805f9b34fb
+2026-02-22T01:43:22.8874204+01:00 [INFO] Gatt service found: 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-22T01:43:23.0303106+01:00 [INFO] Gatt characteristics discovered: 2 for service 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-22T01:43:23.0308280+01:00 [INFO] Found LED characteristic 0000fff3-0000-1000-8000-00805f9b34fb
+2026-02-22T01:43:23.0442158+01:00 [INFO] Connect attempt 2 success (Windows). Address=BE:67:00:4E:95:CB
+2026-02-22T01:43:37.8116021+01:00 [INFO] Connect attempt 1 lookup diagnostics: DeviceInformation count=0
+2026-02-22T01:43:37.8495698+01:00 [EXCEPTION] Connect attempt 1 failed (Windows).
+System.InvalidOperationException: Bluetooth device not found.
+   at LedController.Infrastructure.Services.BleService.ConnectAsync(LedDevice device) in C:\Users\Szerver\Documents\Projects\LEDapp-2.0\src\LedController.Infrastructure\Services\BleService.cs:line 177
+
+2026-02-22T01:43:52.7308118+01:00 [INFO] Connect attempt 3 start (Windows). Address=BE:67:00:4E:95:CB; DeviceId=52eff7fe-a15d-45e8-81a1-efef5a6e530c; Name=ELK-BLEDOM0B; IsConnected=False; IsConnecting=True
+2026-02-22T01:43:52.7915723+01:00 [INFO] BluetoothLEDevice resolved. Name=ELK-BLEDOM0B; Status=Connected
+2026-02-22T01:43:52.7974085+01:00 [INFO] Connect attempt 3 device info: Id=BluetoothLE#BluetoothLE5c:f3:70:a6:d0:76-be:67:00:4e:95:cb; Name=ELK-BLEDOM0B; BluetoothAddress=BE:67:00:4E:95:CB; Status=Connected; Paired=False; CanPair=True; Protection=None; Access=Allowed
+2026-02-22T01:43:53.2401964+01:00 [INFO] Gatt services discovered: 2; ConnectionStatus=Connected
+2026-02-22T01:43:53.2407037+01:00 [INFO] Gatt service found: 00001800-0000-1000-8000-00805f9b34fb
+2026-02-22T01:43:53.7490087+01:00 [INFO] Gatt characteristics discovered: 1 for service 00001800-0000-1000-8000-00805f9b34fb
+2026-02-22T01:43:53.7502767+01:00 [INFO] Gatt service found: 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-22T01:43:53.7785229+01:00 [ERROR] GetCharacteristics failed. Status=AccessDenied; ProtocolError=n/a; Service=0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-22T01:43:53.7789963+01:00 [ERROR] LED characteristic 0000fff3-0000-1000-8000-00805f9b34fb not found after scanning 2 services.
+2026-02-22T01:43:53.7803078+01:00 [ERROR] Connect attempt 3 failed. LED characteristic not found.
+2026-02-22T01:43:53.7809554+01:00 [EXCEPTION] Connect attempt 3 failed (Windows).
+System.InvalidOperationException: LED characteristic not found on device.
+   at LedController.Infrastructure.Services.BleService.ConnectAsync(LedDevice device) in C:\Users\Szerver\Documents\Projects\LEDapp-2.0\src\LedController.Infrastructure\Services\BleService.cs:line 188
+
+2026-02-22T01:44:07.7483807+01:00 [INFO] Connect attempt 4 start (Windows). Address=BE:67:00:4E:95:CB; DeviceId=52eff7fe-a15d-45e8-81a1-efef5a6e530c; Name=ELK-BLEDOM0B; IsConnected=False; IsConnecting=True
+2026-02-22T01:44:07.8054671+01:00 [INFO] BluetoothLEDevice resolved. Name=ELK-BLEDOM0B; Status=Connected
+2026-02-22T01:44:07.8111913+01:00 [INFO] Connect attempt 4 device info: Id=BluetoothLE#BluetoothLE5c:f3:70:a6:d0:76-be:67:00:4e:95:cb; Name=ELK-BLEDOM0B; BluetoothAddress=BE:67:00:4E:95:CB; Status=Connected; Paired=False; CanPair=True; Protection=None; Access=Allowed
+2026-02-22T01:44:08.2668674+01:00 [INFO] Gatt services discovered: 2; ConnectionStatus=Connected
+2026-02-22T01:44:08.2679001+01:00 [INFO] Gatt service found: 00001800-0000-1000-8000-00805f9b34fb
+2026-02-22T01:44:08.7467362+01:00 [INFO] Gatt characteristics discovered: 1 for service 00001800-0000-1000-8000-00805f9b34fb
+2026-02-22T01:44:08.7472055+01:00 [INFO] Gatt service found: 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-22T01:44:08.7566611+01:00 [ERROR] GetCharacteristics failed. Status=AccessDenied; ProtocolError=n/a; Service=0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-22T01:44:08.7570723+01:00 [ERROR] LED characteristic 0000fff3-0000-1000-8000-00805f9b34fb not found after scanning 2 services.
+2026-02-22T01:44:08.7582751+01:00 [ERROR] Connect attempt 4 failed. LED characteristic not found.
+2026-02-22T01:44:08.7588140+01:00 [EXCEPTION] Connect attempt 4 failed (Windows).
+System.InvalidOperationException: LED characteristic not found on device.
+   at LedController.Infrastructure.Services.BleService.ConnectAsync(LedDevice device) in C:\Users\Szerver\Documents\Projects\LEDapp-2.0\src\LedController.Infrastructure\Services\BleService.cs:line 188
+
+2026-02-22T01:44:22.7525525+01:00 [INFO] Connect attempt 5 start (Windows). Address=BE:67:00:4E:95:CB; DeviceId=52eff7fe-a15d-45e8-81a1-efef5a6e530c; Name=ELK-BLEDOM0B; IsConnected=False; IsConnecting=True
+2026-02-22T01:44:22.8089264+01:00 [INFO] BluetoothLEDevice resolved. Name=ELK-BLEDOM0B; Status=Connected
+2026-02-22T01:44:22.8146055+01:00 [INFO] Connect attempt 5 device info: Id=BluetoothLE#BluetoothLE5c:f3:70:a6:d0:76-be:67:00:4e:95:cb; Name=ELK-BLEDOM0B; BluetoothAddress=BE:67:00:4E:95:CB; Status=Connected; Paired=False; CanPair=True; Protection=None; Access=Allowed
+2026-02-22T01:44:23.2875932+01:00 [INFO] Gatt services discovered: 2; ConnectionStatus=Connected
+2026-02-22T01:44:23.2886867+01:00 [INFO] Gatt service found: 00001800-0000-1000-8000-00805f9b34fb
+2026-02-22T01:44:23.7617820+01:00 [INFO] Gatt characteristics discovered: 1 for service 00001800-0000-1000-8000-00805f9b34fb
+2026-02-22T01:44:23.7622292+01:00 [INFO] Gatt service found: 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-22T01:44:23.7715948+01:00 [ERROR] GetCharacteristics failed. Status=AccessDenied; ProtocolError=n/a; Service=0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-22T01:44:23.7720076+01:00 [ERROR] LED characteristic 0000fff3-0000-1000-8000-00805f9b34fb not found after scanning 2 services.
+2026-02-22T01:44:23.7733179+01:00 [ERROR] Connect attempt 5 failed. LED characteristic not found.
+2026-02-22T01:44:23.7738799+01:00 [EXCEPTION] Connect attempt 5 failed (Windows).
+System.InvalidOperationException: LED characteristic not found on device.
+   at LedController.Infrastructure.Services.BleService.ConnectAsync(LedDevice device) in C:\Users\Szerver\Documents\Projects\LEDapp-2.0\src\LedController.Infrastructure\Services\BleService.cs:line 188
+
+2026-02-22T01:44:37.7627934+01:00 [INFO] Connect attempt 6 start (Windows). Address=BE:67:00:4E:95:CB; DeviceId=52eff7fe-a15d-45e8-81a1-efef5a6e530c; Name=ELK-BLEDOM0B; IsConnected=False; IsConnecting=True
+2026-02-22T01:44:37.8224652+01:00 [INFO] BluetoothLEDevice resolved. Name=ELK-BLEDOM0B; Status=Connected
+2026-02-22T01:44:37.8280314+01:00 [INFO] Connect attempt 6 device info: Id=BluetoothLE#BluetoothLE5c:f3:70:a6:d0:76-be:67:00:4e:95:cb; Name=ELK-BLEDOM0B; BluetoothAddress=BE:67:00:4E:95:CB; Status=Connected; Paired=False; CanPair=True; Protection=None; Access=Allowed
+2026-02-22T01:44:38.3662837+01:00 [INFO] Gatt services discovered: 2; ConnectionStatus=Connected
+2026-02-22T01:44:38.3666949+01:00 [INFO] Gatt service found: 00001800-0000-1000-8000-00805f9b34fb
+2026-02-22T01:44:38.8590028+01:00 [INFO] Gatt characteristics discovered: 1 for service 00001800-0000-1000-8000-00805f9b34fb
+2026-02-22T01:44:38.8594421+01:00 [INFO] Gatt service found: 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-22T01:44:38.8685599+01:00 [ERROR] GetCharacteristics failed. Status=AccessDenied; ProtocolError=n/a; Service=0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-22T01:44:38.8689672+01:00 [ERROR] LED characteristic 0000fff3-0000-1000-8000-00805f9b34fb not found after scanning 2 services.
+2026-02-22T01:44:38.8701982+01:00 [ERROR] Connect attempt 6 failed. LED characteristic not found.
+2026-02-22T01:44:38.8707631+01:00 [EXCEPTION] Connect attempt 6 failed (Windows).
+System.InvalidOperationException: LED characteristic not found on device.
+   at LedController.Infrastructure.Services.BleService.ConnectAsync(LedDevice device) in C:\Users\Szerver\Documents\Projects\LEDapp-2.0\src\LedController.Infrastructure\Services\BleService.cs:line 188
+
+2026-02-22T01:44:52.7676535+01:00 [INFO] Connect attempt 7 start (Windows). Address=BE:67:00:4E:95:CB; DeviceId=52eff7fe-a15d-45e8-81a1-efef5a6e530c; Name=ELK-BLEDOM0B; IsConnected=False; IsConnecting=True
+2026-02-22T01:44:52.8244490+01:00 [INFO] BluetoothLEDevice resolved. Name=ELK-BLEDOM0B; Status=Connected
+2026-02-22T01:44:52.8301248+01:00 [INFO] Connect attempt 7 device info: Id=BluetoothLE#BluetoothLE5c:f3:70:a6:d0:76-be:67:00:4e:95:cb; Name=ELK-BLEDOM0B; BluetoothAddress=BE:67:00:4E:95:CB; Status=Connected; Paired=False; CanPair=True; Protection=None; Access=Allowed
+2026-02-22T01:44:53.2984599+01:00 [INFO] Gatt services discovered: 2; ConnectionStatus=Connected
+2026-02-22T01:44:53.2988820+01:00 [INFO] Gatt service found: 00001800-0000-1000-8000-00805f9b34fb
+2026-02-22T01:44:53.7909763+01:00 [INFO] Gatt characteristics discovered: 1 for service 00001800-0000-1000-8000-00805f9b34fb
+2026-02-22T01:44:53.7914251+01:00 [INFO] Gatt service found: 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-22T01:44:53.8007972+01:00 [ERROR] GetCharacteristics failed. Status=AccessDenied; ProtocolError=n/a; Service=0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-22T01:44:53.8012018+01:00 [ERROR] LED characteristic 0000fff3-0000-1000-8000-00805f9b34fb not found after scanning 2 services.
+2026-02-22T01:44:53.8023528+01:00 [ERROR] Connect attempt 7 failed. LED characteristic not found.
+2026-02-22T01:44:53.8028663+01:00 [EXCEPTION] Connect attempt 7 failed (Windows).
+System.InvalidOperationException: LED characteristic not found on device.
+   at LedController.Infrastructure.Services.BleService.ConnectAsync(LedDevice device) in C:\Users\Szerver\Documents\Projects\LEDapp-2.0\src\LedController.Infrastructure\Services\BleService.cs:line 188
+
+2026-02-22T01:45:07.7786345+01:00 [INFO] Connect attempt 8 start (Windows). Address=BE:67:00:4E:95:CB; DeviceId=52eff7fe-a15d-45e8-81a1-efef5a6e530c; Name=ELK-BLEDOM0B; IsConnected=False; IsConnecting=True
+2026-02-22T01:45:07.8379280+01:00 [INFO] BluetoothLEDevice resolved. Name=ELK-BLEDOM0B; Status=Connected
+2026-02-22T01:45:07.8435503+01:00 [INFO] Connect attempt 8 device info: Id=BluetoothLE#BluetoothLE5c:f3:70:a6:d0:76-be:67:00:4e:95:cb; Name=ELK-BLEDOM0B; BluetoothAddress=BE:67:00:4E:95:CB; Status=Connected; Paired=False; CanPair=True; Protection=None; Access=Allowed
+2026-02-22T01:45:08.3144276+01:00 [INFO] Gatt services discovered: 2; ConnectionStatus=Connected
+2026-02-22T01:45:08.3148035+01:00 [INFO] Gatt service found: 00001800-0000-1000-8000-00805f9b34fb
+2026-02-22T01:45:08.8883058+01:00 [INFO] Gatt characteristics discovered: 1 for service 00001800-0000-1000-8000-00805f9b34fb
+2026-02-22T01:45:08.8887654+01:00 [INFO] Gatt service found: 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-22T01:45:08.8983480+01:00 [ERROR] GetCharacteristics failed. Status=AccessDenied; ProtocolError=n/a; Service=0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-22T01:45:08.8988053+01:00 [ERROR] LED characteristic 0000fff3-0000-1000-8000-00805f9b34fb not found after scanning 2 services.
+2026-02-22T01:45:08.9001821+01:00 [ERROR] Connect attempt 8 failed. LED characteristic not found.
+2026-02-22T01:45:08.9007642+01:00 [EXCEPTION] Connect attempt 8 failed (Windows).
+System.InvalidOperationException: LED characteristic not found on device.
+   at LedController.Infrastructure.Services.BleService.ConnectAsync(LedDevice device) in C:\Users\Szerver\Documents\Projects\LEDapp-2.0\src\LedController.Infrastructure\Services\BleService.cs:line 188
+
+2026-02-22T01:45:22.7922109+01:00 [INFO] Connect attempt 9 start (Windows). Address=BE:67:00:4E:95:CB; DeviceId=52eff7fe-a15d-45e8-81a1-efef5a6e530c; Name=ELK-BLEDOM0B; IsConnected=False; IsConnecting=True
+2026-02-22T01:45:22.8479530+01:00 [INFO] BluetoothLEDevice resolved. Name=ELK-BLEDOM0B; Status=Connected
+2026-02-22T01:45:22.8537217+01:00 [INFO] Connect attempt 9 device info: Id=BluetoothLE#BluetoothLE5c:f3:70:a6:d0:76-be:67:00:4e:95:cb; Name=ELK-BLEDOM0B; BluetoothAddress=BE:67:00:4E:95:CB; Status=Connected; Paired=False; CanPair=True; Protection=None; Access=Allowed
+2026-02-22T01:45:23.4105862+01:00 [INFO] Gatt services discovered: 2; ConnectionStatus=Connected
+2026-02-22T01:45:23.4110078+01:00 [INFO] Gatt service found: 00001800-0000-1000-8000-00805f9b34fb
+2026-02-22T01:45:23.9027568+01:00 [INFO] Gatt characteristics discovered: 1 for service 00001800-0000-1000-8000-00805f9b34fb
+2026-02-22T01:45:23.9032463+01:00 [INFO] Gatt service found: 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-22T01:45:23.9126952+01:00 [ERROR] GetCharacteristics failed. Status=AccessDenied; ProtocolError=n/a; Service=0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-22T01:45:23.9131027+01:00 [ERROR] LED characteristic 0000fff3-0000-1000-8000-00805f9b34fb not found after scanning 2 services.
+2026-02-22T01:45:23.9143994+01:00 [ERROR] Connect attempt 9 failed. LED characteristic not found.
+2026-02-22T01:45:23.9149622+01:00 [EXCEPTION] Connect attempt 9 failed (Windows).
+System.InvalidOperationException: LED characteristic not found on device.
+   at LedController.Infrastructure.Services.BleService.ConnectAsync(LedDevice device) in C:\Users\Szerver\Documents\Projects\LEDapp-2.0\src\LedController.Infrastructure\Services\BleService.cs:line 188
+
+2026-02-22T01:45:37.8123590+01:00 [INFO] Connect attempt 10 start (Windows). Address=BE:67:00:4E:95:CB; DeviceId=52eff7fe-a15d-45e8-81a1-efef5a6e530c; Name=ELK-BLEDOM0B; IsConnected=False; IsConnecting=True
+2026-02-22T01:45:37.8697964+01:00 [INFO] BluetoothLEDevice resolved. Name=ELK-BLEDOM0B; Status=Connected
+2026-02-22T01:45:37.8761335+01:00 [INFO] Connect attempt 10 device info: Id=BluetoothLE#BluetoothLE5c:f3:70:a6:d0:76-be:67:00:4e:95:cb; Name=ELK-BLEDOM0B; BluetoothAddress=BE:67:00:4E:95:CB; Status=Connected; Paired=False; CanPair=True; Protection=None; Access=Allowed
+2026-02-22T01:45:38.3428507+01:00 [INFO] Gatt services discovered: 2; ConnectionStatus=Connected
+2026-02-22T01:45:38.3432685+01:00 [INFO] Gatt service found: 00001800-0000-1000-8000-00805f9b34fb
+2026-02-22T01:45:38.8492670+01:00 [INFO] Gatt characteristics discovered: 1 for service 00001800-0000-1000-8000-00805f9b34fb
+2026-02-22T01:45:38.8505038+01:00 [INFO] Gatt service found: 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-22T01:45:38.8704981+01:00 [ERROR] GetCharacteristics failed. Status=AccessDenied; ProtocolError=n/a; Service=0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-22T01:45:38.8710709+01:00 [ERROR] LED characteristic 0000fff3-0000-1000-8000-00805f9b34fb not found after scanning 2 services.
+2026-02-22T01:45:38.8733225+01:00 [ERROR] Connect attempt 10 failed. LED characteristic not found.
+2026-02-22T01:45:38.8740137+01:00 [EXCEPTION] Connect attempt 10 failed (Windows).
+System.InvalidOperationException: LED characteristic not found on device.
+   at LedController.Infrastructure.Services.BleService.ConnectAsync(LedDevice device) in C:\Users\Szerver\Documents\Projects\LEDapp-2.0\src\LedController.Infrastructure\Services\BleService.cs:line 188
+
+2026-02-22T01:45:52.8325614+01:00 [INFO] Connect attempt 11 start (Windows). Address=BE:67:00:4E:95:CB; DeviceId=52eff7fe-a15d-45e8-81a1-efef5a6e530c; Name=ELK-BLEDOM0B; IsConnected=False; IsConnecting=True
+2026-02-22T01:45:52.9978797+01:00 [INFO] BluetoothLEDevice resolved. Name=ELK-BLEDOM0B; Status=Connected
+2026-02-22T01:45:53.0036550+01:00 [INFO] Connect attempt 11 device info: Id=BluetoothLE#BluetoothLE5c:f3:70:a6:d0:76-be:67:00:4e:95:cb; Name=ELK-BLEDOM0B; BluetoothAddress=BE:67:00:4E:95:CB; Status=Connected; Paired=False; CanPair=True; Protection=None; Access=Allowed
+2026-02-22T01:45:53.4434223+01:00 [INFO] Gatt services discovered: 2; ConnectionStatus=Connected
+2026-02-22T01:45:53.4439456+01:00 [INFO] Gatt service found: 00001800-0000-1000-8000-00805f9b34fb
+2026-02-22T01:45:53.9328436+01:00 [INFO] Gatt characteristics discovered: 1 for service 00001800-0000-1000-8000-00805f9b34fb
+2026-02-22T01:45:53.9332716+01:00 [INFO] Gatt service found: 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-22T01:45:53.9426908+01:00 [ERROR] GetCharacteristics failed. Status=AccessDenied; ProtocolError=n/a; Service=0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-22T01:45:53.9430995+01:00 [ERROR] LED characteristic 0000fff3-0000-1000-8000-00805f9b34fb not found after scanning 2 services.
+2026-02-22T01:45:53.9442762+01:00 [ERROR] Connect attempt 11 failed. LED characteristic not found.
+2026-02-22T01:45:53.9448775+01:00 [EXCEPTION] Connect attempt 11 failed (Windows).
+System.InvalidOperationException: LED characteristic not found on device.
+   at LedController.Infrastructure.Services.BleService.ConnectAsync(LedDevice device) in C:\Users\Szerver\Documents\Projects\LEDapp-2.0\src\LedController.Infrastructure\Services\BleService.cs:line 188
+
+2026-02-22T01:46:07.8485820+01:00 [INFO] Connect attempt 12 start (Windows). Address=BE:67:00:4E:95:CB; DeviceId=52eff7fe-a15d-45e8-81a1-efef5a6e530c; Name=ELK-BLEDOM0B; IsConnected=False; IsConnecting=True
+2026-02-22T01:46:07.9047667+01:00 [INFO] BluetoothLEDevice resolved. Name=ELK-BLEDOM0B; Status=Connected
+2026-02-22T01:46:07.9102477+01:00 [INFO] Connect attempt 12 device info: Id=BluetoothLE#BluetoothLE5c:f3:70:a6:d0:76-be:67:00:4e:95:cb; Name=ELK-BLEDOM0B; BluetoothAddress=BE:67:00:4E:95:CB; Status=Connected; Paired=False; CanPair=True; Protection=None; Access=Allowed
+2026-02-22T01:46:08.4550419+01:00 [INFO] Gatt services discovered: 2; ConnectionStatus=Connected
+2026-02-22T01:46:08.4554787+01:00 [INFO] Gatt service found: 00001800-0000-1000-8000-00805f9b34fb
+2026-02-22T01:46:08.9475530+01:00 [INFO] Gatt characteristics discovered: 1 for service 00001800-0000-1000-8000-00805f9b34fb
+2026-02-22T01:46:08.9479911+01:00 [INFO] Gatt service found: 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-22T01:46:08.9576409+01:00 [ERROR] GetCharacteristics failed. Status=AccessDenied; ProtocolError=n/a; Service=0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-22T01:46:08.9580444+01:00 [ERROR] LED characteristic 0000fff3-0000-1000-8000-00805f9b34fb not found after scanning 2 services.
+2026-02-22T01:46:08.9592578+01:00 [ERROR] Connect attempt 12 failed. LED characteristic not found.
+2026-02-22T01:46:08.9597865+01:00 [EXCEPTION] Connect attempt 12 failed (Windows).
+System.InvalidOperationException: LED characteristic not found on device.
+   at LedController.Infrastructure.Services.BleService.ConnectAsync(LedDevice device) in C:\Users\Szerver\Documents\Projects\LEDapp-2.0\src\LedController.Infrastructure\Services\BleService.cs:line 188
+
+2026-02-22T01:46:22.8554117+01:00 [INFO] Connect attempt 13 start (Windows). Address=BE:67:00:4E:95:CB; DeviceId=52eff7fe-a15d-45e8-81a1-efef5a6e530c; Name=ELK-BLEDOM0B; IsConnected=False; IsConnecting=True
+2026-02-22T01:46:22.9157529+01:00 [INFO] BluetoothLEDevice resolved. Name=ELK-BLEDOM0B; Status=Connected
+2026-02-22T01:46:22.9212966+01:00 [INFO] Connect attempt 13 device info: Id=BluetoothLE#BluetoothLE5c:f3:70:a6:d0:76-be:67:00:4e:95:cb; Name=ELK-BLEDOM0B; BluetoothAddress=BE:67:00:4E:95:CB; Status=Connected; Paired=False; CanPair=True; Protection=None; Access=Allowed
+2026-02-22T01:46:23.3870586+01:00 [INFO] Gatt services discovered: 2; ConnectionStatus=Connected
+2026-02-22T01:46:23.3874901+01:00 [INFO] Gatt service found: 00001800-0000-1000-8000-00805f9b34fb
+2026-02-22T01:46:23.8796479+01:00 [INFO] Gatt characteristics discovered: 1 for service 00001800-0000-1000-8000-00805f9b34fb
+2026-02-22T01:46:23.8800609+01:00 [INFO] Gatt service found: 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-22T01:46:23.8896037+01:00 [ERROR] GetCharacteristics failed. Status=AccessDenied; ProtocolError=n/a; Service=0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-22T01:46:23.8899802+01:00 [ERROR] LED characteristic 0000fff3-0000-1000-8000-00805f9b34fb not found after scanning 2 services.
+2026-02-22T01:46:23.8912154+01:00 [ERROR] Connect attempt 13 failed. LED characteristic not found.
+2026-02-22T01:46:23.8917815+01:00 [EXCEPTION] Connect attempt 13 failed (Windows).
+System.InvalidOperationException: LED characteristic not found on device.
+   at LedController.Infrastructure.Services.BleService.ConnectAsync(LedDevice device) in C:\Users\Szerver\Documents\Projects\LEDapp-2.0\src\LedController.Infrastructure\Services\BleService.cs:line 188
+
+2026-02-22T01:46:37.8701467+01:00 [INFO] Connect attempt 14 start (Windows). Address=BE:67:00:4E:95:CB; DeviceId=52eff7fe-a15d-45e8-81a1-efef5a6e530c; Name=ELK-BLEDOM0B; IsConnected=False; IsConnecting=True
+2026-02-22T01:46:37.9290637+01:00 [INFO] BluetoothLEDevice resolved. Name=ELK-BLEDOM0B; Status=Connected
+2026-02-22T01:46:37.9346657+01:00 [INFO] Connect attempt 14 device info: Id=BluetoothLE#BluetoothLE5c:f3:70:a6:d0:76-be:67:00:4e:95:cb; Name=ELK-BLEDOM0B; BluetoothAddress=BE:67:00:4E:95:CB; Status=Connected; Paired=False; CanPair=True; Protection=None; Access=Allowed
+2026-02-22T01:46:38.4844210+01:00 [INFO] Gatt services discovered: 2; ConnectionStatus=Connected
+2026-02-22T01:46:38.4848192+01:00 [INFO] Gatt service found: 00001800-0000-1000-8000-00805f9b34fb
+2026-02-22T01:46:38.9767712+01:00 [INFO] Gatt characteristics discovered: 1 for service 00001800-0000-1000-8000-00805f9b34fb
+2026-02-22T01:46:38.9771958+01:00 [INFO] Gatt service found: 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-22T01:46:38.9863059+01:00 [ERROR] GetCharacteristics failed. Status=AccessDenied; ProtocolError=n/a; Service=0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-22T01:46:38.9866806+01:00 [ERROR] LED characteristic 0000fff3-0000-1000-8000-00805f9b34fb not found after scanning 2 services.
+2026-02-22T01:46:38.9878626+01:00 [ERROR] Connect attempt 14 failed. LED characteristic not found.
+2026-02-22T01:46:38.9883643+01:00 [EXCEPTION] Connect attempt 14 failed (Windows).
+System.InvalidOperationException: LED characteristic not found on device.
+   at LedController.Infrastructure.Services.BleService.ConnectAsync(LedDevice device) in C:\Users\Szerver\Documents\Projects\LEDapp-2.0\src\LedController.Infrastructure\Services\BleService.cs:line 188
+
+2026-02-22T01:46:52.8719518+01:00 [INFO] Connect attempt 15 start (Windows). Address=BE:67:00:4E:95:CB; DeviceId=52eff7fe-a15d-45e8-81a1-efef5a6e530c; Name=ELK-BLEDOM0B; IsConnected=False; IsConnecting=True
+2026-02-22T01:46:52.9287234+01:00 [INFO] BluetoothLEDevice resolved. Name=ELK-BLEDOM0B; Status=Connected
+2026-02-22T01:46:52.9342393+01:00 [INFO] Connect attempt 15 device info: Id=BluetoothLE#BluetoothLE5c:f3:70:a6:d0:76-be:67:00:4e:95:cb; Name=ELK-BLEDOM0B; BluetoothAddress=BE:67:00:4E:95:CB; Status=Connected; Paired=False; CanPair=True; Protection=None; Access=Allowed
+2026-02-22T01:46:53.4992668+01:00 [INFO] Gatt services discovered: 2; ConnectionStatus=Connected
+2026-02-22T01:46:53.4996564+01:00 [INFO] Gatt service found: 00001800-0000-1000-8000-00805f9b34fb
+2026-02-22T01:46:54.0072122+01:00 [INFO] Gatt characteristics discovered: 1 for service 00001800-0000-1000-8000-00805f9b34fb
+2026-02-22T01:46:54.0083186+01:00 [INFO] Gatt service found: 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-22T01:46:54.0296064+01:00 [ERROR] GetCharacteristics failed. Status=AccessDenied; ProtocolError=n/a; Service=0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-22T01:46:54.0303513+01:00 [ERROR] LED characteristic 0000fff3-0000-1000-8000-00805f9b34fb not found after scanning 2 services.
+2026-02-22T01:46:54.0326533+01:00 [ERROR] Connect attempt 15 failed. LED characteristic not found.
+2026-02-22T01:46:54.0334176+01:00 [EXCEPTION] Connect attempt 15 failed (Windows).
+System.InvalidOperationException: LED characteristic not found on device.
+   at LedController.Infrastructure.Services.BleService.ConnectAsync(LedDevice device) in C:\Users\Szerver\Documents\Projects\LEDapp-2.0\src\LedController.Infrastructure\Services\BleService.cs:line 188
+
+2026-02-22T01:47:07.8903695+01:00 [INFO] Connect attempt 16 start (Windows). Address=BE:67:00:4E:95:CB; DeviceId=52eff7fe-a15d-45e8-81a1-efef5a6e530c; Name=ELK-BLEDOM0B; IsConnected=False; IsConnecting=True
+2026-02-22T01:47:07.9471393+01:00 [INFO] BluetoothLEDevice resolved. Name=ELK-BLEDOM0B; Status=Connected
+2026-02-22T01:47:07.9534388+01:00 [INFO] Connect attempt 16 device info: Id=BluetoothLE#BluetoothLE5c:f3:70:a6:d0:76-be:67:00:4e:95:cb; Name=ELK-BLEDOM0B; BluetoothAddress=BE:67:00:4E:95:CB; Status=Connected; Paired=False; CanPair=True; Protection=None; Access=Allowed
+2026-02-22T01:47:08.4326467+01:00 [INFO] Gatt services discovered: 2; ConnectionStatus=Connected
+2026-02-22T01:47:08.4330502+01:00 [INFO] Gatt service found: 00001800-0000-1000-8000-00805f9b34fb
+2026-02-22T01:47:08.9267246+01:00 [INFO] Gatt characteristics discovered: 1 for service 00001800-0000-1000-8000-00805f9b34fb
+2026-02-22T01:47:08.9271650+01:00 [INFO] Gatt service found: 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-22T01:47:08.9371388+01:00 [ERROR] GetCharacteristics failed. Status=AccessDenied; ProtocolError=n/a; Service=0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-22T01:47:08.9375257+01:00 [ERROR] LED characteristic 0000fff3-0000-1000-8000-00805f9b34fb not found after scanning 2 services.
+2026-02-22T01:47:08.9387380+01:00 [ERROR] Connect attempt 16 failed. LED characteristic not found.
+2026-02-22T01:47:08.9392914+01:00 [EXCEPTION] Connect attempt 16 failed (Windows).
+System.InvalidOperationException: LED characteristic not found on device.
+   at LedController.Infrastructure.Services.BleService.ConnectAsync(LedDevice device) in C:\Users\Szerver\Documents\Projects\LEDapp-2.0\src\LedController.Infrastructure\Services\BleService.cs:line 188
+
+2026-02-22T01:47:22.8964663+01:00 [INFO] Connect attempt 17 start (Windows). Address=BE:67:00:4E:95:CB; DeviceId=52eff7fe-a15d-45e8-81a1-efef5a6e530c; Name=ELK-BLEDOM0B; IsConnected=False; IsConnecting=True
+2026-02-22T01:47:22.9532167+01:00 [INFO] BluetoothLEDevice resolved. Name=ELK-BLEDOM0B; Status=Connected
+2026-02-22T01:47:22.9587820+01:00 [INFO] Connect attempt 17 device info: Id=BluetoothLE#BluetoothLE5c:f3:70:a6:d0:76-be:67:00:4e:95:cb; Name=ELK-BLEDOM0B; BluetoothAddress=BE:67:00:4E:95:CB; Status=Connected; Paired=False; CanPair=True; Protection=None; Access=Allowed
+2026-02-22T01:47:23.4536245+01:00 [INFO] Gatt services discovered: 2; ConnectionStatus=Connected
+2026-02-22T01:47:23.4540301+01:00 [INFO] Gatt service found: 00001800-0000-1000-8000-00805f9b34fb
+2026-02-22T01:47:24.0210896+01:00 [INFO] Gatt characteristics discovered: 1 for service 00001800-0000-1000-8000-00805f9b34fb
+2026-02-22T01:47:24.0215632+01:00 [INFO] Gatt service found: 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-22T01:47:24.0308601+01:00 [ERROR] GetCharacteristics failed. Status=AccessDenied; ProtocolError=n/a; Service=0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-22T01:47:24.0312618+01:00 [ERROR] LED characteristic 0000fff3-0000-1000-8000-00805f9b34fb not found after scanning 2 services.
+2026-02-22T01:47:24.0324433+01:00 [ERROR] Connect attempt 17 failed. LED characteristic not found.
+2026-02-22T01:47:24.0329934+01:00 [EXCEPTION] Connect attempt 17 failed (Windows).
+System.InvalidOperationException: LED characteristic not found on device.
+   at LedController.Infrastructure.Services.BleService.ConnectAsync(LedDevice device) in C:\Users\Szerver\Documents\Projects\LEDapp-2.0\src\LedController.Infrastructure\Services\BleService.cs:line 188
+
+2026-02-22T01:47:37.9118508+01:00 [INFO] Connect attempt 18 start (Windows). Address=BE:67:00:4E:95:CB; DeviceId=52eff7fe-a15d-45e8-81a1-efef5a6e530c; Name=ELK-BLEDOM0B; IsConnected=False; IsConnecting=True
+2026-02-22T01:47:38.0780629+01:00 [INFO] BluetoothLEDevice resolved. Name=ELK-BLEDOM0B; Status=Connected
+2026-02-22T01:47:38.0836359+01:00 [INFO] Connect attempt 18 device info: Id=BluetoothLE#BluetoothLE5c:f3:70:a6:d0:76-be:67:00:4e:95:cb; Name=ELK-BLEDOM0B; BluetoothAddress=BE:67:00:4E:95:CB; Status=Connected; Paired=False; CanPair=True; Protection=None; Access=Allowed
+2026-02-22T01:47:38.5626164+01:00 [INFO] Gatt services discovered: 2; ConnectionStatus=Connected
+2026-02-22T01:47:38.5637500+01:00 [INFO] Gatt service found: 00001800-0000-1000-8000-00805f9b34fb
+2026-02-22T01:47:39.0363826+01:00 [INFO] Gatt characteristics discovered: 1 for service 00001800-0000-1000-8000-00805f9b34fb
+2026-02-22T01:47:39.0367905+01:00 [INFO] Gatt service found: 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-22T01:47:39.0459979+01:00 [ERROR] GetCharacteristics failed. Status=AccessDenied; ProtocolError=n/a; Service=0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-22T01:47:39.0463824+01:00 [ERROR] LED characteristic 0000fff3-0000-1000-8000-00805f9b34fb not found after scanning 2 services.
+2026-02-22T01:47:39.0475458+01:00 [ERROR] Connect attempt 18 failed. LED characteristic not found.
+2026-02-22T01:47:39.0480900+01:00 [EXCEPTION] Connect attempt 18 failed (Windows).
+System.InvalidOperationException: LED characteristic not found on device.
+   at LedController.Infrastructure.Services.BleService.ConnectAsync(LedDevice device) in C:\Users\Szerver\Documents\Projects\LEDapp-2.0\src\LedController.Infrastructure\Services\BleService.cs:line 188
+
+2026-02-22T01:47:52.9231540+01:00 [INFO] Connect attempt 19 start (Windows). Address=BE:67:00:4E:95:CB; DeviceId=52eff7fe-a15d-45e8-81a1-efef5a6e530c; Name=ELK-BLEDOM0B; IsConnected=False; IsConnecting=True
+2026-02-22T01:47:52.9841095+01:00 [INFO] BluetoothLEDevice resolved. Name=ELK-BLEDOM0B; Status=Connected
+2026-02-22T01:47:52.9897075+01:00 [INFO] Connect attempt 19 device info: Id=BluetoothLE#BluetoothLE5c:f3:70:a6:d0:76-be:67:00:4e:95:cb; Name=ELK-BLEDOM0B; BluetoothAddress=BE:67:00:4E:95:CB; Status=Connected; Paired=False; CanPair=True; Protection=None; Access=Allowed
+2026-02-22T01:47:53.4760497+01:00 [INFO] Gatt services discovered: 2; ConnectionStatus=Connected
+2026-02-22T01:47:53.4764506+01:00 [INFO] Gatt service found: 00001800-0000-1000-8000-00805f9b34fb
+2026-02-22T01:47:53.9689670+01:00 [INFO] Gatt characteristics discovered: 1 for service 00001800-0000-1000-8000-00805f9b34fb
+2026-02-22T01:47:53.9694017+01:00 [INFO] Gatt service found: 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-22T01:47:53.9786388+01:00 [ERROR] GetCharacteristics failed. Status=AccessDenied; ProtocolError=n/a; Service=0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-22T01:47:53.9790183+01:00 [ERROR] LED characteristic 0000fff3-0000-1000-8000-00805f9b34fb not found after scanning 2 services.
+2026-02-22T01:47:53.9802849+01:00 [ERROR] Connect attempt 19 failed. LED characteristic not found.
+2026-02-22T01:47:53.9808291+01:00 [EXCEPTION] Connect attempt 19 failed (Windows).
+System.InvalidOperationException: LED characteristic not found on device.
+   at LedController.Infrastructure.Services.BleService.ConnectAsync(LedDevice device) in C:\Users\Szerver\Documents\Projects\LEDapp-2.0\src\LedController.Infrastructure\Services\BleService.cs:line 188
+
+2026-02-22T01:48:07.9324280+01:00 [INFO] Connect attempt 20 start (Windows). Address=BE:67:00:4E:95:CB; DeviceId=52eff7fe-a15d-45e8-81a1-efef5a6e530c; Name=ELK-BLEDOM0B; IsConnected=False; IsConnecting=True
+2026-02-22T01:48:07.9902671+01:00 [INFO] BluetoothLEDevice resolved. Name=ELK-BLEDOM0B; Status=Connected
+2026-02-22T01:48:07.9961539+01:00 [INFO] Connect attempt 20 device info: Id=BluetoothLE#BluetoothLE5c:f3:70:a6:d0:76-be:67:00:4e:95:cb; Name=ELK-BLEDOM0B; BluetoothAddress=BE:67:00:4E:95:CB; Status=Connected; Paired=False; CanPair=True; Protection=None; Access=Allowed
+2026-02-22T01:48:08.4905080+01:00 [INFO] Gatt services discovered: 2; ConnectionStatus=Connected
+2026-02-22T01:48:08.4909275+01:00 [INFO] Gatt service found: 00001800-0000-1000-8000-00805f9b34fb
+2026-02-22T01:48:08.9831674+01:00 [INFO] Gatt characteristics discovered: 1 for service 00001800-0000-1000-8000-00805f9b34fb
+2026-02-22T01:48:08.9835969+01:00 [INFO] Gatt service found: 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-22T01:48:08.9926403+01:00 [ERROR] GetCharacteristics failed. Status=AccessDenied; ProtocolError=n/a; Service=0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-22T01:48:08.9930233+01:00 [ERROR] LED characteristic 0000fff3-0000-1000-8000-00805f9b34fb not found after scanning 2 services.
+2026-02-22T01:48:08.9942406+01:00 [ERROR] Connect attempt 20 failed. LED characteristic not found.
+2026-02-22T01:48:08.9947345+01:00 [EXCEPTION] Connect attempt 20 failed (Windows).
+System.InvalidOperationException: LED characteristic not found on device.
+   at LedController.Infrastructure.Services.BleService.ConnectAsync(LedDevice device) in C:\Users\Szerver\Documents\Projects\LEDapp-2.0\src\LedController.Infrastructure\Services\BleService.cs:line 188
+
+2026-02-22T01:48:22.9524885+01:00 [INFO] Connect attempt 21 start (Windows). Address=BE:67:00:4E:95:CB; DeviceId=52eff7fe-a15d-45e8-81a1-efef5a6e530c; Name=ELK-BLEDOM0B; IsConnected=False; IsConnecting=True
+2026-02-22T01:48:23.0089344+01:00 [INFO] BluetoothLEDevice resolved. Name=ELK-BLEDOM0B; Status=Connected
+2026-02-22T01:48:23.0148873+01:00 [INFO] Connect attempt 21 device info: Id=BluetoothLE#BluetoothLE5c:f3:70:a6:d0:76-be:67:00:4e:95:cb; Name=ELK-BLEDOM0B; BluetoothAddress=BE:67:00:4E:95:CB; Status=Connected; Paired=False; CanPair=True; Protection=None; Access=Allowed
+2026-02-22T01:48:23.5058610+01:00 [INFO] Gatt services discovered: 2; ConnectionStatus=Connected
+2026-02-22T01:48:23.5062565+01:00 [INFO] Gatt service found: 00001800-0000-1000-8000-00805f9b34fb
+2026-02-22T01:48:23.9982434+01:00 [INFO] Gatt characteristics discovered: 1 for service 00001800-0000-1000-8000-00805f9b34fb
+2026-02-22T01:48:23.9987070+01:00 [INFO] Gatt service found: 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-22T01:48:24.0082791+01:00 [ERROR] GetCharacteristics failed. Status=AccessDenied; ProtocolError=n/a; Service=0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-22T01:48:24.0086692+01:00 [ERROR] LED characteristic 0000fff3-0000-1000-8000-00805f9b34fb not found after scanning 2 services.
+2026-02-22T01:48:24.0098592+01:00 [ERROR] Connect attempt 21 failed. LED characteristic not found.
+2026-02-22T01:48:24.0104826+01:00 [EXCEPTION] Connect attempt 21 failed (Windows).
+System.InvalidOperationException: LED characteristic not found on device.
+   at LedController.Infrastructure.Services.BleService.ConnectAsync(LedDevice device) in C:\Users\Szerver\Documents\Projects\LEDapp-2.0\src\LedController.Infrastructure\Services\BleService.cs:line 188
+
+2026-02-22T01:48:37.9676676+01:00 [INFO] Connect attempt 22 start (Windows). Address=BE:67:00:4E:95:CB; DeviceId=52eff7fe-a15d-45e8-81a1-efef5a6e530c; Name=ELK-BLEDOM0B; IsConnected=False; IsConnecting=True
+2026-02-22T01:48:38.0367408+01:00 [INFO] BluetoothLEDevice resolved. Name=ELK-BLEDOM0B; Status=Connected
+2026-02-22T01:48:38.0437300+01:00 [INFO] Connect attempt 22 device info: Id=BluetoothLE#BluetoothLE5c:f3:70:a6:d0:76-be:67:00:4e:95:cb; Name=ELK-BLEDOM0B; BluetoothAddress=BE:67:00:4E:95:CB; Status=Connected; Paired=False; CanPair=True; Protection=None; Access=Allowed
+2026-02-22T01:48:38.5212781+01:00 [INFO] Gatt services discovered: 2; ConnectionStatus=Connected
+2026-02-22T01:48:38.5218953+01:00 [INFO] Gatt service found: 00001800-0000-1000-8000-00805f9b34fb
+2026-02-22T01:48:39.0958858+01:00 [INFO] Gatt characteristics discovered: 1 for service 00001800-0000-1000-8000-00805f9b34fb
+2026-02-22T01:48:39.0963211+01:00 [INFO] Gatt service found: 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-22T01:48:39.5930829+01:00 [INFO] Gatt characteristics discovered: 2 for service 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-22T01:48:39.5935096+01:00 [INFO] Found LED characteristic 0000fff3-0000-1000-8000-00805f9b34fb
+2026-02-22T01:48:39.5939012+01:00 [INFO] Connect attempt 22 success (Windows). Address=BE:67:00:4E:95:CB
+2026-02-22T09:31:12.7164269+01:00 [INFO] Connect attempt 23 start (Windows). Address=BE:67:00:4E:95:CB; DeviceId=52eff7fe-a15d-45e8-81a1-efef5a6e530c; Name=ELK-BLEDOM0B; IsConnected=False; IsConnecting=True
+2026-02-22T09:31:12.7515186+01:00 [INFO] BluetoothLEDevice resolved. Name=ELK-BLEDOM0B; Status=Disconnected
+2026-02-22T09:31:12.7570735+01:00 [INFO] Connect attempt 23 device info: Id=BluetoothLE#BluetoothLE5c:f3:70:a6:d0:76-be:67:00:4e:95:cb; Name=ELK-BLEDOM0B; BluetoothAddress=BE:67:00:4E:95:CB; Status=Disconnected; Paired=False; CanPair=True; Protection=None; Access=Allowed
+2026-02-22T09:31:14.2466065+01:00 [INFO] Gatt services discovered: 2; ConnectionStatus=Connected
+2026-02-22T09:31:14.2470269+01:00 [INFO] Gatt service found: 00001800-0000-1000-8000-00805f9b34fb
+2026-02-22T09:31:14.3749557+01:00 [INFO] Gatt characteristics discovered: 1 for service 00001800-0000-1000-8000-00805f9b34fb
+2026-02-22T09:31:14.3753611+01:00 [INFO] Gatt service found: 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-22T09:31:14.5091266+01:00 [INFO] Gatt characteristics discovered: 2 for service 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-22T09:31:14.5095312+01:00 [INFO] Found LED characteristic 0000fff3-0000-1000-8000-00805f9b34fb
+2026-02-22T09:31:14.5099198+01:00 [INFO] Connect attempt 23 success (Windows). Address=BE:67:00:4E:95:CB
+2026-02-22T21:44:00.1357474+01:00 [INFO] Connect attempt 24 start (Windows). Address=BE:67:00:4E:95:CB; DeviceId=52eff7fe-a15d-45e8-81a1-efef5a6e530c; Name=ELK-BLEDOM0B; IsConnected=False; IsConnecting=True
+2026-02-22T21:44:00.1946732+01:00 [INFO] BluetoothLEDevice resolved. Name=ELK-BLEDOM0B; Status=Disconnected
+2026-02-22T21:44:00.2004729+01:00 [INFO] Connect attempt 24 device info: Id=BluetoothLE#BluetoothLE5c:f3:70:a6:d0:76-be:67:00:4e:95:cb; Name=ELK-BLEDOM0B; BluetoothAddress=BE:67:00:4E:95:CB; Status=Disconnected; Paired=False; CanPair=True; Protection=None; Access=Allowed
+2026-02-22T21:44:01.7073890+01:00 [INFO] Gatt services discovered: 2; ConnectionStatus=Connected
+2026-02-22T21:44:01.7078031+01:00 [INFO] Gatt service found: 00001800-0000-1000-8000-00805f9b34fb
+2026-02-22T21:44:01.8569757+01:00 [INFO] Gatt characteristics discovered: 1 for service 00001800-0000-1000-8000-00805f9b34fb
+2026-02-22T21:44:01.8576616+01:00 [INFO] Gatt service found: 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-22T21:44:01.9912431+01:00 [INFO] Gatt characteristics discovered: 2 for service 0000fff0-0000-1000-8000-00805f9b34fb
+2026-02-22T21:44:01.9921441+01:00 [INFO] Found LED characteristic 0000fff3-0000-1000-8000-00805f9b34fb
+2026-02-22T21:44:01.9929341+01:00 [INFO] Connect attempt 24 success (Windows). Address=BE:67:00:4E:95:CB

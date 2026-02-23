@@ -11,16 +11,29 @@ public sealed partial class SettingsViewModel : ViewModelBase
 {
     private readonly IConfigService _configService;
     private readonly IMqttService _mqttService;
+    private readonly IStartupService _startupService;
+    private bool _isLoading;
 
-    public SettingsViewModel(IConfigService configService, IMqttService mqttService)
+    public SettingsViewModel(IConfigService configService, IMqttService mqttService, IStartupService startupService)
     {
         _configService = configService;
         _mqttService = mqttService;
+        _startupService = startupService;
         _ = LoadAsync();
     }
 
     [ObservableProperty]
     private bool startWithWindows;
+
+    partial void OnStartWithWindowsChanged(bool value)
+    {
+        if (_isLoading)
+        {
+            return;
+        }
+
+        _ = SaveStartupPreferenceAsync(value);
+    }
 
     [ObservableProperty]
     private bool mqttEnabled;
@@ -52,6 +65,8 @@ public sealed partial class SettingsViewModel : ViewModelBase
     {
         try
         {
+            var effectiveStartWithWindows = ApplyStartupSetting(StartWithWindows);
+
             var config = await _configService.LoadConfigAsync();
             var mqttSettings = new MqttSettings
             {
@@ -64,7 +79,7 @@ public sealed partial class SettingsViewModel : ViewModelBase
 
             var settings = (config.Settings ?? AppSettings.Default) with
             {
-                StartWithWindows = StartWithWindows,
+                StartWithWindows = effectiveStartWithWindows,
                 Mqtt = mqttSettings
             };
 
@@ -102,15 +117,66 @@ public sealed partial class SettingsViewModel : ViewModelBase
         }
     }
 
+    private async Task SaveStartupPreferenceAsync(bool requestedState)
+    {
+        try
+        {
+            var effectiveStartWithWindows = ApplyStartupSetting(requestedState);
+            var config = await _configService.LoadConfigAsync();
+            var settings = (config.Settings ?? AppSettings.Default) with
+            {
+                StartWithWindows = effectiveStartWithWindows
+            };
+
+            var updated = config with { Settings = settings };
+            await _configService.SaveConfigAsync(updated);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[Settings] Startup save failed: {ex.Message}");
+        }
+    }
+
+    private bool ApplyStartupSetting(bool requestedState)
+    {
+        var startupSet = _startupService.SetEnabled(requestedState);
+        if (!startupSet)
+        {
+            Console.WriteLine("[Settings] Startup update failed.");
+        }
+
+        var effectiveStartWithWindows = _startupService.IsEnabled();
+        if (effectiveStartWithWindows != StartWithWindows)
+        {
+            SetStartWithWindowsSilently(effectiveStartWithWindows);
+        }
+
+        return effectiveStartWithWindows;
+    }
+
+    private void SetStartWithWindowsSilently(bool value)
+    {
+        _isLoading = true;
+        try
+        {
+            StartWithWindows = value;
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
     private async Task LoadAsync()
     {
+        _isLoading = true;
         try
         {
             var config = await _configService.LoadConfigAsync();
             var settings = config.Settings ?? AppSettings.Default;
             var mqtt = settings.Mqtt ?? MqttSettings.Default;
 
-            StartWithWindows = settings.StartWithWindows;
+            StartWithWindows = _startupService.IsEnabled();
             MqttEnabled = mqtt.Enabled;
             MqttHost = mqtt.Host;
             MqttPort = mqtt.Port == 0 ? 1883 : mqtt.Port;
@@ -121,6 +187,10 @@ public sealed partial class SettingsViewModel : ViewModelBase
         catch (Exception ex)
         {
             Console.WriteLine($"[Settings] Load failed: {ex.Message}");
+        }
+        finally
+        {
+            _isLoading = false;
         }
     }
 }

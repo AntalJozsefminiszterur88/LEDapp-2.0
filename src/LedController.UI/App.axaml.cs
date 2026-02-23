@@ -46,6 +46,7 @@ public partial class App : Application
         services.AddSingleton<ILocationService, LocationService>();
         services.AddSingleton<ISchedulerService, SchedulerService>();
         services.AddSingleton<IMqttService, MqttService>();
+        services.AddSingleton<IStartupService, StartupService>();
 
         services.AddSingleton<DashboardViewModel>();
         services.AddSingleton<DiscoveryViewModel>();
