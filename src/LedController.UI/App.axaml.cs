@@ -28,15 +28,32 @@ public partial class App : Application
         Services = services.BuildServiceProvider();
 
         RegisterGlobalExceptionHandlers();
+        NormalizeStartupRegistration();
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             var mainWindow = Services.GetRequiredService<MainWindow>();
+            mainWindow.ConfigureStartup(Program.StartMinimizedToTray);
             mainWindow.Opened += (_, _) => NativeSplash.Close();
             desktop.MainWindow = mainWindow;
         }
 
         base.OnFrameworkInitializationCompleted();
+    }
+
+    private void NormalizeStartupRegistration()
+    {
+        try
+        {
+            var startupService = Services.GetService<IStartupService>();
+            if (startupService?.IsEnabled() == true)
+            {
+                _ = startupService.SetEnabled(enabled: true);
+            }
+        }
+        catch
+        {
+        }
     }
 
     private static void ConfigureServices(IServiceCollection services)

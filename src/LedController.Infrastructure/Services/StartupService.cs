@@ -6,6 +6,7 @@ namespace LedController.Infrastructure.Services;
 
 public sealed class StartupService : IStartupService
 {
+    private const string StartupHiddenArgument = "--start-minimized-to-tray";
     private const string RunKeyPath = @"Software\Microsoft\Windows\CurrentVersion\Run";
     private const string ValueName = "LEDapp-2.0";
 
@@ -74,15 +75,15 @@ public sealed class StartupService : IStartupService
             var entryAssemblyPath = Assembly.GetEntryAssembly()?.Location;
             if (!string.IsNullOrWhiteSpace(entryAssemblyPath))
             {
-                return $"\"{processPath}\" \"{entryAssemblyPath}\"";
+                return $"\"{processPath}\" \"{entryAssemblyPath}\" {StartupHiddenArgument}";
             }
         }
 
         if (string.Equals(Path.GetExtension(processPath), ".dll", StringComparison.OrdinalIgnoreCase))
         {
-            return $"\"dotnet\" \"{processPath}\"";
+            return $"\"dotnet\" \"{processPath}\" {StartupHiddenArgument}";
         }
 
-        return $"\"{processPath}\"";
+        return $"\"{processPath}\" {StartupHiddenArgument}";
     }
 }

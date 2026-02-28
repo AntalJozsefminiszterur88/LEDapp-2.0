@@ -6,6 +6,7 @@ using Avalonia.LogicalTree;
 using Avalonia.Platform;
 using Avalonia.Media;
 using Avalonia.Interactivity;
+using Avalonia.Threading;
 using LedController.UI.ViewModels;
 using LedController.UI.Views;
 
@@ -16,6 +17,7 @@ public partial class MainWindow : Window
     private TrayIcon? _trayIcon;
     private bool _exitRequested;
     private bool _sunTimesRefreshed;
+    private bool _startHiddenInTray;
 
     public MainWindow()
     {
@@ -23,6 +25,7 @@ public partial class MainWindow : Window
         Closing += OnClosing;
         Closed += (_, _) => DisposeTrayIcon();
         Opened += (_, _) => EnsureTrayIcon();
+        Opened += (_, _) => ApplyStartupVisibility();
     }
 
     public MainWindow(MainViewModel viewModel)
@@ -31,6 +34,11 @@ public partial class MainWindow : Window
         DataContext = viewModel;
         viewModel.DiscoveryRequested += async () => await OpenDiscoveryAsync(viewModel);
         Opened += (_, _) => _ = InitializeAfterOpenAsync(viewModel);
+    }
+
+    internal void ConfigureStartup(bool startHiddenInTray)
+    {
+        _startHiddenInTray = startHiddenInTray;
     }
 
     private async Task OpenDiscoveryAsync(MainViewModel viewModel)
@@ -111,6 +119,17 @@ public partial class MainWindow : Window
     {
         _exitRequested = true;
         Close();
+    }
+
+    private void ApplyStartupVisibility()
+    {
+        if (!_startHiddenInTray)
+        {
+            return;
+        }
+
+        _startHiddenInTray = false;
+        Dispatcher.UIThread.Post(Hide, DispatcherPriority.Background);
     }
 
     private void OnClosing(object? sender, WindowClosingEventArgs e)
