@@ -17,16 +17,19 @@ public sealed partial class SchedulerViewModel : ViewModelBase, IDisposable
 {
     private readonly IConfigService _configService;
     private readonly ILocationService _locationService;
+    private readonly ISchedulerService _schedulerService;
     private readonly SemaphoreSlim _activationSaveGate = new(1, 1);
     private bool _suppressActivationSave;
     private bool _pendingActivationSave;
 
     public SchedulerViewModel(
         IConfigService configService,
+        ISchedulerService schedulerService,
         ILocationService locationService,
         LedDevice targetDevice)
     {
         _configService = configService;
+        _schedulerService = schedulerService;
         _locationService = locationService;
         TargetDevice = targetDevice ?? throw new ArgumentNullException(nameof(targetDevice));
 
@@ -312,10 +315,7 @@ public sealed partial class SchedulerViewModel : ViewModelBase, IDisposable
 
     private static LedDevice? FindDevice(IReadOnlyList<LedDevice> devices, LedDevice target)
     {
-        return devices.FirstOrDefault(d =>
-                   d.Id == target.Id ||
-                   (!string.IsNullOrWhiteSpace(d.MacAddress) &&
-                    string.Equals(d.MacAddress, target.MacAddress, StringComparison.OrdinalIgnoreCase)));
+        return devices.FirstOrDefault(d => LedDeviceIdentity.Matches(d, target));
     }
 
     private static DayOfWeek[] GetWeekOrder() => new[]
@@ -407,6 +407,7 @@ public sealed partial class SchedulerViewModel : ViewModelBase, IDisposable
 
                 var updatedConfig = new AppConfig(devices, config.Profiles, config.Settings);
                 await _configService.SaveConfigAsync(updatedConfig);
+                _schedulerService.MarkDeviceStateDirty(TargetDevice.Id);
             }
             while (_pendingActivationSave);
         }

@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Text.Json.Serialization;
 using CommunityToolkit.Mvvm.ComponentModel;
 
@@ -67,6 +68,20 @@ public partial class DailySchedule : ObservableObject
     [JsonIgnore]
     public bool HasSunsetOffEvent => SunsetEnabled && !SunsetTurnsOn;
 
+    [JsonIgnore]
+    public string FixedOnTimeText
+    {
+        get => FormatTime(FixedOnTime);
+        set => UpdateTimeFromText(value, isOnTime: true);
+    }
+
+    [JsonIgnore]
+    public string FixedOffTimeText
+    {
+        get => FormatTime(FixedOffTime);
+        set => UpdateTimeFromText(value, isOnTime: false);
+    }
+
     partial void OnSunriseEnabledChanged(bool value)
     {
         NotifySunriseEventFlagsChanged();
@@ -75,6 +90,16 @@ public partial class DailySchedule : ObservableObject
     partial void OnSunriseTurnsOnChanged(bool value)
     {
         NotifySunriseEventFlagsChanged();
+    }
+
+    partial void OnFixedOnTimeChanged(TimeSpan? value)
+    {
+        OnPropertyChanged(nameof(FixedOnTimeText));
+    }
+
+    partial void OnFixedOffTimeChanged(TimeSpan? value)
+    {
+        OnPropertyChanged(nameof(FixedOffTimeText));
     }
 
     partial void OnSunsetEnabledChanged(bool value)
@@ -175,5 +200,58 @@ public partial class DailySchedule : ObservableObject
     {
         OnPropertyChanged(nameof(HasSunsetOnEvent));
         OnPropertyChanged(nameof(HasSunsetOffEvent));
+    }
+
+    private void UpdateTimeFromText(string? value, bool isOnTime)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            if (isOnTime)
+            {
+                FixedOnTime = null;
+            }
+            else
+            {
+                FixedOffTime = null;
+            }
+
+            return;
+        }
+
+        var trimmed = value.Trim();
+        if (!TryParseTime(trimmed, out var parsed))
+        {
+            OnPropertyChanged(isOnTime ? nameof(FixedOnTimeText) : nameof(FixedOffTimeText));
+            return;
+        }
+
+        if (isOnTime)
+        {
+            FixedOnTime = parsed;
+        }
+        else
+        {
+            FixedOffTime = parsed;
+        }
+    }
+
+    private static bool TryParseTime(string value, out TimeSpan parsed)
+    {
+        if (TimeSpan.TryParseExact(value, "hh\\:mm", CultureInfo.InvariantCulture, out parsed))
+        {
+            return true;
+        }
+
+        if (TimeSpan.TryParseExact(value, "h\\:mm", CultureInfo.InvariantCulture, out parsed))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    private static string FormatTime(TimeSpan? value)
+    {
+        return value?.ToString("hh\\:mm", CultureInfo.InvariantCulture) ?? string.Empty;
     }
 }

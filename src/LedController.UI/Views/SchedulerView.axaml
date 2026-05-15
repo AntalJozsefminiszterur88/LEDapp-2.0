@@ -15,14 +15,13 @@
     <converters:BoolToIndexConverter x:Key="BoolToIndexOnOffConverter" TrueIndex="0" FalseIndex="1" />
   </UserControl.Resources>
   <UserControl.Styles>
-    <Style Selector="TimePicker">
-      <Setter Property="TextElement.Foreground" Value="#F2F2F2" />
-    </Style>
-    <Style Selector="TimePicker /template/ TextBox">
+    <Style Selector="TextBox.schedule-time">
       <Setter Property="Foreground" Value="#F2F2F2" />
-    </Style>
-    <Style Selector="TimePicker /template/ TextBlock">
-      <Setter Property="Foreground" Value="#F2F2F2" />
+      <Setter Property="TextAlignment" Value="Center" />
+      <Setter Property="HorizontalAlignment" Value="Stretch" />
+      <Setter Property="MinWidth" Value="88" />
+      <Setter Property="Watermark" Value="00:00" />
+      <Setter Property="MaxLength" Value="5" />
     </Style>
     <Style Selector="NumericUpDown /template/ TextBox">
       <Setter Property="Foreground" Value="#F2F2F2" />
@@ -86,8 +85,8 @@
             <ColumnDefinition Width="240" SharedSizeGroup="ScheduleSunriseOffset" />
             <ColumnDefinition Width="Auto" SharedSizeGroup="ScheduleSunset" />
             <ColumnDefinition Width="240" SharedSizeGroup="ScheduleSunsetOffset" />
-            <ColumnDefinition Width="70" SharedSizeGroup="ScheduleOn" />
-            <ColumnDefinition Width="70" SharedSizeGroup="ScheduleOff" />
+            <ColumnDefinition Width="120" SharedSizeGroup="ScheduleOn" />
+            <ColumnDefinition Width="120" SharedSizeGroup="ScheduleOff" />
             <ColumnDefinition Width="180" SharedSizeGroup="ScheduleColor" />
           </Grid.ColumnDefinitions>
           <TextBlock Text="Nap" FontWeight="SemiBold" />
@@ -110,8 +109,8 @@
                   <ColumnDefinition Width="240" SharedSizeGroup="ScheduleSunriseOffset" />
                   <ColumnDefinition Width="Auto" SharedSizeGroup="ScheduleSunset" />
                   <ColumnDefinition Width="240" SharedSizeGroup="ScheduleSunsetOffset" />
-                  <ColumnDefinition Width="70" SharedSizeGroup="ScheduleOn" />
-                  <ColumnDefinition Width="70" SharedSizeGroup="ScheduleOff" />
+                  <ColumnDefinition Width="120" SharedSizeGroup="ScheduleOn" />
+                  <ColumnDefinition Width="120" SharedSizeGroup="ScheduleOff" />
                   <ColumnDefinition Width="180" SharedSizeGroup="ScheduleColor" />
                 </Grid.ColumnDefinitions>
                 <TextBlock Text="{Binding DayOfWeek, Converter={StaticResource DayNameConverter}}" VerticalAlignment="Center" />
@@ -174,39 +173,31 @@
                                  IsEnabled="{Binding SunsetEnabled}" />
                 </StackPanel>
 
-                <Grid Grid.Column="5" Width="70" MinWidth="70">
-                  <TimePicker Foreground="#F2F2F2"
-                              SelectedTime="{Binding FixedOnTime}">
-                    <TimePicker.IsEnabled>
-                      <MultiBinding Converter="{StaticResource AnyTrueToFalseConverter}">
-                        <Binding Path="HasSunriseOnEvent" />
-                        <Binding Path="HasSunsetOnEvent" />
-                      </MultiBinding>
-                    </TimePicker.IsEnabled>
-                  </TimePicker>
-                  <TextBlock Text="{Binding FixedOnTime, StringFormat={}{0:hh\\:mm}}"
-                             Foreground="#F2F2F2"
-                             HorizontalAlignment="Center"
-                             VerticalAlignment="Center"
-                             IsHitTestVisible="False" />
-                </Grid>
+                <TextBox Grid.Column="5"
+                         Classes="schedule-time"
+                         Width="120"
+                         MinWidth="120"
+                         Text="{Binding FixedOnTimeText, Mode=TwoWay, UpdateSourceTrigger=LostFocus}">
+                  <TextBox.IsEnabled>
+                    <MultiBinding Converter="{StaticResource AnyTrueToFalseConverter}">
+                      <Binding Path="HasSunriseOnEvent" />
+                      <Binding Path="HasSunsetOnEvent" />
+                    </MultiBinding>
+                  </TextBox.IsEnabled>
+                </TextBox>
 
-                <Grid Grid.Column="6" Width="70" MinWidth="70">
-                  <TimePicker Foreground="#F2F2F2"
-                              SelectedTime="{Binding FixedOffTime}">
-                    <TimePicker.IsEnabled>
-                      <MultiBinding Converter="{StaticResource AnyTrueToFalseConverter}">
-                        <Binding Path="HasSunriseOffEvent" />
-                        <Binding Path="HasSunsetOffEvent" />
-                      </MultiBinding>
-                    </TimePicker.IsEnabled>
-                  </TimePicker>
-                  <TextBlock Text="{Binding FixedOffTime, StringFormat={}{0:hh\\:mm}}"
-                             Foreground="#F2F2F2"
-                             HorizontalAlignment="Center"
-                             VerticalAlignment="Center"
-                             IsHitTestVisible="False" />
-                </Grid>
+                <TextBox Grid.Column="6"
+                         Classes="schedule-time"
+                         Width="120"
+                         MinWidth="120"
+                         Text="{Binding FixedOffTimeText, Mode=TwoWay, UpdateSourceTrigger=LostFocus}">
+                  <TextBox.IsEnabled>
+                    <MultiBinding Converter="{StaticResource AnyTrueToFalseConverter}">
+                      <Binding Path="HasSunriseOffEvent" />
+                      <Binding Path="HasSunsetOffEvent" />
+                    </MultiBinding>
+                  </TextBox.IsEnabled>
+                </TextBox>
 
                 <ComboBox Grid.Column="7"
                           ItemsSource="{Binding DataContext.AvailableColors, ElementName=Root}"

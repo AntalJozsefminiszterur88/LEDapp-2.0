@@ -9,7 +9,7 @@
         x:Class="LedController.UI.MainWindow"
         x:DataType="viewModels:MainViewModel"
         Title="LedController"
-        Icon="avares://LEDapp-2.0/Assets/logo.ico"
+        Icon="avares://LEDapp-2.0/Assets/logo.png"
         WindowStartupLocation="CenterScreen"
         Background="#1E1E1E"
         Foreground="#E6E6E6">

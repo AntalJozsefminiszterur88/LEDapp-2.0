@@ -93,10 +93,15 @@ public sealed partial class DiscoveryViewModel : ViewModelBase
 
             var config = await _configService.LoadConfigAsync();
             var updatedDevices = config.SavedDevices.ToList();
+            var existingDevice = updatedDevices.FirstOrDefault(d => LedDeviceIdentity.Matches(d, SelectedDevice));
 
-            if (!updatedDevices.Any(d => string.Equals(d.MacAddress, SelectedDevice.MacAddress, StringComparison.OrdinalIgnoreCase)))
+            if (existingDevice is null)
             {
                 updatedDevices.Add(SelectedDevice);
+            }
+            else
+            {
+                UpdatePersistedDevice(existingDevice, SelectedDevice);
             }
 
             var updatedConfig = new AppConfig(updatedDevices, config.Profiles, config.Settings);
@@ -112,6 +117,24 @@ public sealed partial class DiscoveryViewModel : ViewModelBase
         finally
         {
             IsBusy = false;
+        }
+    }
+
+    private static void UpdatePersistedDevice(LedDevice target, LedDevice source)
+    {
+        if (!string.IsNullOrWhiteSpace(source.Name))
+        {
+            target.Name = source.Name;
+        }
+
+        if (!string.IsNullOrWhiteSpace(source.MacAddress))
+        {
+            target.MacAddress = source.MacAddress;
+        }
+
+        if (!string.IsNullOrWhiteSpace(source.DeviceIdentifier))
+        {
+            target.DeviceIdentifier = source.DeviceIdentifier;
         }
     }
 }

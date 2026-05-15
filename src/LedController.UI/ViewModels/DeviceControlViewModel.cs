@@ -16,6 +16,7 @@ namespace LedController.UI.ViewModels;
 public sealed partial class DeviceControlViewModel : ViewModelBase, IDisposable
 {
     private readonly IBleService _bleService;
+    private readonly IMqttService _mqttService;
     private readonly ISchedulerService _schedulerService;
     private readonly IConfigService _configService;
     private readonly DispatcherTimer _customColorTimer;
@@ -32,11 +33,13 @@ public sealed partial class DeviceControlViewModel : ViewModelBase, IDisposable
 
     public DeviceControlViewModel(
         IBleService bleService,
+        IMqttService mqttService,
         ISchedulerService schedulerService,
         IConfigService configService,
         LedDevice device)
     {
         _bleService = bleService;
+        _mqttService = mqttService;
         _schedulerService = schedulerService;
         _configService = configService;
         Device = device ?? throw new ArgumentNullException(nameof(device));
@@ -45,8 +48,7 @@ public sealed partial class DeviceControlViewModel : ViewModelBase, IDisposable
         PresetColors = new ObservableCollection<LedColor>(_defaultColors);
 
         brightness = Device.Brightness;
-
-        IsScheduleEnabled = Device.Profiles.Count == 0 || Device.Profiles.Any(p => p.IsActive);
+        isScheduleEnabled = Device.ScheduleEnabled;
 
         _customColorTimer = new DispatcherTimer
         {
@@ -108,9 +110,12 @@ public sealed partial class DeviceControlViewModel : ViewModelBase, IDisposable
 
     partial void OnIsScheduleEnabledChanged(bool value)
     {
+        Device.ScheduleEnabled = value;
         OnPropertyChanged(nameof(ScheduleButtonLabel));
         _schedulerService.SetDeviceScheduleEnabled(Device.Id, value);
         _schedulerService.MarkDeviceStateDirty(Device.Id);
+        _ = SaveDeviceScheduleEnabledAsync(value);
+        _ = _mqttService.PublishStateAsync(Device);
     }
 
     partial void OnCustomColorChanged(Color value)
@@ -209,6 +214,7 @@ public sealed partial class DeviceControlViewModel : ViewModelBase, IDisposable
                 Device.CurrentColor = color;
                 Device.IsOn = true;
                 _schedulerService.MarkDeviceStateDirty(Device.Id);
+                await _mqttService.PublishStateAsync(Device);
             }
             else
             {
@@ -216,6 +222,7 @@ public sealed partial class DeviceControlViewModel : ViewModelBase, IDisposable
                 Device.IsOn = false;
                 Device.CurrentColor = LedColor.Off;
                 _schedulerService.MarkDeviceStateDirty(Device.Id);
+                await _mqttService.PublishStateAsync(Device);
             }
         }
         catch (Exception ex)
@@ -244,6 +251,7 @@ public sealed partial class DeviceControlViewModel : ViewModelBase, IDisposable
             Device.CurrentColor = color;
             Device.IsOn = true;
             _schedulerService.MarkDeviceStateDirty(Device.Id);
+            await _mqttService.PublishStateAsync(Device);
         }
         catch (Exception ex)
         {
@@ -269,6 +277,7 @@ public sealed partial class DeviceControlViewModel : ViewModelBase, IDisposable
             await _bleService.SendCommandAsync(Device, HexToBytes(commandHex));
             Device.Brightness = clamped;
             QueueBrightnessPersist(clamped);
+            await _mqttService.PublishStateAsync(Device);
         }
         catch (Exception ex)
         {
@@ -474,10 +483,7 @@ public sealed partial class DeviceControlViewModel : ViewModelBase, IDisposable
         {
             var config = await _configService.LoadConfigAsync();
             var devices = config.SavedDevices.ToList();
-            var target = devices.FirstOrDefault(d =>
-                d.Id == Device.Id ||
-                (!string.IsNullOrWhiteSpace(d.MacAddress) &&
-                 string.Equals(d.MacAddress, Device.MacAddress, StringComparison.OrdinalIgnoreCase)));
+            var target = devices.FirstOrDefault(d => LedDeviceIdentity.Matches(d, Device));
 
             if (target is null)
             {
@@ -493,6 +499,31 @@ public sealed partial class DeviceControlViewModel : ViewModelBase, IDisposable
         catch (Exception ex)
         {
             Console.WriteLine($"[DeviceControl] Brightness save failed: {ex.Message}");
+        }
+    }
+
+    private async Task SaveDeviceScheduleEnabledAsync(bool enabled)
+    {
+        try
+        {
+            var config = await _configService.LoadConfigAsync();
+            var devices = config.SavedDevices.ToList();
+            var target = devices.FirstOrDefault(d => LedDeviceIdentity.Matches(d, Device));
+
+            if (target is null)
+            {
+                target = Device;
+                devices.Add(target);
+            }
+
+            target.ScheduleEnabled = enabled;
+
+            var updated = new AppConfig(devices, config.Profiles, config.Settings);
+            await _configService.SaveConfigAsync(updated);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[DeviceControl] Schedule state save failed: {ex.Message}");
         }
     }
 
@@ -619,6 +650,11 @@ public sealed partial class DeviceControlViewModel : ViewModelBase, IDisposable
         try
         {
             await _bleService.ConnectAsync(Device);
+            if (Device.IsConnected)
+            {
+                await PersistConnectedDeviceIdentityAsync();
+            }
+
             return Device.IsConnected;
         }
         catch (Exception ex)
@@ -626,6 +662,44 @@ public sealed partial class DeviceControlViewModel : ViewModelBase, IDisposable
             Device.IsConnected = false;
             Console.WriteLine($"[DeviceControl] Connect failed: {ex.Message}");
             return false;
+        }
+    }
+
+    private async Task PersistConnectedDeviceIdentityAsync()
+    {
+        try
+        {
+            var config = await _configService.LoadConfigAsync();
+            var devices = config.SavedDevices.ToList();
+            var target = devices.FirstOrDefault(d => LedDeviceIdentity.Matches(d, Device));
+
+            if (target is null)
+            {
+                target = Device;
+                devices.Add(target);
+            }
+
+            if (!string.IsNullOrWhiteSpace(Device.Name))
+            {
+                target.Name = Device.Name;
+            }
+
+            if (!string.IsNullOrWhiteSpace(Device.MacAddress))
+            {
+                target.MacAddress = Device.MacAddress;
+            }
+
+            if (!string.IsNullOrWhiteSpace(Device.DeviceIdentifier))
+            {
+                target.DeviceIdentifier = Device.DeviceIdentifier;
+            }
+
+            var updated = new AppConfig(devices, config.Profiles, config.Settings);
+            await _configService.SaveConfigAsync(updated);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[DeviceControl] Device identity save failed: {ex.Message}");
         }
     }
 

@@ -160,8 +160,13 @@ public sealed class FileConfigService : IConfigService
         }
     }
 
-    private static AppConfig NormalizeSettings(AppConfig config)
+    private AppConfig NormalizeSettings(AppConfig config)
     {
+        var oldDevices = _cache?.SavedDevices ?? Array.Empty<LedDevice>();
+        var devices = config.SavedDevices
+            .Select(d => NormalizeDevice(d, oldDevices))
+            .ToList();
+
         var settings = config.Settings ?? AppSettings.Default;
         var mqtt = settings.Mqtt ?? MqttSettings.Default;
         if (!ReferenceEquals(settings.Mqtt, mqtt))
@@ -169,11 +174,42 @@ public sealed class FileConfigService : IConfigService
             settings = settings with { Mqtt = mqtt };
         }
 
-        if (!ReferenceEquals(config.Settings, settings))
+        if (!ReferenceEquals(config.Settings, settings) ||
+            !ReferenceEquals(config.SavedDevices, devices))
         {
-            config = config with { Settings = settings };
+            config = config with { SavedDevices = devices, Settings = settings };
         }
 
         return config;
+    }
+
+    private static LedDevice NormalizeDevice(LedDevice device, IReadOnlyList<LedDevice> oldDevices)
+    {
+        if (device is null)
+        {
+            return new LedDevice();
+        }
+
+        var oldDevice = oldDevices.FirstOrDefault(d => d.Id == device.Id || 
+            (!string.IsNullOrWhiteSpace(d.MacAddress) && string.Equals(d.MacAddress, device.MacAddress, StringComparison.OrdinalIgnoreCase)));
+
+        if (oldDevice is not null)
+        {
+            device.IsConnected = oldDevice.IsConnected;
+            device.IsConnecting = oldDevice.IsConnecting;
+            BleLog.Info($"[FileConfigService] Normalized device {device.Name} ({device.MacAddress}): IsConnected={device.IsConnected}, IsConnecting={device.IsConnecting} from oldDevice.");
+        }
+        else
+        {
+            BleLog.Info($"[FileConfigService] NormalizeDevice: oldDevice is NULL for {device.Name} ({device.MacAddress})");
+        }
+
+        if (!string.IsNullOrWhiteSpace(device.DeviceIdentifier) || string.IsNullOrWhiteSpace(device.MacAddress))
+        {
+            return device;
+        }
+
+        device.DeviceIdentifier = device.MacAddress;
+        return device;
     }
 }

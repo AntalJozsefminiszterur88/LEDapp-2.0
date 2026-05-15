@@ -1,15 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+    <TargetFrameworks>net8.0;net8.0-windows10.0.19041.0</TargetFrameworks>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <OutputType>Exe</OutputType>
+    <OutputType Condition="'$(TargetFramework)' == 'net8.0-windows10.0.19041.0'">WinExe</OutputType>
     <Nullable>enable</Nullable>
-    <UseWindowsForms>true</UseWindowsForms>
     <PublishDir>$(MSBuildProjectDirectory)\..\..\publish\</PublishDir>
     <AssemblyName>LEDapp-2.0</AssemblyName>
     <AssemblyTitle>LEDapp-2.0</AssemblyTitle>
     <Product>LEDapp-2.0</Product>
     <ApplicationTitle>LEDapp-2.0</ApplicationTitle>
-    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationManifest Condition="'$(TargetFramework)' == 'net8.0-windows10.0.19041.0'">app.manifest</ApplicationManifest>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
     <ApplicationIcon>Assets\logo.ico</ApplicationIcon>
     <UsedAvaloniaProducts></UsedAvaloniaProducts>
@@ -38,5 +39,11 @@
   <ItemGroup>
     <AvaloniaResource Include="Assets\trayicon.png" />
     <AvaloniaResource Include="Assets\logo.ico" />
+    <AvaloniaResource Include="Assets\logo.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Assets\trayicon.png" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <None Include="Assets\logo.png" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

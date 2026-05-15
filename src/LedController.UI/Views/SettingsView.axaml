@@ -14,7 +14,7 @@
               Padding="16">
         <StackPanel Spacing="12">
           <TextBlock Text="Rendszer" FontWeight="SemiBold" />
-          <CheckBox Content="Indítás Windowszal"
+          <CheckBox Content="Indítás a rendszerrel"
                     IsChecked="{Binding StartWithWindows}" />
         </StackPanel>
       </Border>

@@ -136,7 +136,7 @@ public sealed partial class MainViewModel : ViewModelBase
             return;
         }
 
-        DeviceControl = new DeviceControlViewModel(_bleService, _schedulerService, _configService, value);
+        DeviceControl = new DeviceControlViewModel(_bleService, _mqttService, _schedulerService, _configService, value);
         _pendingSchedulerDevice = value;
         EnsureSchedulerLoaded();
         if (_autoConnectEnabled)
@@ -396,7 +396,7 @@ public sealed partial class MainViewModel : ViewModelBase
             disposableScheduler.Dispose();
         }
 
-        Scheduler = new SchedulerViewModel(_configService, _locationService, _pendingSchedulerDevice);
+        Scheduler = new SchedulerViewModel(_configService, _schedulerService, _locationService, _pendingSchedulerDevice);
     }
 
     private async Task RunHealthCheckAsync()
@@ -516,6 +516,11 @@ public sealed partial class MainViewModel : ViewModelBase
         try
         {
             await _bleService.ConnectAsync(device);
+            if (device.IsConnected)
+            {
+                await PersistConnectedDeviceAsync(device);
+            }
+
             return device.IsConnected;
         }
         catch
@@ -577,17 +582,7 @@ public sealed partial class MainViewModel : ViewModelBase
 
     private static bool IsSameDevice(LedDevice left, LedDevice right)
     {
-        if (left.Id != Guid.Empty && right.Id != Guid.Empty && left.Id == right.Id)
-        {
-            return true;
-        }
-
-        if (string.IsNullOrWhiteSpace(left.MacAddress) || string.IsNullOrWhiteSpace(right.MacAddress))
-        {
-            return false;
-        }
-
-        return string.Equals(left.MacAddress, right.MacAddress, StringComparison.OrdinalIgnoreCase);
+        return LedDeviceIdentity.Matches(left, right);
     }
 
     private void OnDevicePropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -609,10 +604,7 @@ public sealed partial class MainViewModel : ViewModelBase
         {
             var config = await _configService.LoadConfigAsync();
             var devices = config.SavedDevices.ToList();
-            var target = devices.FirstOrDefault(d =>
-                d.Id == device.Id ||
-                (!string.IsNullOrWhiteSpace(d.MacAddress) &&
-                 string.Equals(d.MacAddress, device.MacAddress, StringComparison.OrdinalIgnoreCase)));
+            var target = devices.FirstOrDefault(d => LedDeviceIdentity.Matches(d, device));
 
             if (target is null)
             {
@@ -628,6 +620,48 @@ public sealed partial class MainViewModel : ViewModelBase
         catch (Exception ex)
         {
             Console.WriteLine($"[Main] Device name save failed: {ex.Message}");
+        }
+    }
+
+    private async Task PersistConnectedDeviceAsync(LedDevice device)
+    {
+        try
+        {
+            var config = await _configService.LoadConfigAsync();
+            var devices = config.SavedDevices.ToList();
+            var target = devices.FirstOrDefault(d => LedDeviceIdentity.Matches(d, device));
+
+            if (target is null)
+            {
+                target = device;
+                devices.Add(target);
+            }
+
+            UpdatePersistedDevice(target, device);
+            var updated = new AppConfig(devices, config.Profiles, config.Settings);
+            await _configService.SaveConfigAsync(updated);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[Main] Device identity save failed: {ex.Message}");
+        }
+    }
+
+    private static void UpdatePersistedDevice(LedDevice target, LedDevice source)
+    {
+        if (!string.IsNullOrWhiteSpace(source.Name))
+        {
+            target.Name = source.Name;
+        }
+
+        if (!string.IsNullOrWhiteSpace(source.MacAddress))
+        {
+            target.MacAddress = source.MacAddress;
+        }
+
+        if (!string.IsNullOrWhiteSpace(source.DeviceIdentifier))
+        {
+            target.DeviceIdentifier = source.DeviceIdentifier;
         }
     }
 }

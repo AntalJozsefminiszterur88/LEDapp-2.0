@@ -14,6 +14,8 @@ namespace LedController.UI;
 
 public partial class App : Application
 {
+    private SplashScreenWindow? _splashScreen;
+
     public IServiceProvider Services { get; private set; } = default!;
 
     public override void Initialize()
@@ -32,9 +34,16 @@ public partial class App : Application
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
+            if (Program.ShowSplashOnStartup)
+            {
+                _splashScreen = new SplashScreenWindow();
+                _splashScreen.Show();
+            }
+
             var mainWindow = Services.GetRequiredService<MainWindow>();
             mainWindow.ConfigureStartup(Program.StartMinimizedToTray);
-            mainWindow.Opened += (_, _) => NativeSplash.Close();
+            mainWindow.Opened += (_, _) => CloseSplash();
+            mainWindow.Closed += (_, _) => CloseSplash();
             desktop.MainWindow = mainWindow;
         }
 
@@ -58,12 +67,18 @@ public partial class App : Application
 
     private static void ConfigureServices(IServiceCollection services)
     {
-        services.AddSingleton<IBleService, BleService>();
         services.AddSingleton<IConfigService, FileConfigService>();
         services.AddSingleton<ILocationService, LocationService>();
         services.AddSingleton<ISchedulerService, SchedulerService>();
         services.AddSingleton<IMqttService, MqttService>();
-        services.AddSingleton<IStartupService, StartupService>();
+
+#if WINDOWS
+        services.AddSingleton<IBleService, WindowsBleService>();
+        services.AddSingleton<IStartupService, WindowsStartupService>();
+#else
+        services.AddSingleton<IBleService, LinuxBleService>();
+        services.AddSingleton<IStartupService, LinuxStartupService>();
+#endif
 
         services.AddSingleton<DashboardViewModel>();
         services.AddSingleton<DiscoveryViewModel>();
@@ -79,5 +94,25 @@ public partial class App : Application
             AppLog.Exception("Unhandled UI thread exception.", e.Exception);
             e.Handled = true;
         };
+    }
+
+    private void CloseSplash()
+    {
+        if (_splashScreen is null)
+        {
+            return;
+        }
+
+        try
+        {
+            _splashScreen.Close();
+        }
+        catch
+        {
+        }
+        finally
+        {
+            _splashScreen = null;
+        }
     }
 }

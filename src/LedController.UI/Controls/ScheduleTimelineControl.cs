@@ -412,6 +412,11 @@ public sealed class ScheduleTimelineControl : Control
 
         foreach (var profile in profiles)
         {
+            if (!profile.IsActive)
+            {
+                continue;
+            }
+
             foreach (var day in WeekOrder)
             {
                 var schedule = profile.GetSchedule(day);

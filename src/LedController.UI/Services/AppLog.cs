@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
@@ -29,6 +30,24 @@ internal static class AppLog
             .ToString();
 
         Write("EXCEPTION", details);
+    }
+
+    internal static bool IsBenignBackgroundException(Exception ex)
+    {
+        foreach (var candidate in Flatten(ex))
+        {
+            if (candidate.Message.Contains("com.canonical.AppMenu.Registrar", StringComparison.Ordinal))
+            {
+                return true;
+            }
+
+            if (candidate.Message.Contains("org.freedesktop.DBus.Error.ServiceUnknown", StringComparison.Ordinal))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private static void Write(string level, string message)
@@ -81,5 +100,71 @@ internal static class AppLog
         }
 
         return null;
+    }
+
+    private static IEnumerable<Exception> Flatten(Exception ex)
+    {
+        var pending = new Stack<Exception>();
+        pending.Push(ex);
+
+        while (pending.Count > 0)
+        {
+            var current = pending.Pop();
+            yield return current;
+
+            if (current is AggregateException aggregate)
+            {
+                foreach (var inner in aggregate.InnerExceptions)
+                {
+                    pending.Push(inner);
+                }
+            }
+            else if (current.InnerException is not null)
+            {
+                pending.Push(current.InnerException);
+            }
+        }
+    }
+
+    internal static void Maintenance()
+    {
+        try
+        {
+            Rotate(LogFilePath);
+            Rotate(Path.Combine(LogDirectory, "ble.log"));
+        }
+        catch
+        {
+        }
+    }
+
+    private static void Rotate(string filePath)
+    {
+        if (!File.Exists(filePath)) return;
+
+        var fileInfo = new FileInfo(filePath);
+        if (fileInfo.Length < 5 * 1024 * 1024) return; // 5MB
+
+        lock (Sync)
+        {
+            try
+            {
+                for (int i = 4; i >= 1; i--)
+                {
+                    var oldFile = $"{filePath}.{i}";
+                    var newFile = $"{filePath}.{i + 1}";
+                    if (File.Exists(oldFile))
+                    {
+                        if (i == 4) File.Delete(oldFile);
+                        else File.Move(oldFile, newFile, true);
+                    }
+                }
+
+                File.Move(filePath, $"{filePath}.1", true);
+            }
+            catch
+            {
+            }
+        }
     }
 }

@@ -1,0 +1,36 @@
+﻿2026-04-18T20:36:27.1295303+02:00 [EXCEPTION] Unhandled exception (AppDomain).
+System.Exception: XOpenDisplay failed
+   at Avalonia.X11.AvaloniaX11Platform.Initialize(X11PlatformOptions options)
+   at Avalonia.AvaloniaX11PlatformExtensions.<>c.<UseX11>b__0_0()
+   at Avalonia.AppBuilder.SetupUnsafe()
+   at Avalonia.AppBuilder.Setup()
+   at Avalonia.AppBuilder.SetupWithLifetime(IApplicationLifetime lifetime)
+   at Avalonia.ClassicDesktopStyleApplicationLifetimeExtensions.StartWithClassicDesktopLifetime(AppBuilder builder, String[] args, Action`1 lifetimeBuilder)
+   at LedController.UI.Program.Main(String[] args) in /home/server/Documents/Projects/LEDapp-2.0/src/LedController.UI/Program.cs:line 36
+
+2026-04-18T21:36:34.4570980+02:00 [EXCEPTION] Unobserved task exception.
+System.AggregateException: A Task's exception(s) were not observed either by Waiting on the Task or accessing its Exception property. As a result, the unobserved exception was rethrown by the finalizer thread. (org.freedesktop.DBus.Error.ServiceUnknown: The name com.canonical.AppMenu.Registrar was not provided by any .service files)
+ ---> Tmds.DBus.Protocol.DBusException: org.freedesktop.DBus.Error.ServiceUnknown: The name com.canonical.AppMenu.Registrar was not provided by any .service files
+   at Tmds.DBus.Protocol.DBusConnection.MyValueTaskSource`1.System.Threading.Tasks.Sources.IValueTaskSource.GetResult(Int16 token)
+   at Tmds.DBus.Protocol.DBusConnection.CallMethodAsync(MessageBuffer message)
+   at Tmds.DBus.Protocol.Connection.CallMethodAsync(MessageBuffer message)
+   --- End of inner exception stack trace ---
+
+2026-04-18T21:38:37.0680689+02:00 [EXCEPTION] Unobserved task exception.
+System.AggregateException: A Task's exception(s) were not observed either by Waiting on the Task or accessing its Exception property. As a result, the unobserved exception was rethrown by the finalizer thread. (org.freedesktop.DBus.Error.ServiceUnknown: The name com.canonical.AppMenu.Registrar was not provided by any .service files)
+ ---> Tmds.DBus.Protocol.DBusException: org.freedesktop.DBus.Error.ServiceUnknown: The name com.canonical.AppMenu.Registrar was not provided by any .service files
+   at Tmds.DBus.Protocol.DBusConnection.MyValueTaskSource`1.System.Threading.Tasks.Sources.IValueTaskSource.GetResult(Int16 token)
+   at Tmds.DBus.Protocol.DBusConnection.CallMethodAsync(MessageBuffer message)
+   at Tmds.DBus.Protocol.Connection.CallMethodAsync(MessageBuffer message)
+   --- End of inner exception stack trace ---
+
+2026-04-28T20:55:16.0231378+02:00 [EXCEPTION] Unhandled exception (AppDomain).
+System.Exception: XOpenDisplay failed
+   at Avalonia.X11.AvaloniaX11Platform.Initialize(X11PlatformOptions options)
+   at Avalonia.AvaloniaX11PlatformExtensions.<>c.<UseX11>b__0_0()
+   at Avalonia.AppBuilder.SetupUnsafe()
+   at Avalonia.AppBuilder.Setup()
+   at Avalonia.AppBuilder.SetupWithLifetime(IApplicationLifetime lifetime)
+   at Avalonia.ClassicDesktopStyleApplicationLifetimeExtensions.StartWithClassicDesktopLifetime(AppBuilder builder, String[] args, Action`1 lifetimeBuilder)
+   at LedController.UI.Program.Main(String[] args) in /home/server/Documents/Projects/LEDapp-2.0/src/LedController.UI/Program.cs:line 161
+

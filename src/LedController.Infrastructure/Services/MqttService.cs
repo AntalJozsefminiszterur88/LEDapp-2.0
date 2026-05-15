@@ -22,6 +22,7 @@ public sealed class MqttService : IMqttService
 
     private readonly IConfigService _configService;
     private readonly IBleService _bleService;
+    private readonly ISchedulerService _schedulerService;
     private readonly SemaphoreSlim _sync = new(1, 1);
     private readonly object _reconnectLock = new();
 
@@ -30,10 +31,12 @@ public sealed class MqttService : IMqttService
     private Task? _reconnectTask;
     private bool _stopRequested;
 
-    public MqttService(IConfigService configService, IBleService bleService)
+    public MqttService(IConfigService configService, IBleService bleService, ISchedulerService schedulerService)
     {
         _configService = configService;
         _bleService = bleService;
+        _schedulerService = schedulerService;
+        _schedulerService.DeviceStateChanged += OnSchedulerDeviceStateChanged;
     }
 
     public bool IsRunning { get; private set; }
@@ -72,6 +75,7 @@ public sealed class MqttService : IMqttService
             await client.ConnectAsync(options, CancellationToken.None);
             await client.SubscribeAsync(CommandTopic, MqttQualityOfServiceLevel.AtMostOnce);
             IsRunning = true;
+            await PublishAllStatesAsync(config.SavedDevices);
         }
         catch (Exception ex)
         {
@@ -228,6 +232,8 @@ public sealed class MqttService : IMqttService
             await _client!.ConnectAsync(options, token);
             await _client.SubscribeAsync(CommandTopic, MqttQualityOfServiceLevel.AtMostOnce);
             IsRunning = true;
+            var config = await _configService.LoadConfigAsync();
+            await PublishAllStatesAsync(config.SavedDevices);
             return true;
         }
         catch (OperationCanceledException)
@@ -275,11 +281,16 @@ public sealed class MqttService : IMqttService
                 return;
             }
 
-            if (!device.IsConnected)
+            var requiresConnection = RequiresDeviceConnection(payload);
+            if (requiresConnection && !device.IsConnected)
             {
                 try
                 {
                     await _bleService.ConnectAsync(device);
+                    if (device.IsConnected)
+                    {
+                        await PersistConnectedDeviceIdentityAsync(device, config);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -302,12 +313,26 @@ public sealed class MqttService : IMqttService
         var state = payload.State?.Trim();
         var wantsOff = string.Equals(state, "OFF", StringComparison.OrdinalIgnoreCase);
         var wantsOn = string.Equals(state, "ON", StringComparison.OrdinalIgnoreCase);
+        var scheduleChanged = false;
+
+        if (payload.ScheduleEnabled.HasValue)
+        {
+            device.ScheduleEnabled = payload.ScheduleEnabled.Value;
+            _schedulerService.SetDeviceScheduleEnabled(device.Id, device.ScheduleEnabled);
+            _schedulerService.MarkDeviceStateDirty(device.Id);
+            await PersistDeviceConfigAsync(
+                device,
+                target => target.ScheduleEnabled = device.ScheduleEnabled,
+                "schedule state");
+            scheduleChanged = true;
+        }
 
         if (wantsOff)
         {
             await _bleService.SendCommandAsync(device, LedColor.OffCommandBytes);
             device.IsOn = false;
             device.CurrentColor = LedColor.Off;
+            _schedulerService.MarkDeviceStateDirty(device.Id);
             return;
         }
 
@@ -317,6 +342,7 @@ public sealed class MqttService : IMqttService
             await _bleService.SendCommandAsync(device, color.ToCommandBytes());
             device.CurrentColor = color;
             device.IsOn = true;
+            _schedulerService.MarkDeviceStateDirty(device.Id);
         }
         else if (wantsOn)
         {
@@ -324,6 +350,7 @@ public sealed class MqttService : IMqttService
             await _bleService.SendCommandAsync(device, fallback.ToCommandBytes());
             device.CurrentColor = fallback;
             device.IsOn = true;
+            _schedulerService.MarkDeviceStateDirty(device.Id);
         }
 
         if (payload.Brightness.HasValue)
@@ -333,25 +360,34 @@ public sealed class MqttService : IMqttService
             await _bleService.SendCommandAsync(device, command);
             device.Brightness = brightness;
             device.IsOn = true;
+            _schedulerService.MarkDeviceStateDirty(device.Id);
+            await PersistDeviceConfigAsync(
+                device,
+                target => target.Brightness = brightness,
+                "brightness");
+        }
+
+        if (scheduleChanged)
+        {
+            _schedulerService.MarkDeviceStateDirty(device.Id);
         }
     }
 
-    private async Task PublishStateAsync(LedDevice device)
+    public async Task PublishStateAsync(LedDevice device)
     {
-        if (_client is null || !_client.IsConnected)
+        if (device is null || _client is null || !_client.IsConnected)
         {
             return;
         }
 
-        var deviceId = string.IsNullOrWhiteSpace(device.MacAddress)
-            ? device.Id.ToString()
-            : device.MacAddress;
+        var deviceId = LedDeviceIdentity.GetStableId(device);
         var topic = $"{StateTopicPrefix}{deviceId}/state";
         var payload = new MqttStatePayload
         {
             State = device.IsOn ? "ON" : "OFF",
             Color = device.CurrentColor?.NormalizedHex ?? "#000000",
-            Brightness = device.Brightness
+            Brightness = device.Brightness,
+            ScheduleEnabled = device.ScheduleEnabled
         };
 
         var json = JsonSerializer.Serialize(payload, SerializerOptions);
@@ -359,16 +395,23 @@ public sealed class MqttService : IMqttService
             .WithTopic(topic)
             .WithPayload(json)
             .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtMostOnce)
+            .WithRetainFlag(true)
             .Build();
 
         await _client.PublishAsync(message);
     }
 
+    private async Task PublishAllStatesAsync(IEnumerable<LedDevice> devices)
+    {
+        foreach (var device in devices)
+        {
+            await PublishStateAsync(device);
+        }
+    }
+
     private static LedDevice? FindDevice(IReadOnlyList<LedDevice> devices, string deviceId)
     {
-        return devices.FirstOrDefault(d =>
-                   string.Equals(d.MacAddress, deviceId, StringComparison.OrdinalIgnoreCase) ||
-                   string.Equals(d.Id.ToString(), deviceId, StringComparison.OrdinalIgnoreCase));
+        return devices.FirstOrDefault(d => LedDeviceIdentity.Matches(d, deviceId));
     }
 
     private static string? ExtractDeviceId(string topic)
@@ -395,6 +438,80 @@ public sealed class MqttService : IMqttService
         }
 
         return parts[1];
+    }
+
+    private async Task PersistConnectedDeviceIdentityAsync(LedDevice device, AppConfig config)
+    {
+        try
+        {
+            var devices = config.SavedDevices.ToList();
+            var target = devices.FirstOrDefault(d => LedDeviceIdentity.Matches(d, device));
+            if (target is null)
+            {
+                target = device;
+                devices.Add(target);
+            }
+
+            if (!string.IsNullOrWhiteSpace(device.Name))
+            {
+                target.Name = device.Name;
+            }
+
+            if (!string.IsNullOrWhiteSpace(device.MacAddress))
+            {
+                target.MacAddress = device.MacAddress;
+            }
+
+            if (!string.IsNullOrWhiteSpace(device.DeviceIdentifier))
+            {
+                target.DeviceIdentifier = device.DeviceIdentifier;
+            }
+
+            var updated = new AppConfig(devices, config.Profiles, config.Settings);
+            await _configService.SaveConfigAsync(updated);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[MQTT] Device identity save failed: {ex.Message}");
+        }
+    }
+
+    private async Task PersistDeviceConfigAsync(LedDevice device, Action<LedDevice> update, string operationName)
+    {
+        try
+        {
+            var config = await _configService.LoadConfigAsync();
+            var devices = config.SavedDevices.ToList();
+            var target = devices.FirstOrDefault(d => LedDeviceIdentity.Matches(d, device));
+            if (target is null)
+            {
+                target = device;
+                devices.Add(target);
+            }
+
+            update(target);
+
+            var updated = new AppConfig(devices, config.Profiles, config.Settings);
+            await _configService.SaveConfigAsync(updated);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[MQTT] Failed to persist {operationName}: {ex.Message}");
+        }
+    }
+
+    private void OnSchedulerDeviceStateChanged(LedDevice device)
+    {
+        _ = PublishStateAsync(device);
+    }
+
+    private static bool RequiresDeviceConnection(MqttCommandPayload payload)
+    {
+        var state = payload.State?.Trim();
+        return string.Equals(state, "ON", StringComparison.OrdinalIgnoreCase) ||
+               string.Equals(state, "OFF", StringComparison.OrdinalIgnoreCase) ||
+               !string.IsNullOrWhiteSpace(payload.Color) ||
+               payload.Brightness.HasValue;
     }
 
     private static byte[] BuildBrightnessCommand(int value)
@@ -425,6 +542,7 @@ public sealed class MqttService : IMqttService
         public string? State { get; set; }
         public string? Color { get; set; }
         public int? Brightness { get; set; }
+        public bool? ScheduleEnabled { get; set; }
     }
 
     private sealed class MqttStatePayload
@@ -432,5 +550,6 @@ public sealed class MqttService : IMqttService
         public string State { get; set; } = "OFF";
         public string Color { get; set; } = "#000000";
         public int Brightness { get; set; }
+        public bool ScheduleEnabled { get; set; }
     }
 }

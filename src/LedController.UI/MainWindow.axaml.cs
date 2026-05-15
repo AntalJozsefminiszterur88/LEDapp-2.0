@@ -69,7 +69,7 @@ public partial class MainWindow : Window
             return;
         }
 
-        var icon = new WindowIcon(AssetLoader.Open(new Uri("avares://LEDapp-2.0/Assets/logo.ico")));
+        var icon = CreateTrayIcon();
         var menu = new NativeMenu();
 
         var showHideItem = new NativeMenuItem("Megjelenítés / elrejtés");
@@ -88,6 +88,17 @@ public partial class MainWindow : Window
             Menu = menu
         };
         _trayIcon.Clicked += (_, _) => ShowFromTray();
+    }
+
+    private static WindowIcon CreateTrayIcon()
+    {
+#if WINDOWS
+        const string assetPath = "avares://LEDapp-2.0/Assets/logo.ico";
+#else
+        const string assetPath = "avares://LEDapp-2.0/Assets/logo.png";
+#endif
+
+        return new WindowIcon(AssetLoader.Open(new Uri(assetPath)));
     }
 
     private void ToggleVisibility()

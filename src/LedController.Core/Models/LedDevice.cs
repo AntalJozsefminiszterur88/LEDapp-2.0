@@ -9,6 +9,9 @@ public partial class LedDevice : ObservableObject
     private Guid id = Guid.NewGuid();
 
     [ObservableProperty]
+    private string deviceIdentifier = string.Empty;
+
+    [ObservableProperty]
     private string name = string.Empty;
 
     [ObservableProperty]
@@ -18,9 +21,11 @@ public partial class LedDevice : ObservableObject
     private string macAddress = string.Empty;
 
     [ObservableProperty]
+    [property: System.Text.Json.Serialization.JsonIgnore]
     private bool isConnected;
 
     [ObservableProperty]
+    [property: System.Text.Json.Serialization.JsonIgnore]
     private bool isConnecting;
 
     [ObservableProperty]
@@ -33,6 +38,9 @@ public partial class LedDevice : ObservableObject
     private bool isOn;
 
     [ObservableProperty]
+    private bool scheduleEnabled = true;
+
+    [ObservableProperty]
     private ObservableCollection<ScheduleProfile> profiles = new();
 
     public string PrimaryName => string.IsNullOrWhiteSpace(CustomName) ? Name : CustomName;
@@ -41,23 +49,30 @@ public partial class LedDevice : ObservableObject
     {
         get
         {
+            var addressOrIdentifier = string.IsNullOrWhiteSpace(MacAddress) ? DeviceIdentifier : MacAddress;
+
             if (string.IsNullOrWhiteSpace(CustomName))
             {
-                return MacAddress;
+                return addressOrIdentifier;
             }
 
             if (string.IsNullOrWhiteSpace(Name))
             {
-                return MacAddress;
+                return addressOrIdentifier;
             }
 
-            if (string.IsNullOrWhiteSpace(MacAddress))
+            if (string.IsNullOrWhiteSpace(addressOrIdentifier))
             {
                 return Name;
             }
 
-            return $"{Name} - {MacAddress}";
+            return $"{Name} - {addressOrIdentifier}";
         }
+    }
+
+    partial void OnDeviceIdentifierChanged(string value)
+    {
+        OnPropertyChanged(nameof(SecondaryName));
     }
 
     partial void OnNameChanged(string value)

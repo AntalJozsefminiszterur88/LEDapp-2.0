@@ -4,7 +4,7 @@ using Microsoft.Win32;
 
 namespace LedController.Infrastructure.Services;
 
-public sealed class StartupService : IStartupService
+public sealed class WindowsStartupService : IStartupService
 {
     private const string StartupHiddenArgument = "--start-minimized-to-tray";
     private const string RunKeyPath = @"Software\Microsoft\Windows\CurrentVersion\Run";

@@ -9,6 +9,8 @@ public sealed class SchedulerService : ISchedulerService
     private static readonly TimeSpan Interval = TimeSpan.FromSeconds(2);
     private static readonly TimeSpan LocationCacheDuration = TimeSpan.FromHours(1);
 
+    public event Action<LedDevice>? DeviceStateChanged;
+
     private readonly object _sync = new();
     private readonly object _stateLock = new();
     private readonly IBleService _bleService;
@@ -201,19 +203,18 @@ public sealed class SchedulerService : ISchedulerService
                 scheduleOverride = state.ScheduleEnabledOverride;
             }
 
-            if (scheduleOverride == false || !hasActiveProfiles)
-            {
-                continue;
-            }
-
-            var desiredColor = ResolveDesiredColor(profilesForDevice, now, todaySunTimes, yesterdaySunTimes);
-
             var forceRefresh = false;
             lock (_stateLock)
             {
                 forceRefresh = state.ForceRefresh;
                 state.ForceRefresh = false;
             }
+
+            var scheduleControlEnabled = scheduleOverride ?? device.ScheduleEnabled;
+            var schedulingEnabled = scheduleControlEnabled && hasActiveProfiles;
+            var desiredColor = schedulingEnabled
+                ? ResolveDesiredColor(profilesForDevice, now, todaySunTimes, yesterdaySunTimes)
+                : null;
 
             if (desiredColor is not null)
             {
@@ -224,37 +225,152 @@ public sealed class SchedulerService : ISchedulerService
 
                 if (needsUpdate)
                 {
-                    try
+                    var action = $"color {desiredColor.NormalizedHex}";
+                    if (await SendScheduledCommandAsync(device, state, desiredColor.ToCommandBytes(), action))
                     {
-                        await _bleService.SendCommandAsync(device, desiredColor.ToCommandBytes());
                         device.IsOn = true;
                         device.CurrentColor = desiredColor;
                         state.IsOn = true;
                         state.ColorHex = desiredColor.NormalizedHex;
-                    }
-                    catch (Exception ex)
-                    {
-                        device.IsConnected = false;
-                        Console.WriteLine($"[Scheduler] BLE send failed for {device.Name}: {ex.Message}");
+                        DeviceStateChanged?.Invoke(device);
                     }
                 }
             }
-            else if (state.IsOn || forceRefresh)
+            else if (schedulingEnabled && (state.IsOn || forceRefresh))
             {
-                try
+                if (await SendScheduledCommandAsync(device, state, LedColor.OffCommandBytes, "off"))
                 {
-                    await _bleService.SendCommandAsync(device, LedColor.OffCommandBytes);
                     device.IsOn = false;
                     device.CurrentColor = LedColor.Off;
                     state.IsOn = false;
                     state.ColorHex = LedColor.Off.NormalizedHex;
-                }
-                catch (Exception ex)
-                {
-                    device.IsConnected = false;
-                    Console.WriteLine($"[Scheduler] BLE off failed for {device.Name}: {ex.Message}");
+                    DeviceStateChanged?.Invoke(device);
                 }
             }
+
+            if (scheduleControlEnabled && !device.IsConnected && !device.IsConnecting)
+            {
+                _ = EnsureDeviceConnectedAsync(device, state, "proactive background reconnect");
+            }
+        }
+    }
+
+    private async Task<bool> SendScheduledCommandAsync(
+        LedDevice device,
+        DeviceState state,
+        byte[] command,
+        string action)
+    {
+        if (!await EnsureDeviceConnectedAsync(device, state, action))
+        {
+            return false;
+        }
+
+        try
+        {
+            await _bleService.SendCommandAsync(device, command);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            device.IsConnected = false;
+            lock (_stateLock)
+            {
+                state.ForceRefresh = true;
+            }
+
+            BleLog.Exception($"[Scheduler] Scheduled {action} send failed for {device.PrimaryName}. Retrying after reconnect.", ex);
+
+            if (!await EnsureDeviceConnectedAsync(device, state, $"{action} retry"))
+            {
+                return false;
+            }
+
+            try
+            {
+                await _bleService.SendCommandAsync(device, command);
+                BleLog.Info($"[Scheduler] Scheduled {action} send recovered after reconnect for {device.PrimaryName}.");
+                return true;
+            }
+            catch (Exception retryEx)
+            {
+                device.IsConnected = false;
+                lock (_stateLock)
+                {
+                    state.ForceRefresh = true;
+                }
+
+                BleLog.Exception($"[Scheduler] Scheduled {action} retry failed for {device.PrimaryName}.", retryEx);
+                return false;
+            }
+        }
+    }
+
+    private async Task<bool> EnsureDeviceConnectedAsync(LedDevice device, DeviceState state, string reason)
+    {
+        if (device.IsConnected)
+        {
+            return true;
+        }
+
+        if (device.IsConnecting)
+        {
+            lock (_stateLock)
+            {
+                state.ForceRefresh = true;
+            }
+
+            return false;
+        }
+
+        var now = DateTime.UtcNow;
+        if (now - state.LastConnectAttemptUtc < TimeSpan.FromSeconds(30))
+        {
+            return false;
+        }
+
+        state.LastConnectAttemptUtc = now;
+        device.IsConnecting = true;
+        try
+        {
+            BleLog.Info(
+                $"[Scheduler] Reconnect start for {device.PrimaryName}. Reason={reason}; Address={device.MacAddress}; DeviceIdentifier={device.DeviceIdentifier}");
+
+            await _bleService.ConnectAsync(device);
+            if (!device.IsConnected)
+            {
+                lock (_stateLock)
+                {
+                    state.ForceRefresh = true;
+                }
+
+                BleLog.Error($"[Scheduler] Reconnect finished without an active connection for {device.PrimaryName}.");
+                return false;
+            }
+
+            lock (_stateLock)
+            {
+                state.ForceRefresh = true;
+            }
+
+            BleLog.Info($"[Scheduler] Reconnect success for {device.PrimaryName}.");
+            state.LastConnectAttemptUtc = DateTime.MinValue;
+            return true;
+        }
+        catch (Exception ex)
+        {
+            device.IsConnected = false;
+            lock (_stateLock)
+            {
+                state.ForceRefresh = true;
+            }
+
+            BleLog.Exception($"[Scheduler] Reconnect failed for {device.PrimaryName}.", ex);
+            return false;
+        }
+        finally
+        {
+            device.IsConnecting = false;
         }
     }
 
@@ -412,5 +528,6 @@ public sealed class SchedulerService : ISchedulerService
         public string? ColorHex { get; set; }
         public bool ForceRefresh { get; set; }
         public bool? ScheduleEnabledOverride { get; set; }
+        public DateTime LastConnectAttemptUtc { get; set; } = DateTime.MinValue;
     }
 }

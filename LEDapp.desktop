@@ -1,0 +1,12 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=LEDapp-2.0
+Comment=Bluetooth LED controller
+Exec=/home/server/Documents/Projects/LEDapp-2.0/inditas-linux.sh
+Path=/home/server/Documents/Projects/LEDapp-2.0
+Icon=/home/server/Documents/Projects/LEDapp-2.0/src/LedController.UI/Assets/logo.png
+Terminal=false
+Categories=Utility;
+StartupNotify=true
+StartupWMClass=LEDapp-2.0

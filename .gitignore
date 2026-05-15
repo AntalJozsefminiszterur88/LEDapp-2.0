@@ -1,3 +1,12 @@
 publish/
 **/bin/
 **/obj/
+__pycache__/
+*.pyc
+bin/
+obj/
+*.user
+*.suo
+.vs/
+node_modules/
+dist/

@@ -18,7 +18,7 @@ using WindowsGattCharacteristic = Windows.Devices.Bluetooth.GenericAttributeProf
 
 namespace LedController.Infrastructure.Services;
 
-public sealed class BleService : IBleService
+public sealed class WindowsBleService : IBleService
 {
     private static readonly Guid LedCharacteristicUuid = Guid.Parse("0000fff3-0000-1000-8000-00805f9b34fb");
     private static readonly TimeSpan ConnectTimeout = TimeSpan.FromSeconds(8);
@@ -54,7 +54,8 @@ public sealed class BleService : IBleService
                     _ => new LedDevice
                     {
                         Name = name,
-                        MacAddress = address
+                        MacAddress = address,
+                        DeviceIdentifier = address
                     },
                     (_, existing) =>
                     {
@@ -140,14 +141,15 @@ public sealed class BleService : IBleService
             throw new ArgumentNullException(nameof(device));
         }
 
-        if (string.IsNullOrWhiteSpace(device.MacAddress))
+        var connectionId = LedDeviceIdentity.GetConnectionId(device);
+        if (string.IsNullOrWhiteSpace(connectionId))
         {
-            throw new InvalidOperationException("Device MacAddress is required for BLE connection.");
+            throw new InvalidOperationException("Device identifier is required for BLE connection.");
         }
 
         if (OperatingSystem.IsWindows())
         {
-            if (!TryParseBluetoothAddress(device.MacAddress, out var address))
+            if (!TryParseBluetoothAddress(connectionId, out var address))
             {
                 throw new InvalidOperationException("Device address format is invalid.");
             }
