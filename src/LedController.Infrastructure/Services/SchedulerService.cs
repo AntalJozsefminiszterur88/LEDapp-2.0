@@ -8,6 +8,8 @@ public sealed class SchedulerService : ISchedulerService
 {
     private static readonly TimeSpan Interval = TimeSpan.FromSeconds(2);
     private static readonly TimeSpan LocationCacheDuration = TimeSpan.FromHours(1);
+    private static readonly TimeSpan BaseReconnectDelay = TimeSpan.FromSeconds(10);
+    private static readonly TimeSpan MaxReconnectDelay = TimeSpan.FromMinutes(5);
 
     public event Action<LedDevice>? DeviceStateChanged;
 
@@ -142,7 +144,6 @@ public sealed class SchedulerService : ISchedulerService
     private async Task TickAsync(CancellationToken token)
     {
         var now = DateTime.Now;
-
         AppConfig config;
         try
         {
@@ -216,6 +217,16 @@ public sealed class SchedulerService : ISchedulerService
                 ? ResolveDesiredColor(profilesForDevice, now, todaySunTimes, yesterdaySunTimes)
                 : null;
 
+            if (schedulingEnabled && !device.IsConnected && !device.IsConnecting)
+            {
+                await EnsureDeviceConnectedAsync(
+                    device,
+                    state,
+                    desiredColor is null
+                        ? "connection maintenance"
+                        : $"maintain {desiredColor.NormalizedHex}");
+            }
+
             if (desiredColor is not null)
             {
                 var needsUpdate = forceRefresh ||
@@ -236,9 +247,13 @@ public sealed class SchedulerService : ISchedulerService
                     }
                 }
             }
-            else if (schedulingEnabled && (state.IsOn || forceRefresh))
+            else if (schedulingEnabled)
             {
-                if (await SendScheduledCommandAsync(device, state, LedColor.OffCommandBytes, "off"))
+                var needsUpdate = forceRefresh ||
+                                  state.IsOn ||
+                                  !string.Equals(state.ColorHex, LedColor.Off.NormalizedHex, StringComparison.OrdinalIgnoreCase);
+
+                if (needsUpdate && await SendScheduledCommandAsync(device, state, LedColor.OffCommandBytes, "off"))
                 {
                     device.IsOn = false;
                     device.CurrentColor = LedColor.Off;
@@ -248,10 +263,7 @@ public sealed class SchedulerService : ISchedulerService
                 }
             }
 
-            if (scheduleControlEnabled && !device.IsConnected && !device.IsConnecting)
-            {
-                _ = EnsureDeviceConnectedAsync(device, state, "proactive background reconnect");
-            }
+
         }
     }
 
@@ -268,7 +280,9 @@ public sealed class SchedulerService : ISchedulerService
 
         try
         {
+            BleLog.Info($"[Scheduler] Sending scheduled {action} command for {device.PrimaryName}.");
             await _bleService.SendCommandAsync(device, command);
+            BleLog.Info($"[Scheduler] Scheduled {action} send success for {device.PrimaryName}.");
             return true;
         }
         catch (Exception ex)
@@ -308,7 +322,7 @@ public sealed class SchedulerService : ISchedulerService
 
     private async Task<bool> EnsureDeviceConnectedAsync(LedDevice device, DeviceState state, string reason)
     {
-        if (device.IsConnected)
+        if (device.IsConnected || await _bleService.IsDeviceConnectedAsync(device))
         {
             return true;
         }
@@ -324,12 +338,11 @@ public sealed class SchedulerService : ISchedulerService
         }
 
         var now = DateTime.UtcNow;
-        if (now - state.LastConnectAttemptUtc < TimeSpan.FromSeconds(30))
+        if (now < state.NextReconnectAllowedUtc)
         {
             return false;
         }
 
-        state.LastConnectAttemptUtc = now;
         device.IsConnecting = true;
         try
         {
@@ -354,7 +367,8 @@ public sealed class SchedulerService : ISchedulerService
             }
 
             BleLog.Info($"[Scheduler] Reconnect success for {device.PrimaryName}.");
-            state.LastConnectAttemptUtc = DateTime.MinValue;
+            state.ConsecutiveConnectFailures = 0;
+            state.NextReconnectAllowedUtc = DateTime.MinValue;
             return true;
         }
         catch (Exception ex)
@@ -366,12 +380,26 @@ public sealed class SchedulerService : ISchedulerService
             }
 
             BleLog.Exception($"[Scheduler] Reconnect failed for {device.PrimaryName}.", ex);
+            ApplyReconnectBackoff(state, device);
             return false;
         }
         finally
         {
             device.IsConnecting = false;
         }
+    }
+
+    private static void ApplyReconnectBackoff(DeviceState state, LedDevice device)
+    {
+        state.ConsecutiveConnectFailures++;
+        var multiplier = Math.Pow(2, Math.Min(state.ConsecutiveConnectFailures - 1, 5));
+        var delaySeconds = Math.Min(BaseReconnectDelay.TotalSeconds * multiplier, MaxReconnectDelay.TotalSeconds);
+        var delay = TimeSpan.FromSeconds(delaySeconds);
+        state.NextReconnectAllowedUtc = DateTime.UtcNow.Add(delay);
+
+        BleLog.Info(
+            $"[Scheduler] Backoff scheduled for {device.PrimaryName}. FailureCount={state.ConsecutiveConnectFailures}; " +
+            $"NextAttemptUtc={state.NextReconnectAllowedUtc:O}; DelaySeconds={delay.TotalSeconds:0}");
     }
 
     private async Task<GeoCoordinate> ResolveCoordinatesAsync(AppSettings settings)
@@ -528,6 +556,7 @@ public sealed class SchedulerService : ISchedulerService
         public string? ColorHex { get; set; }
         public bool ForceRefresh { get; set; }
         public bool? ScheduleEnabledOverride { get; set; }
-        public DateTime LastConnectAttemptUtc { get; set; } = DateTime.MinValue;
+        public int ConsecutiveConnectFailures { get; set; }
+        public DateTime NextReconnectAllowedUtc { get; set; } = DateTime.MinValue;
     }
 }

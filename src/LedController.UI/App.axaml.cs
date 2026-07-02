@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -55,6 +56,17 @@ public partial class App : Application
         try
         {
             var startupService = Services.GetService<IStartupService>();
+#if !WINDOWS
+            if (startupService is LinuxStartupService linuxStartupService)
+            {
+                linuxStartupService.NormalizeExistingRegistration();
+                if (File.Exists(linuxStartupService.UserServicePath))
+                {
+                    return;
+                }
+            }
+#endif
+
             if (startupService?.IsEnabled() == true)
             {
                 _ = startupService.SetEnabled(enabled: true);

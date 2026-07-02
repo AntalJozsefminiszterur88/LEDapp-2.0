@@ -34,3 +34,72 @@ System.Exception: XOpenDisplay failed
    at Avalonia.ClassicDesktopStyleApplicationLifetimeExtensions.StartWithClassicDesktopLifetime(AppBuilder builder, String[] args, Action`1 lifetimeBuilder)
    at LedController.UI.Program.Main(String[] args) in /home/server/Documents/Projects/LEDapp-2.0/src/LedController.UI/Program.cs:line 161
 
+2026-05-23T13:45:23.9916735+02:00 [INFO] Another LEDapp-2.0 instance is already running. Duplicate launch is exiting.
+2026-05-23T13:45:29.3246863+02:00 [INFO] Another LEDapp-2.0 instance is already running. Duplicate launch is exiting.
+2026-05-23T13:45:34.5439646+02:00 [INFO] Another LEDapp-2.0 instance is already running. Duplicate launch is exiting.
+2026-05-23T13:45:39.7893306+02:00 [INFO] Another LEDapp-2.0 instance is already running. Duplicate launch is exiting.
+2026-05-23T13:45:45.0414041+02:00 [INFO] Another LEDapp-2.0 instance is already running. Duplicate launch is exiting.
+2026-05-23T13:45:50.3024684+02:00 [INFO] Another LEDapp-2.0 instance is already running. Duplicate launch is exiting.
+2026-05-23T13:45:55.5506845+02:00 [INFO] Another LEDapp-2.0 instance is already running. Duplicate launch is exiting.
+2026-05-23T13:46:00.8043633+02:00 [INFO] Another LEDapp-2.0 instance is already running. Duplicate launch is exiting.
+2026-05-23T13:46:06.0311354+02:00 [INFO] Another LEDapp-2.0 instance is already running. Duplicate launch is exiting.
+2026-05-23T13:46:11.2938905+02:00 [INFO] Another LEDapp-2.0 instance is already running. Duplicate launch is exiting.
+2026-05-23T13:46:16.5300373+02:00 [INFO] Another LEDapp-2.0 instance is already running. Duplicate launch is exiting.
+2026-05-23T13:46:21.7971071+02:00 [INFO] Another LEDapp-2.0 instance is already running. Duplicate launch is exiting.
+2026-05-23T13:46:27.0211378+02:00 [INFO] Another LEDapp-2.0 instance is already running. Duplicate launch is exiting.
+2026-05-23T13:46:32.2839920+02:00 [INFO] Another LEDapp-2.0 instance is already running. Duplicate launch is exiting.
+2026-05-23T13:46:37.5274387+02:00 [INFO] Another LEDapp-2.0 instance is already running. Duplicate launch is exiting.
+2026-05-23T13:46:42.8136773+02:00 [INFO] Another LEDapp-2.0 instance is already running. Duplicate launch is exiting.
+2026-05-23T13:46:48.0422019+02:00 [INFO] Another LEDapp-2.0 instance is already running. Duplicate launch is exiting.
+2026-05-23T13:46:53.2959340+02:00 [INFO] Another LEDapp-2.0 instance is already running. Duplicate launch is exiting.
+2026-05-23T13:46:58.5435393+02:00 [INFO] Another LEDapp-2.0 instance is already running. Duplicate launch is exiting.
+2026-05-23T13:47:03.8165633+02:00 [INFO] Another LEDapp-2.0 instance is already running. Duplicate launch is exiting.
+2026-05-23T13:47:09.0641319+02:00 [INFO] Another LEDapp-2.0 instance is already running. Duplicate launch is exiting.
+2026-05-23T13:47:14.3138690+02:00 [INFO] Another LEDapp-2.0 instance is already running. Duplicate launch is exiting.
+2026-05-23T13:47:19.5432705+02:00 [INFO] Another LEDapp-2.0 instance is already running. Duplicate launch is exiting.
+2026-05-23T13:47:24.7746578+02:00 [INFO] Another LEDapp-2.0 instance is already running. Duplicate launch is exiting.
+2026-05-23T13:47:30.0603816+02:00 [INFO] Another LEDapp-2.0 instance is already running. Duplicate launch is exiting.
+2026-05-23T13:47:35.2952813+02:00 [INFO] Another LEDapp-2.0 instance is already running. Duplicate launch is exiting.
+2026-05-23T13:47:40.5374863+02:00 [INFO] Another LEDapp-2.0 instance is already running. Duplicate launch is exiting.
+2026-05-23T13:55:30.5579973+02:00 [INFO] Another LEDapp-2.0 instance is already running. Duplicate launch is exiting.
+2026-05-23T14:01:06.5009684+02:00 [INFO] Another LEDapp-2.0 instance is already running. Duplicate launch is exiting.
+2026-06-01T14:41:59.3743096+02:00 [EXCEPTION] Unobserved task exception.
+System.AggregateException: A Task's exception(s) were not observed either by Waiting on the Task or accessing its Exception property. As a result, the unobserved exception was rethrown by the finalizer thread. (org.bluez.Error.Failed: br-connection-canceled)
+ ---> Tmds.DBus.DBusException: org.bluez.Error.Failed: br-connection-canceled
+   at Tmds.DBus.DBusConnection.CallMethodAsync(Message msg, Boolean checkConnected, Boolean checkReplyType)
+   at Tmds.DBus.Connection.CallMethodAsync(Message message)
+   at Tmds.DBus.CodeGen.DBusObjectProxy.SendMethodReturnReaderAsync(String iface, String member, Nullable`1 inSignature, MessageWriter writer)
+   --- End of inner exception stack trace ---
+
+2026-06-17T15:52:23.9824183+02:00 [EXCEPTION] Unobserved task exception.
+System.AggregateException: A Task's exception(s) were not observed either by Waiting on the Task or accessing its Exception property. As a result, the unobserved exception was rethrown by the finalizer thread. (org.bluez.Error.Failed: br-connection-canceled)
+ ---> Tmds.DBus.DBusException: org.bluez.Error.Failed: br-connection-canceled
+   at Tmds.DBus.DBusConnection.CallMethodAsync(Message msg, Boolean checkConnected, Boolean checkReplyType)
+   at Tmds.DBus.Connection.CallMethodAsync(Message message)
+   at Tmds.DBus.CodeGen.DBusObjectProxy.SendMethodReturnReaderAsync(String iface, String member, Nullable`1 inSignature, MessageWriter writer)
+   --- End of inner exception stack trace ---
+
+2026-06-17T15:59:39.3528846+02:00 [EXCEPTION] Unobserved task exception.
+System.AggregateException: A Task's exception(s) were not observed either by Waiting on the Task or accessing its Exception property. As a result, the unobserved exception was rethrown by the finalizer thread. (org.bluez.Error.Failed: br-connection-canceled)
+ ---> Tmds.DBus.DBusException: org.bluez.Error.Failed: br-connection-canceled
+   at Tmds.DBus.DBusConnection.CallMethodAsync(Message msg, Boolean checkConnected, Boolean checkReplyType)
+   at Tmds.DBus.Connection.CallMethodAsync(Message message)
+   at Tmds.DBus.CodeGen.DBusObjectProxy.SendMethodReturnReaderAsync(String iface, String member, Nullable`1 inSignature, MessageWriter writer)
+   --- End of inner exception stack trace ---
+
+2026-06-17T16:01:09.9775690+02:00 [EXCEPTION] Unobserved task exception.
+System.AggregateException: A Task's exception(s) were not observed either by Waiting on the Task or accessing its Exception property. As a result, the unobserved exception was rethrown by the finalizer thread. (org.bluez.Error.Failed: br-connection-canceled)
+ ---> Tmds.DBus.DBusException: org.bluez.Error.Failed: br-connection-canceled
+   at Tmds.DBus.DBusConnection.CallMethodAsync(Message msg, Boolean checkConnected, Boolean checkReplyType)
+   at Tmds.DBus.Connection.CallMethodAsync(Message message)
+   at Tmds.DBus.CodeGen.DBusObjectProxy.SendMethodReturnReaderAsync(String iface, String member, Nullable`1 inSignature, MessageWriter writer)
+   --- End of inner exception stack trace ---
+
+2026-07-01T21:55:58.0402024+02:00 [EXCEPTION] Unobserved task exception.
+System.AggregateException: A Task's exception(s) were not observed either by Waiting on the Task or accessing its Exception property. As a result, the unobserved exception was rethrown by the finalizer thread. (org.bluez.Error.Failed: br-connection-canceled)
+ ---> Tmds.DBus.DBusException: org.bluez.Error.Failed: br-connection-canceled
+   at Tmds.DBus.DBusConnection.CallMethodAsync(Message msg, Boolean checkConnected, Boolean checkReplyType)
+   at Tmds.DBus.Connection.CallMethodAsync(Message message)
+   at Tmds.DBus.CodeGen.DBusObjectProxy.SendMethodReturnReaderAsync(String iface, String member, Nullable`1 inSignature, MessageWriter writer)
+   --- End of inner exception stack trace ---
+

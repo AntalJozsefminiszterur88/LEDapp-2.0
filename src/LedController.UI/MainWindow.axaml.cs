@@ -15,9 +15,9 @@ namespace LedController.UI;
 public partial class MainWindow : Window
 {
     private TrayIcon? _trayIcon;
-    private bool _exitRequested;
     private bool _sunTimesRefreshed;
     private bool _startHiddenInTray;
+    private bool _exitRequested;
 
     public MainWindow()
     {
@@ -132,17 +132,6 @@ public partial class MainWindow : Window
         Close();
     }
 
-    private void ApplyStartupVisibility()
-    {
-        if (!_startHiddenInTray)
-        {
-            return;
-        }
-
-        _startHiddenInTray = false;
-        Dispatcher.UIThread.Post(Hide, DispatcherPriority.Background);
-    }
-
     private void OnClosing(object? sender, WindowClosingEventArgs e)
     {
         if (_exitRequested)
@@ -152,6 +141,17 @@ public partial class MainWindow : Window
 
         e.Cancel = true;
         Hide();
+    }
+
+    private void ApplyStartupVisibility()
+    {
+        if (!_startHiddenInTray)
+        {
+            return;
+        }
+
+        _startHiddenInTray = false;
+        Dispatcher.UIThread.Post(Hide, DispatcherPriority.Background);
     }
 
     private void DisposeTrayIcon()

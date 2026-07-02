@@ -8,3 +8,7 @@
 [MQTT] Start failed: Error while connecting host 'Unspecified/127.0.0.1:1883'.
 [MQTT] Connect failed: Error while connecting host 'Unspecified/127.0.0.1:1883'.
 [MQTT] Connect failed: Error while connecting host 'Unspecified/127.0.0.1:1883'.
+[MQTT] Connect failed: Error while authenticating. Connection closed.
+[MQTT] Connect failed: Error while connecting host 'Unspecified/127.0.0.1:1883'.
+[MQTT] Connect failed: Error while authenticating. Connection closed.
+[MQTT] Connect failed: Error while authenticating. Connection closed.

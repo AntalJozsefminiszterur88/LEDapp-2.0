@@ -11,6 +11,11 @@ public sealed class PlaceholderBleService : IBleService
         return Task.FromResult(result);
     }
 
+    public Task<bool> IsDeviceConnectedAsync(LedDevice device)
+    {
+        return Task.FromResult(device?.IsConnected == true);
+    }
+
     public Task ConnectAsync(LedDevice device)
     {
         if (device is not null)

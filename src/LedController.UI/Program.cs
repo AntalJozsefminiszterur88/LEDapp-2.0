@@ -79,6 +79,7 @@ class Program
 
     internal static bool StartMinimizedToTray { get; private set; }
     internal static bool ShowSplashOnStartup => !StartMinimizedToTray;
+    private static FileStream? _singleInstanceLockStream;
 
     // Initialization code. Don't use any Avalonia, third-party APIs or any
     // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
@@ -88,97 +89,111 @@ class Program
     {
         StartMinimizedToTray = args.Any(a => string.Equals(a, StartMinimizedArgument, StringComparison.OrdinalIgnoreCase));
 
-        if (args.Any(a => string.Equals(a, BleScanOnceArgument, StringComparison.OrdinalIgnoreCase)))
-        {
-            RunBleScanOnceAsync().GetAwaiter().GetResult();
-            return;
-        }
-
-        if (TryGetOptionValue(args, BleInspectArgument, out var inspectTarget))
-        {
-            RunBleInspectAsync(inspectTarget).GetAwaiter().GetResult();
-            return;
-        }
-
-        if (TryGetOptionValue(args, BleConnectOnceArgument, out var connectTarget))
-        {
-            RunBleConnectOnceAsync(connectTarget).GetAwaiter().GetResult();
-            return;
-        }
-
-        if (TryGetOptionPair(args, BleSendColorArgument, out var colorTarget, out var colorHex))
-        {
-            RunBleSendColorAsync(colorTarget, colorHex).GetAwaiter().GetResult();
-            return;
-        }
-
-        if (TryGetOptionValue(args, BleSendOffArgument, out var offTarget))
-        {
-            RunBleSendColorAsync(offTarget, "#000000").GetAwaiter().GetResult();
-            return;
-        }
-
-        if (TryGetOptionalOptionValue(args, RestoreLegacySchedulesArgument, out var restoreLegacyPath))
-        {
-            RunRestoreLegacySchedulesAsync(restoreLegacyPath).GetAwaiter().GetResult();
-            return;
-        }
-
-        if (args.Any(a => string.Equals(a, AutostartStatusArgument, StringComparison.OrdinalIgnoreCase)))
-        {
-            RunAutostartStatus();
-            return;
-        }
-
-        if (args.Any(a => string.Equals(a, AutostartEnableArgument, StringComparison.OrdinalIgnoreCase)))
-        {
-            RunAutostartToggle(enabled: true);
-            return;
-        }
-
-        if (args.Any(a => string.Equals(a, AutostartDisableArgument, StringComparison.OrdinalIgnoreCase)))
-        {
-            RunAutostartToggle(enabled: false);
-            return;
-        }
-
-        AppLog.Maintenance();
-
-        AppDomain.CurrentDomain.UnhandledException += (_, e) =>
-        {
-            var exception = e.ExceptionObject as Exception ?? new Exception("Unknown unhandled exception.");
-            AppLog.Exception("Unhandled exception (AppDomain).", exception);
-        };
-
-        TaskScheduler.UnobservedTaskException += (_, e) =>
-        {
-            if (!AppLog.IsBenignBackgroundException(e.Exception))
-            {
-                AppLog.Exception("Unobserved task exception.", e.Exception);
-            }
-
-            e.SetObserved();
-        };
-
         try
         {
-            BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
-        }
-        catch (Exception ex)
-        {
-            if (ex.Message.Contains("XOpenDisplay", StringComparison.OrdinalIgnoreCase) ||
-                ex.Message.Contains("Could not connect to X11", StringComparison.OrdinalIgnoreCase))
+            if (args.Any(a => string.Equals(a, BleScanOnceArgument, StringComparison.OrdinalIgnoreCase)))
             {
-                Console.Error.WriteLine($"Fatal Error: Could not initialize GUI display (X11). {ex.Message}");
-                AppLog.Exception("GUI display initialization failed (X11). Process will exit.", ex);
-            }
-            else
-            {
-                Console.Error.WriteLine($"Fatal Error during startup: {ex.Message}");
-                AppLog.Exception("Fatal error during Avalonia startup.", ex);
+                RunBleScanOnceAsync().GetAwaiter().GetResult();
+                return;
             }
 
-            Environment.Exit(1);
+            if (TryGetOptionValue(args, BleInspectArgument, out var inspectTarget))
+            {
+                RunBleInspectAsync(inspectTarget).GetAwaiter().GetResult();
+                return;
+            }
+
+            if (TryGetOptionValue(args, BleConnectOnceArgument, out var connectTarget))
+            {
+                RunBleConnectOnceAsync(connectTarget).GetAwaiter().GetResult();
+                return;
+            }
+
+            if (TryGetOptionPair(args, BleSendColorArgument, out var colorTarget, out var colorHex))
+            {
+                RunBleSendColorAsync(colorTarget, colorHex).GetAwaiter().GetResult();
+                return;
+            }
+
+            if (TryGetOptionValue(args, BleSendOffArgument, out var offTarget))
+            {
+                RunBleSendColorAsync(offTarget, "#000000").GetAwaiter().GetResult();
+                return;
+            }
+
+            if (TryGetOptionalOptionValue(args, RestoreLegacySchedulesArgument, out var restoreLegacyPath))
+            {
+                RunRestoreLegacySchedulesAsync(restoreLegacyPath).GetAwaiter().GetResult();
+                return;
+            }
+
+            if (args.Any(a => string.Equals(a, AutostartStatusArgument, StringComparison.OrdinalIgnoreCase)))
+            {
+                RunAutostartStatus();
+                return;
+            }
+
+            if (args.Any(a => string.Equals(a, AutostartEnableArgument, StringComparison.OrdinalIgnoreCase)))
+            {
+                RunAutostartToggle(enabled: true);
+                return;
+            }
+
+            if (args.Any(a => string.Equals(a, AutostartDisableArgument, StringComparison.OrdinalIgnoreCase)))
+            {
+                RunAutostartToggle(enabled: false);
+                return;
+            }
+
+            if (!TryAcquireSingleInstanceLock())
+            {
+                AppLog.Info("Another LEDapp-2.0 instance is already running. Duplicate launch is exiting.");
+                Console.Error.WriteLine("LEDapp-2.0 is already running.");
+                return;
+            }
+
+            AppLog.Maintenance();
+
+            AppDomain.CurrentDomain.UnhandledException += (_, e) =>
+            {
+                var exception = e.ExceptionObject as Exception ?? new Exception("Unknown unhandled exception.");
+                AppLog.Exception("Unhandled exception (AppDomain).", exception);
+            };
+
+            TaskScheduler.UnobservedTaskException += (_, e) =>
+            {
+                if (!AppLog.IsBenignBackgroundException(e.Exception))
+                {
+                    AppLog.Exception("Unobserved task exception.", e.Exception);
+                }
+
+                e.SetObserved();
+            };
+
+            try
+            {
+                BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+            }
+            catch (Exception ex)
+            {
+                if (ex.Message.Contains("XOpenDisplay", StringComparison.OrdinalIgnoreCase) ||
+                    ex.Message.Contains("Could not connect to X11", StringComparison.OrdinalIgnoreCase))
+                {
+                    Console.Error.WriteLine($"Fatal Error: Could not initialize GUI display (X11). {ex.Message}");
+                    AppLog.Exception("GUI display initialization failed (X11). Process will exit.", ex);
+                }
+                else
+                {
+                    Console.Error.WriteLine($"Fatal Error during startup: {ex.Message}");
+                    AppLog.Exception("Fatal error during Avalonia startup.", ex);
+                }
+
+                Environment.Exit(1);
+            }
+        }
+        finally
+        {
+            ReleaseSingleInstanceLock();
         }
     }
 
@@ -188,6 +203,74 @@ class Program
             .UsePlatformDetect()
             .WithInterFont()
             .LogToTrace();
+
+    private static bool TryAcquireSingleInstanceLock()
+    {
+        var lockFilePath = ResolveSingleInstanceLockPath();
+        try
+        {
+            var directory = Path.GetDirectoryName(lockFilePath);
+            if (!string.IsNullOrWhiteSpace(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+
+            _singleInstanceLockStream = new FileStream(
+                lockFilePath,
+                FileMode.OpenOrCreate,
+                FileAccess.ReadWrite,
+                FileShare.None);
+            if (!OperatingSystem.IsMacOS())
+            {
+                _singleInstanceLockStream.Lock(0, 0);
+            }
+            _singleInstanceLockStream.SetLength(0);
+
+            var payload = System.Text.Encoding.UTF8.GetBytes(Environment.ProcessId.ToString());
+            _singleInstanceLockStream.Write(payload, 0, payload.Length);
+            _singleInstanceLockStream.Flush();
+            return true;
+        }
+        catch (IOException)
+        {
+            _singleInstanceLockStream?.Dispose();
+            _singleInstanceLockStream = null;
+            return false;
+        }
+        catch (Exception ex)
+        {
+            AppLog.Exception("Failed to acquire single-instance lock.", ex);
+            return true;
+        }
+    }
+
+    private static void ReleaseSingleInstanceLock()
+    {
+        try
+        {
+            if (!OperatingSystem.IsMacOS())
+            {
+                _singleInstanceLockStream?.Unlock(0, 0);
+            }
+        }
+        catch
+        {
+        }
+        finally
+        {
+            _singleInstanceLockStream?.Dispose();
+            _singleInstanceLockStream = null;
+        }
+    }
+
+    private static string ResolveSingleInstanceLockPath()
+    {
+        return Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "UMKGL Solutions",
+            "LEDapp",
+            "ledapp.single-instance.lock");
+    }
 
     private static async Task RunBleScanOnceAsync()
     {
@@ -444,6 +527,12 @@ class Program
             if (File.Exists(linuxStartupService.DesktopEntryPath))
             {
                 Console.WriteLine(File.ReadAllText(linuxStartupService.DesktopEntryPath));
+            }
+
+            Console.WriteLine($"User service: {linuxStartupService.UserServicePath}");
+            if (File.Exists(linuxStartupService.UserServicePath))
+            {
+                Console.WriteLine(File.ReadAllText(linuxStartupService.UserServicePath));
             }
         }
 #endif

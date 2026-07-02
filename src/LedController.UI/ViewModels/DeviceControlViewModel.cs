@@ -642,7 +642,7 @@ public sealed partial class DeviceControlViewModel : ViewModelBase, IDisposable
 
     private async Task<bool> EnsureConnectedAsync()
     {
-        if (Device.IsConnected)
+        if (Device.IsConnected || await _bleService.IsDeviceConnectedAsync(Device))
         {
             return true;
         }
@@ -650,7 +650,7 @@ public sealed partial class DeviceControlViewModel : ViewModelBase, IDisposable
         try
         {
             await _bleService.ConnectAsync(Device);
-            if (Device.IsConnected)
+            if (Device.IsConnected || await _bleService.IsDeviceConnectedAsync(Device))
             {
                 await PersistConnectedDeviceIdentityAsync();
             }

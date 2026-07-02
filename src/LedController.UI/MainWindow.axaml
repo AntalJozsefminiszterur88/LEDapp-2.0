@@ -36,8 +36,8 @@
                                      VerticalAlignment="Center">
                                 <Ellipse.Fill>
                                     <MultiBinding Converter="{StaticResource ConnectionBrushConverter}">
-                                        <Binding Path="SelectedDevice.IsConnected" />
-                                        <Binding Path="SelectedDevice.IsConnecting" />
+                                        <Binding Path="SelectedDevice.IsConnected" FallbackValue="False" TargetNullValue="False" />
+                                        <Binding Path="SelectedDevice.IsConnecting" FallbackValue="False" TargetNullValue="False" />
                                     </MultiBinding>
                                 </Ellipse.Fill>
                             </Ellipse>
@@ -70,7 +70,7 @@
                                     </Flyout>
                                 </Button.Flyout>
                             </Button>
-                            <TextBlock Text="{Binding SelectedDevice.Name, StringFormat=Eredeti: {0}}"
+                            <TextBlock Text="{Binding SelectedDevice.Name, StringFormat=Eredeti: {0}, FallbackValue='Eredeti: -', TargetNullValue='Eredeti: -'}"
                                        Opacity="0.6"
                                        FontSize="12"
                                        VerticalAlignment="Center" />

@@ -22,15 +22,10 @@ public sealed partial class MainViewModel : ViewModelBase
     private readonly IMqttService _mqttService;
     private readonly SettingsViewModel _settingsViewModel;
     private readonly DispatcherTimer _clockTimer;
-    private readonly DispatcherTimer _reconnectTimer;
     private readonly DispatcherTimer _healthTimer;
-    private Guid? _autoConnectDeviceId;
     private LedDevice? _pendingSchedulerDevice;
-    private bool _autoConnectEnabled;
-    private bool _autoConnectScheduled;
     private bool _suppressUiStateSave;
     private bool _initializedAfterOpen;
-    private bool _reconnectRunning;
     private bool _healthCheckRunning;
     private readonly HashSet<LedDevice> _deviceSubscriptions = new();
 
@@ -72,12 +67,6 @@ public sealed partial class MainViewModel : ViewModelBase
         _clockTimer.Tick += (_, _) => UpdateTime();
         _clockTimer.Start();
         UpdateTime();
-
-        _reconnectTimer = new DispatcherTimer
-        {
-            Interval = TimeSpan.FromSeconds(15)
-        };
-        _reconnectTimer.Tick += async (_, _) => await ReconnectMissingDevicesAsync();
 
         _healthTimer = new DispatcherTimer
         {
@@ -139,10 +128,6 @@ public sealed partial class MainViewModel : ViewModelBase
         DeviceControl = new DeviceControlViewModel(_bleService, _mqttService, _schedulerService, _configService, value);
         _pendingSchedulerDevice = value;
         EnsureSchedulerLoaded();
-        if (_autoConnectEnabled)
-        {
-            _ = EnsureConnectedAsync(value);
-        }
     }
 
     [RelayCommand]
@@ -239,7 +224,6 @@ public sealed partial class MainViewModel : ViewModelBase
         _schedulerService.Start();
         _ = StartMqttIfEnabledAsync();
         await LoadAsync();
-        _ = StartDeferredAutoConnectAsync();
         _healthTimer.Start();
     }
 
@@ -283,8 +267,6 @@ public sealed partial class MainViewModel : ViewModelBase
             SavedDevices.Clear();
             foreach (var device in config.SavedDevices)
             {
-                device.IsConnected = false;
-                device.IsConnecting = false;
                 SavedDevices.Add(device);
                 AttachDevice(device);
             }
@@ -426,134 +408,6 @@ public sealed partial class MainViewModel : ViewModelBase
         }
     }
 
-    private async Task EnsureConnectedAsync(LedDevice device)
-    {
-        if (device.IsConnected || device.IsConnecting)
-        {
-            return;
-        }
-
-        if (!_autoConnectEnabled)
-        {
-            return;
-        }
-
-        if (_autoConnectDeviceId == device.Id)
-        {
-            return;
-        }
-
-        _autoConnectDeviceId = device.Id;
-        try
-        {
-            await ConnectDeviceAsync(device);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"[Main] Auto-connect failed: {ex.Message}");
-        }
-        finally
-        {
-            if (_autoConnectDeviceId == device.Id)
-            {
-                _autoConnectDeviceId = null;
-            }
-        }
-    }
-
-    private async Task ConnectAllDevicesAsync()
-    {
-        var devices = SavedDevices.ToList();
-        if (devices.Count == 0)
-        {
-            return;
-        }
-
-        var tasks = devices
-            .Where(device => !device.IsConnected && !device.IsConnecting)
-            .Select(ConnectDeviceAsync)
-            .ToList();
-
-        if (tasks.Count == 0)
-        {
-            return;
-        }
-
-        await Task.WhenAll(tasks);
-    }
-
-    private async Task ReconnectMissingDevicesAsync()
-    {
-        if (_reconnectRunning)
-        {
-            return;
-        }
-
-        if (!_autoConnectEnabled)
-        {
-            return;
-        }
-
-        _reconnectRunning = true;
-        try
-        {
-            await ConnectAllDevicesAsync();
-        }
-        finally
-        {
-            _reconnectRunning = false;
-        }
-    }
-
-    private async Task<bool> ConnectDeviceAsync(LedDevice device)
-    {
-        if (device.IsConnected || device.IsConnecting)
-        {
-            return device.IsConnected;
-        }
-
-        device.IsConnecting = true;
-        try
-        {
-            await _bleService.ConnectAsync(device);
-            if (device.IsConnected)
-            {
-                await PersistConnectedDeviceAsync(device);
-            }
-
-            return device.IsConnected;
-        }
-        catch
-        {
-            return false;
-        }
-        finally
-        {
-            device.IsConnecting = false;
-        }
-    }
-
-    private async Task StartDeferredAutoConnectAsync()
-    {
-        if (_autoConnectScheduled)
-        {
-            return;
-        }
-
-        _autoConnectScheduled = true;
-        try
-        {
-            await Task.Delay(TimeSpan.FromSeconds(1));
-            _autoConnectEnabled = true;
-            _reconnectTimer.Start();
-            await ConnectAllDevicesAsync();
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"[Main] Auto-connect start failed: {ex.Message}");
-        }
-    }
-
     private void AttachDevice(LedDevice device)
     {
         if (_deviceSubscriptions.Add(device))
@@ -623,45 +477,4 @@ public sealed partial class MainViewModel : ViewModelBase
         }
     }
 
-    private async Task PersistConnectedDeviceAsync(LedDevice device)
-    {
-        try
-        {
-            var config = await _configService.LoadConfigAsync();
-            var devices = config.SavedDevices.ToList();
-            var target = devices.FirstOrDefault(d => LedDeviceIdentity.Matches(d, device));
-
-            if (target is null)
-            {
-                target = device;
-                devices.Add(target);
-            }
-
-            UpdatePersistedDevice(target, device);
-            var updated = new AppConfig(devices, config.Profiles, config.Settings);
-            await _configService.SaveConfigAsync(updated);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"[Main] Device identity save failed: {ex.Message}");
-        }
-    }
-
-    private static void UpdatePersistedDevice(LedDevice target, LedDevice source)
-    {
-        if (!string.IsNullOrWhiteSpace(source.Name))
-        {
-            target.Name = source.Name;
-        }
-
-        if (!string.IsNullOrWhiteSpace(source.MacAddress))
-        {
-            target.MacAddress = source.MacAddress;
-        }
-
-        if (!string.IsNullOrWhiteSpace(source.DeviceIdentifier))
-        {
-            target.DeviceIdentifier = source.DeviceIdentifier;
-        }
-    }
 }

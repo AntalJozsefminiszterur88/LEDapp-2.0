@@ -134,6 +134,11 @@ public sealed class WindowsBleService : IBleService
         }
     }
 
+    public Task<bool> IsDeviceConnectedAsync(LedDevice device)
+    {
+        return Task.FromResult(device?.IsConnected == true);
+    }
+
     public async Task ConnectAsync(LedDevice device)
     {
         if (device is null)

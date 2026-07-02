@@ -190,20 +190,6 @@ public sealed class FileConfigService : IConfigService
             return new LedDevice();
         }
 
-        var oldDevice = oldDevices.FirstOrDefault(d => d.Id == device.Id || 
-            (!string.IsNullOrWhiteSpace(d.MacAddress) && string.Equals(d.MacAddress, device.MacAddress, StringComparison.OrdinalIgnoreCase)));
-
-        if (oldDevice is not null)
-        {
-            device.IsConnected = oldDevice.IsConnected;
-            device.IsConnecting = oldDevice.IsConnecting;
-            BleLog.Info($"[FileConfigService] Normalized device {device.Name} ({device.MacAddress}): IsConnected={device.IsConnected}, IsConnecting={device.IsConnecting} from oldDevice.");
-        }
-        else
-        {
-            BleLog.Info($"[FileConfigService] NormalizeDevice: oldDevice is NULL for {device.Name} ({device.MacAddress})");
-        }
-
         if (!string.IsNullOrWhiteSpace(device.DeviceIdentifier) || string.IsNullOrWhiteSpace(device.MacAddress))
         {
             return device;
