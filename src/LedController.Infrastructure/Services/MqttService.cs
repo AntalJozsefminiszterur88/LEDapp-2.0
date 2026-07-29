@@ -76,6 +76,7 @@ public sealed class MqttService : IMqttService
             await client.SubscribeAsync(CommandTopic, MqttQualityOfServiceLevel.AtMostOnce);
             IsRunning = true;
             await PublishAllStatesAsync(config.SavedDevices);
+            await PublishAllColorsAsync(config.SavedDevices, config.Settings);
         }
         catch (Exception ex)
         {
@@ -234,6 +235,7 @@ public sealed class MqttService : IMqttService
             IsRunning = true;
             var config = await _configService.LoadConfigAsync();
             await PublishAllStatesAsync(config.SavedDevices);
+            await PublishAllColorsAsync(config.SavedDevices, config.Settings);
             return true;
         }
         catch (OperationCanceledException)
@@ -318,7 +320,7 @@ public sealed class MqttService : IMqttService
         if (payload.ScheduleEnabled.HasValue)
         {
             device.ScheduleEnabled = payload.ScheduleEnabled.Value;
-            _schedulerService.SetDeviceScheduleEnabled(device.Id, device.ScheduleEnabled);
+            await _schedulerService.SetDeviceScheduleEnabledAsync(device.Id, device.ScheduleEnabled);
             _schedulerService.MarkDeviceStateDirty(device.Id);
             await PersistDeviceConfigAsync(
                 device,
@@ -342,6 +344,21 @@ public sealed class MqttService : IMqttService
             await _bleService.SendCommandAsync(device, color.ToCommandBytes());
             device.CurrentColor = color;
             device.IsOn = true;
+
+            // Ha ebben a pillanatban aktiv az utemezes, a Raspberry-rol jovo
+            // szinvaltas csak 6 orara felulbiralja - utana automatikusan
+            // visszaall az utemezett szinre (SchedulerService.TickAsync).
+            // Ha az utemezes ki van kapcsolva, egyszeru, tartos szinbeallitas
+            // (nincs mire "visszaallni").
+            if (device.ScheduleEnabled)
+            {
+                _schedulerService.SetManualColorOverride(device.Id, color);
+            }
+            else
+            {
+                _schedulerService.ClearManualColorOverride(device.Id);
+            }
+
             _schedulerService.MarkDeviceStateDirty(device.Id);
         }
         else if (wantsOn)
@@ -399,6 +416,40 @@ public sealed class MqttService : IMqttService
             .Build();
 
         await _client.PublishAsync(message);
+    }
+
+    private async Task PublishColorsAsync(LedDevice device, AppSettings? settings)
+    {
+        if (device is null || _client is null || !_client.IsConnected)
+        {
+            return;
+        }
+
+        var deviceId = LedDeviceIdentity.GetStableId(device);
+        var topic = $"{StateTopicPrefix}{deviceId}/colors";
+        var customColors = settings?.CustomColors ?? Array.Empty<LedColor>();
+        var palette = LedColor.Defaults
+            .Concat(customColors)
+            .Select(c => new MqttColorPayload { Name = c.Name, Hex = c.NormalizedHex })
+            .ToList();
+
+        var json = JsonSerializer.Serialize(palette, SerializerOptions);
+        var message = new MqttApplicationMessageBuilder()
+            .WithTopic(topic)
+            .WithPayload(json)
+            .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtMostOnce)
+            .WithRetainFlag(true)
+            .Build();
+
+        await _client.PublishAsync(message);
+    }
+
+    private async Task PublishAllColorsAsync(IEnumerable<LedDevice> devices, AppSettings? settings)
+    {
+        foreach (var device in devices)
+        {
+            await PublishColorsAsync(device, settings);
+        }
     }
 
     private async Task PublishAllStatesAsync(IEnumerable<LedDevice> devices)
@@ -551,5 +602,11 @@ public sealed class MqttService : IMqttService
         public string Color { get; set; } = "#000000";
         public int Brightness { get; set; }
         public bool ScheduleEnabled { get; set; }
+    }
+
+    private sealed class MqttColorPayload
+    {
+        public string Name { get; set; } = string.Empty;
+        public string Hex { get; set; } = string.Empty;
     }
 }

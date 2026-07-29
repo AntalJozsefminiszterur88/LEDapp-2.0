@@ -11,6 +11,18 @@ public sealed class LedColor
 
     public static byte[] OffCommandBytes => Off.ToCommandBytes();
 
+    public static LedColor[] Defaults { get; } =
+    {
+        new("Piros", "#ff0000"),
+        new("Zöld", "#00ff00"),
+        new("Kék", "#0000ff"),
+        new("Sárga", "#ffff00"),
+        new("Cián", "#00ffff"),
+        new("Lila", "#800080"),
+        new("Narancs", "#ffa500"),
+        new("Fehér", "#ffffff"),
+    };
+
     public LedColor(string name, string hex)
     {
         Name = name ?? throw new ArgumentNullException(nameof(name));

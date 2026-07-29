@@ -10,6 +10,7 @@ public sealed class SchedulerService : ISchedulerService
     private static readonly TimeSpan LocationCacheDuration = TimeSpan.FromHours(1);
     private static readonly TimeSpan BaseReconnectDelay = TimeSpan.FromSeconds(10);
     private static readonly TimeSpan MaxReconnectDelay = TimeSpan.FromMinutes(5);
+    private static readonly TimeSpan ManualOverrideDuration = TimeSpan.FromHours(6);
 
     public event Action<LedDevice>? DeviceStateChanged;
 
@@ -93,12 +94,87 @@ public sealed class SchedulerService : ISchedulerService
         }
     }
 
-    public void SetDeviceScheduleEnabled(Guid deviceId, bool enabled)
+    public void SetManualColorOverride(Guid deviceId, LedColor color)
     {
         var state = _deviceStates.GetOrAdd(deviceId, _ => new DeviceState());
         lock (_stateLock)
         {
+            state.ManualOverrideColor = color;
+            state.ManualOverrideExpiresUtc = DateTime.UtcNow.Add(ManualOverrideDuration);
+            state.ForceRefresh = true;
+        }
+    }
+
+    public void ClearManualColorOverride(Guid deviceId)
+    {
+        var state = _deviceStates.GetOrAdd(deviceId, _ => new DeviceState());
+        lock (_stateLock)
+        {
+            state.ManualOverrideColor = null;
+            state.ManualOverrideExpiresUtc = null;
+        }
+    }
+
+    public async Task SetDeviceScheduleEnabledAsync(Guid deviceId, bool enabled)
+    {
+        var state = _deviceStates.GetOrAdd(deviceId, _ => new DeviceState());
+        bool hadOverride;
+        lock (_stateLock)
+        {
+            hadOverride = state.ManualOverrideColor is not null;
             state.ScheduleEnabledOverride = enabled;
+            state.ManualOverrideColor = null;
+            state.ManualOverrideExpiresUtc = null;
+            state.ForceRefresh = true;
+        }
+
+        if (!hadOverride)
+        {
+            return;
+        }
+
+        // Volt aktiv kezi felulbiralas - most, hogy torolve lett, azonnal
+        // visszaallitjuk arra a szinre, amit az utemezo ETTOL FUGGETLENUL,
+        // pusztan az idorendi szabalyok alapjan adna most, meg akkor is, ha
+        // a kapcsolo epp kikapcsolta az utemezest (igy az csak "megfagy"
+        // ezen a szinen, nem marad az elozo kezi felulbiralas szinen).
+        try
+        {
+            var config = await _configService.LoadConfigAsync();
+            var device = config.SavedDevices.FirstOrDefault(d => d.Id == deviceId);
+            if (device is null)
+            {
+                return;
+            }
+
+            var profilesForDevice = device.Profiles.Count > 0
+                ? device.Profiles.ToList()
+                : config.Profiles;
+
+            var settings = config.Settings ?? AppSettings.Default;
+            var coordinates = await ResolveCoordinatesAsync(settings);
+            var now = DateTime.Now;
+            var todaySunTimes = _locationService.GetSunTimes(coordinates.Latitude, coordinates.Longitude, now);
+            var yesterdaySunTimes = _locationService.GetSunTimes(coordinates.Latitude, coordinates.Longitude, now.AddDays(-1));
+            var desiredColor = ResolveDesiredColor(profilesForDevice, now, todaySunTimes, yesterdaySunTimes);
+
+            var command = desiredColor?.ToCommandBytes() ?? LedColor.OffCommandBytes;
+            if (await SendScheduledCommandAsync(device, state, command, "revert-after-toggle"))
+            {
+                device.IsOn = desiredColor is not null;
+                device.CurrentColor = desiredColor ?? LedColor.Off;
+                lock (_stateLock)
+                {
+                    state.IsOn = device.IsOn;
+                    state.ColorHex = (desiredColor ?? LedColor.Off).NormalizedHex;
+                }
+
+                DeviceStateChanged?.Invoke(device);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[Scheduler] Failed to resolve revert color after toggle: {ex.Message}");
         }
     }
 
@@ -213,8 +289,23 @@ public sealed class SchedulerService : ISchedulerService
 
             var scheduleControlEnabled = scheduleOverride ?? device.ScheduleEnabled;
             var schedulingEnabled = scheduleControlEnabled && hasActiveProfiles;
+
+            LedColor? manualOverrideColor = null;
+            lock (_stateLock)
+            {
+                if (state.ManualOverrideExpiresUtc is { } expiresUtc && DateTime.UtcNow >= expiresUtc)
+                {
+                    // Lejart a kezi felulbiralas - automatikusan visszaall az utemezore.
+                    state.ManualOverrideColor = null;
+                    state.ManualOverrideExpiresUtc = null;
+                    state.ForceRefresh = true;
+                }
+
+                manualOverrideColor = state.ManualOverrideColor;
+            }
+
             var desiredColor = schedulingEnabled
-                ? ResolveDesiredColor(profilesForDevice, now, todaySunTimes, yesterdaySunTimes)
+                ? (manualOverrideColor ?? ResolveDesiredColor(profilesForDevice, now, todaySunTimes, yesterdaySunTimes))
                 : null;
 
             if (schedulingEnabled && !device.IsConnected && !device.IsConnecting)
@@ -556,6 +647,8 @@ public sealed class SchedulerService : ISchedulerService
         public string? ColorHex { get; set; }
         public bool ForceRefresh { get; set; }
         public bool? ScheduleEnabledOverride { get; set; }
+        public LedColor? ManualOverrideColor { get; set; }
+        public DateTime? ManualOverrideExpiresUtc { get; set; }
         public int ConsecutiveConnectFailures { get; set; }
         public DateTime NextReconnectAllowedUtc { get; set; } = DateTime.MinValue;
     }

@@ -34,7 +34,7 @@ public sealed partial class SchedulerViewModel : ViewModelBase, IDisposable
         TargetDevice = targetDevice ?? throw new ArgumentNullException(nameof(targetDevice));
 
         Profiles = new ObservableCollection<ScheduleProfile>();
-        AvailableColors = new ObservableCollection<LedColor>(CreateDefaultColors());
+        AvailableColors = new ObservableCollection<LedColor>(LedColor.Defaults);
         DailySchedules = new ObservableCollection<DailySchedule>();
 
         Profiles.CollectionChanged += OnProfilesCollectionChanged;
@@ -327,18 +327,6 @@ public sealed partial class SchedulerViewModel : ViewModelBase, IDisposable
         DayOfWeek.Friday,
         DayOfWeek.Saturday,
         DayOfWeek.Sunday
-    };
-
-    private static LedColor[] CreateDefaultColors() => new[]
-    {
-        new LedColor("Piros", "#ff0000"),
-        new LedColor("Zöld", "#00ff00"),
-        new LedColor("Kék", "#0000ff"),
-        new LedColor("Sárga", "#ffff00"),
-        new LedColor("Cián", "#00ffff"),
-        new LedColor("Lila", "#800080"),
-        new LedColor("Narancs", "#ffa500"),
-        new LedColor("Fehér", "#ffffff")
     };
 
     private void OnProfilesCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)

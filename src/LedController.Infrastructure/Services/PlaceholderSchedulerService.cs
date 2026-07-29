@@ -23,7 +23,16 @@ public sealed class PlaceholderSchedulerService : ISchedulerService
     {
     }
 
-    public void SetDeviceScheduleEnabled(Guid deviceId, bool enabled)
+    public Task SetDeviceScheduleEnabledAsync(Guid deviceId, bool enabled)
+    {
+        return Task.CompletedTask;
+    }
+
+    public void SetManualColorOverride(Guid deviceId, LedColor color)
+    {
+    }
+
+    public void ClearManualColorOverride(Guid deviceId)
     {
     }
 }

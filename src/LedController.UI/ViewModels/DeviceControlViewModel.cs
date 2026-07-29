@@ -44,7 +44,7 @@ public sealed partial class DeviceControlViewModel : ViewModelBase, IDisposable
         _configService = configService;
         Device = device ?? throw new ArgumentNullException(nameof(device));
 
-        _defaultColors = CreateDefaultColors().ToList();
+        _defaultColors = LedColor.Defaults.ToList();
         PresetColors = new ObservableCollection<LedColor>(_defaultColors);
 
         brightness = Device.Brightness;
@@ -112,7 +112,7 @@ public sealed partial class DeviceControlViewModel : ViewModelBase, IDisposable
     {
         Device.ScheduleEnabled = value;
         OnPropertyChanged(nameof(ScheduleButtonLabel));
-        _schedulerService.SetDeviceScheduleEnabled(Device.Id, value);
+        _ = _schedulerService.SetDeviceScheduleEnabledAsync(Device.Id, value);
         _schedulerService.MarkDeviceStateDirty(Device.Id);
         _ = SaveDeviceScheduleEnabledAsync(value);
         _ = _mqttService.PublishStateAsync(Device);
@@ -610,18 +610,6 @@ public sealed partial class DeviceControlViewModel : ViewModelBase, IDisposable
 
         return true;
     }
-
-    private static LedColor[] CreateDefaultColors() => new[]
-    {
-        new LedColor("Piros", "#ff0000"),
-        new LedColor("Zöld", "#00ff00"),
-        new LedColor("Kék", "#0000ff"),
-        new LedColor("Sárga", "#ffff00"),
-        new LedColor("Cián", "#00ffff"),
-        new LedColor("Lila", "#800080"),
-        new LedColor("Narancs", "#ffa500"),
-        new LedColor("Fehér", "#ffffff")
-    };
 
     private static byte[] HexToBytes(string hex)
     {

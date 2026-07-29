@@ -8,5 +8,7 @@ public interface ISchedulerService
     void Start();
     void Stop();
     void MarkDeviceStateDirty(Guid deviceId);
-    void SetDeviceScheduleEnabled(Guid deviceId, bool enabled);
+    Task SetDeviceScheduleEnabledAsync(Guid deviceId, bool enabled);
+    void SetManualColorOverride(Guid deviceId, LedColor color);
+    void ClearManualColorOverride(Guid deviceId);
 }
