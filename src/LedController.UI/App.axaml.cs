@@ -16,6 +16,7 @@ namespace LedController.UI;
 public partial class App : Application
 {
     private SplashScreenWindow? _splashScreen;
+    private MainWindow? _mainWindow;
 
     public IServiceProvider Services { get; private set; } = default!;
 
@@ -41,11 +42,17 @@ public partial class App : Application
                 _splashScreen.Show();
             }
 
-            var mainWindow = Services.GetRequiredService<MainWindow>();
-            mainWindow.ConfigureStartup(Program.StartMinimizedToTray);
-            mainWindow.Opened += (_, _) => CloseSplash();
-            mainWindow.Closed += (_, _) => CloseSplash();
-            desktop.MainWindow = mainWindow;
+            _mainWindow = Services.GetRequiredService<MainWindow>();
+            _mainWindow.ConfigureStartup(Program.StartMinimizedToTray);
+            _mainWindow.Opened += (_, _) => CloseSplash();
+            _mainWindow.Closed += (_, _) => CloseSplash();
+
+            // A hidden startup window must never be mapped. Hiding it from Opened
+            // is too late on Cinnamon/X11 and can leave a transparent frame behind.
+            if (!Program.StartMinimizedToTray)
+            {
+                desktop.MainWindow = _mainWindow;
+            }
         }
 
         base.OnFrameworkInitializationCompleted();

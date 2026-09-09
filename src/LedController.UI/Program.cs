@@ -1,4 +1,6 @@
 using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -172,7 +174,7 @@ class Program
 
             try
             {
-                BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+                BuildAvaloniaApp().StartWithClassicDesktopLifetime(args, ShutdownMode.OnExplicitShutdown);
             }
             catch (Exception ex)
             {

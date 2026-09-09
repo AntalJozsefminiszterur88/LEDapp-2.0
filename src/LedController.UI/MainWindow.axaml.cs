@@ -2,11 +2,11 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.LogicalTree;
 using Avalonia.Platform;
 using Avalonia.Media;
 using Avalonia.Interactivity;
-using Avalonia.Threading;
 using LedController.UI.ViewModels;
 using LedController.UI.Views;
 
@@ -15,8 +15,8 @@ namespace LedController.UI;
 public partial class MainWindow : Window
 {
     private TrayIcon? _trayIcon;
+    private MainViewModel? _viewModel;
     private bool _sunTimesRefreshed;
-    private bool _startHiddenInTray;
     private bool _exitRequested;
 
     public MainWindow()
@@ -25,20 +25,26 @@ public partial class MainWindow : Window
         Closing += OnClosing;
         Closed += (_, _) => DisposeTrayIcon();
         Opened += (_, _) => EnsureTrayIcon();
-        Opened += (_, _) => ApplyStartupVisibility();
     }
 
     public MainWindow(MainViewModel viewModel)
         : this()
     {
+        _viewModel = viewModel;
         DataContext = viewModel;
         viewModel.DiscoveryRequested += async () => await OpenDiscoveryAsync(viewModel);
-        Opened += (_, _) => _ = InitializeAfterOpenAsync(viewModel);
+        Opened += (_, _) => _ = InitializeAfterOpenAsync();
     }
 
     internal void ConfigureStartup(bool startHiddenInTray)
     {
-        _startHiddenInTray = startHiddenInTray;
+        if (!startHiddenInTray)
+        {
+            return;
+        }
+
+        EnsureTrayIcon();
+        _ = InitializeAfterOpenAsync();
     }
 
     private async Task OpenDiscoveryAsync(MainViewModel viewModel)
@@ -85,7 +91,8 @@ public partial class MainWindow : Window
         {
             Icon = icon,
             ToolTipText = "LedController",
-            Menu = menu
+            Menu = menu,
+            IsVisible = true
         };
         _trayIcon.Clicked += (_, _) => ShowFromTray();
     }
@@ -129,7 +136,14 @@ public partial class MainWindow : Window
     private void ExitApplication()
     {
         _exitRequested = true;
-        Close();
+        if (global::Avalonia.Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+        {
+            desktop.Shutdown();
+        }
+        else
+        {
+            Close();
+        }
     }
 
     private void OnClosing(object? sender, WindowClosingEventArgs e)
@@ -141,17 +155,6 @@ public partial class MainWindow : Window
 
         e.Cancel = true;
         Hide();
-    }
-
-    private void ApplyStartupVisibility()
-    {
-        if (!_startHiddenInTray)
-        {
-            return;
-        }
-
-        _startHiddenInTray = false;
-        Dispatcher.UIThread.Post(Hide, DispatcherPriority.Background);
     }
 
     private void DisposeTrayIcon()
@@ -193,10 +196,15 @@ public partial class MainWindow : Window
         await viewModel.RefreshSunTimesAsync();
     }
 
-    private async Task InitializeAfterOpenAsync(MainViewModel viewModel)
+    private async Task InitializeAfterOpenAsync()
     {
+        if (_viewModel is null)
+        {
+            return;
+        }
+
         await Task.Yield();
-        await viewModel.InitializeAfterOpenAsync();
-        await RefreshSunTimesAfterOpenAsync(viewModel);
+        await _viewModel.InitializeAfterOpenAsync();
+        await RefreshSunTimesAfterOpenAsync(_viewModel);
     }
 }
