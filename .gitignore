@@ -10,3 +10,7 @@ obj/
 .vs/
 node_modules/
 dist/
+
+# Runtime logs
+logs/*
+!logs/.gitkeep
